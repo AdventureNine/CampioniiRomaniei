@@ -1,2 +1,2 @@
-# CampioniiRomaniei
+# Campionii Romaniei
 IOC University Project
