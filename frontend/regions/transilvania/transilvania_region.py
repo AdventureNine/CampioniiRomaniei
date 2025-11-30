@@ -1,7 +1,9 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line
 from frontend.regions.transilvania.colors import REGION_BG, HEADER_BG, HEADER_TITLE, HEADER_SUBTITLE, MAP_BG1, MAP_BG2, MAP_LABEL, MASCOT, MASCOT_NAME, TASK_CIRCLE_SHADOW, TASK_CIRCLE_LOCKED, TASK_CIRCLE_LINE, TASK_ICON_UNLOCKED, TASK_ICON_LOCKED, TASK_LABEL_UNLOCKED, TASK_LABEL_LOCKED, TASK_STAR, TASK_LOCK, BOTTOM_BG, START_BTN_BG, VERIFY_BTN_BG, HELP_BTN_BG
 
@@ -144,7 +146,11 @@ class TransilvaniaRegionScreen(Screen):
             Ellipse(pos=(8, 6), size=(164, 164))
 
             if task_data['unlocked']:
-                Color(*task_data['color'])
+                if self.selected_task == task_data['id']:
+                    r, g, b, a = task_data['color']
+                    Color(r + 0.20, g + 0.20, b + 0.20, 1)
+                else:
+                    Color(*task_data['color'])
             else:
                 Color(*TASK_CIRCLE_LOCKED)
 
@@ -202,11 +208,13 @@ class TransilvaniaRegionScreen(Screen):
             container.add_widget(lock)
 
         if task_data['unlocked']:
-            if self.selected_task == task_data['id']:
-                r, g, b, a = task_data['color']
-                Color(r + 0.15, g + 0.15, b + 0.15, 1)
-            else:
-                Color(*task_data['color'])
+            btn = Button(
+                background_color=(0, 0, 0, 0),
+                size_hint=(1, 1),
+                pos_hint={'center_x': 0.5, 'center_y': 0.5}
+            )
+            btn.bind(on_press=lambda x, tid=task_data['id']: self.select_task(tid))
+            container.add_widget(btn)
 
         return container
 
@@ -273,6 +281,7 @@ class TransilvaniaRegionScreen(Screen):
         for t in self.tasks_data:
             if t["id"] == completed_task_id + 1:
                 t["unlocked"] = True
+                self.selected_task = t["id"]
 
         self.layout.clear_widgets()
         self.setup_ui()
@@ -282,7 +291,37 @@ class TransilvaniaRegionScreen(Screen):
             self.start_task(self.selected_task)
             return
 
-        for t in self.tasks_data:
-            if t["unlocked"]:
-                self.start_task(t["id"])
-                break
+    def show_completion_popup(self):
+        box = BoxLayout(orientation='vertical', padding=20, spacing=20)
+
+        message = Label(
+            text="Felicitări!\n\nAi terminat toate misiunile din Transilvania!",
+            font_size="26sp",
+            halign="center",
+            valign="middle"
+        )
+
+        close_btn = Button(
+            text="Înapoi la regiuni",
+            size_hint=(1, 0.4),
+            font_size="20sp",
+            bold=True
+        )
+        close_btn.bind(on_press=lambda x: self._close_completion_popup())
+
+        box.add_widget(message)
+        box.add_widget(close_btn)
+
+        self.completion_popup = Popup(
+            title="Misiune Finalizată",
+            content=box,
+            size_hint=(0.55, 0.55),
+            auto_dismiss=False
+        )
+
+        self.completion_popup.open()
+
+    def _close_completion_popup(self):
+        self.completion_popup.dismiss()
+        self.manager.current = "transilvania"
+

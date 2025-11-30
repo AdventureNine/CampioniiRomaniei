@@ -107,9 +107,15 @@ class TaskScreenBase(Screen):
 
         if user_answer == good_answer:
             prev_screen = self.manager.get_screen("transilvania")
+
+            if self.task_number == 4:
+                prev_screen.show_completion_popup()
+                return
+
             prev_screen.unlock_next_task(self.task_number)
             self.manager.current = "transilvania"
             return
+
         else:
             popup = Popup(
                 title="Răspuns greșit",
