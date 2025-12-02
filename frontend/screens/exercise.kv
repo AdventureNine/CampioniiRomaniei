@@ -1,0 +1,62 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<ExerciseScreen>:
+    canvas.before:
+        Color:
+            rgba: hex('#FAFAFA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.15
+            pos_hint: {'top': 1}
+            padding: 20
+            canvas.before:
+                Color:
+                    rgba: hex('#3F51B5')
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: root.exercise_title
+                font_size: '24sp'
+                halign: 'left'
+                text_size: self.size
+                valign: 'middle'
+                bold: True
+
+            Label:
+                text: root.timer_text
+                font_size: '30sp'
+                bold: True
+                color: hex('#FFEB3B')
+                size_hint_x: 0.5
+
+        ScoreDisplay:
+
+
+        Label:
+            text: root.exercise_content
+            font_size: '28sp'
+            color: 0,0,0,1
+            halign: 'center'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+
+        BoxLayout:
+            size_hint: 0.6, 0.1
+            pos_hint: {'center_x': 0.5, 'y': 0.1}
+            spacing: 50
+
+            Button:
+                text: "Renunță"
+                background_color: hex('#F44336')
+                on_release: root.quit_exercise()
+
+            Button:
+                text: "Finalizează"
+                background_color: hex('#4CAF50')
+                on_release: root.complete_exercise()

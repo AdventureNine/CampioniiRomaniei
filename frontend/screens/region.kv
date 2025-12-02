@@ -1,0 +1,65 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<RegionScreen>:
+    canvas.before:
+        Color:
+            rgba: hex('#E8F5E9')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        ScoreDisplay:
+
+        Label:
+            text: root.region_name
+            font_size: '40sp'
+            pos_hint: {'center_x': 0.5, 'top': 0.98}
+            color: hex('#2E7D32')
+            bold: True
+
+        Label:
+            text: root.mission_description
+            font_size: '20sp'
+            pos_hint: {'center_x': 0.5, 'top': 0.90}
+            color: hex('#555555')
+
+        GridLayout:
+            cols: 3
+            spacing: 60
+            padding: 40
+            size_hint: None, None
+            size: 600, 350
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            LevelCircle:
+                text: "1"
+                disabled: not root.levels_unlocked[0]
+                on_release: root.start_exercise(1)
+            LevelCircle:
+                text: "2"
+                disabled: not root.levels_unlocked[1]
+                on_release: root.start_exercise(2)
+            LevelCircle:
+                text: "3"
+                disabled: not root.levels_unlocked[2]
+                on_release: root.start_exercise(3)
+            LevelCircle:
+                text: "4"
+                disabled: not root.levels_unlocked[3]
+                on_release: root.start_exercise(4)
+            LevelCircle:
+                text: "5"
+                disabled: not root.levels_unlocked[4]
+                on_release: root.start_exercise(5)
+            LevelCircle:
+                text: "6"
+                disabled: not root.levels_unlocked[5]
+                on_release: root.start_exercise(6)
+
+        Button:
+            text: "Înapoi"
+            size_hint: None, None
+            size: 150, 50
+            pos_hint: {'x': 0.05, 'top': 0.95}
+            on_release: root.go_back()

@@ -1,0 +1,41 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<MenuScreen>:
+    canvas.before:
+        Color:
+            rgba: hex('#E3F2FD')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        Label:
+            text: "Aplicație Didactică"
+            font_size: '50sp'
+            pos_hint: {'center_x': 0.5, 'y': 0.35}
+            color: hex('#1565C0')
+            bold: True
+
+        GridLayout:
+            cols: 2
+            spacing: 40
+            padding: 40
+            size_hint: None, None
+            size: 600, 250
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+
+            GameButton:
+                text: "JOC"
+                on_release: root.go_to_map()
+
+            GameButton:
+                text: "COSMETICE"
+                background_color: hex('#9C27B0')
+
+            GameButton:
+                text: "INVENTAR"
+                background_color: hex('#00BCD4')
+
+            GameButton:
+                text: "STATISTICI"
+                background_color: hex('#607D8B')

@@ -1,0 +1,76 @@
+# aici asset-urile comune
+
+<GameButton@Button>:
+    background_normal: ''
+    background_color: hex('#FF9800')
+    font_size: '22sp'
+    bold: True
+    color: 1, 1, 1, 1
+    size_hint: None, None
+    size: 260, 70
+    background_down: ''
+    canvas.before:
+        Color:
+            rgba: self.background_color if self.state == 'normal' else hex('#E65100')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20,]
+
+<RegionButton@Button>:
+    background_normal: ''
+    background_color: hex('#4CAF50')
+    size_hint: None, None
+    size: 160, 100
+    font_size: '16sp'
+    halign: 'center'
+    valign: 'middle'
+    text_size: self.size
+    bold: True
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+
+<LevelCircle@Button>:
+    background_normal: ''
+    size_hint: None, None
+    size: 90, 90
+    font_size: '28sp'
+    bold: True
+    background_color: hex('#2196F3') if not self.disabled else hex('#BDBDBD')
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+
+<ScoreDisplay@BoxLayout>:
+    size_hint: None, None
+    size: 200, 60
+    pos_hint: {'top': 0.98, 'right': 0.98}
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.2
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+
+    Image:
+        source: ''
+        size_hint_x: 0.3
+
+    Label:
+        # Preluăm scorul din aplicația principală (App)
+        text: "Credite: " + str(app.credit)
+        font_size: '24sp'
+        bold: True
+        color: 1, 1, 0, 1
+        halign: 'center'
+        valign: 'middle'

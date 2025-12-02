@@ -1,0 +1,55 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<MapScreen>:
+    canvas.before:
+        Color:
+            rgba: hex('#FFF8E1')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        ScoreDisplay:
+
+        Label:
+            text: "Harta României"
+            font_size: '35sp'
+            pos_hint: {'center_x': 0.5, 'top': 0.98}
+            color: hex('#BF360C')
+
+        RegionButton:
+            text: "Transilvania"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            background_color: hex('#4CAF50')
+            on_release: root.open_region(1)
+
+        RegionButton:
+            text: "Moldova"
+            pos_hint: {'center_x': 0.75, 'center_y': 0.65}
+            background_color: hex('#2196F3')
+            on_release: root.open_region(2)
+
+        RegionButton:
+            text: "Țara Românească"
+            pos_hint: {'center_x': 0.55, 'center_y': 0.3}
+            background_color: hex('#FF9800')
+            on_release: root.open_region(3)
+
+        RegionButton:
+            text: "Dobrogea"
+            pos_hint: {'center_x': 0.8, 'center_y': 0.35}
+            background_color: hex('#00BCD4')
+            on_release: root.open_region(4)
+
+        RegionButton:
+            text: "Banat-Crișana\nMaramureș"
+            pos_hint: {'center_x': 0.25, 'center_y': 0.6}
+            background_color: hex('#9C27B0')
+            on_release: root.open_region(5)
+
+        Button:
+            text: "< Meniu"
+            size_hint: None, None
+            size: 120, 50
+            pos_hint: {'x': 0.05, 'top': 0.95}
+            on_release: root.go_back()
