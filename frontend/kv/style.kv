@@ -1,0 +1,18 @@
+#:include kv/style.kv
+
+<ButonMeniu@MDFillRoundFlatButton>:
+    font_size: "24sp"
+    size_hint_x: 0.4
+    height: "60dp"
+    pos_hint: {"center_x": 0.5}
+    md_bg_color: 0.2, 0.4, 0.8, 1
+    text_color: 1, 1, 1, 1
+
+
+<ButonInapoi@MDIconButton>:
+    icon: "arrow-left-bold-circle"
+    user_font_size: "48sp"
+    pos_hint: {"x": 0.02, "top": 0.98}
+    theme_text_color: "Custom"
+    text_color: 1, 1, 1, 1
+    on_release: app.root.current = 'meniu'

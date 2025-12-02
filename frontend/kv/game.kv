@@ -1,0 +1,14 @@
+<EcranJoc>:
+    name: 'joc'
+    md_bg_color: 0, 0, 0, 1
+
+    MDLabel:
+        text: "Nivel 1: Începutul"
+        halign: "center"
+        theme_text_color: "Custom"
+        text_color: 1, 1, 1, 1
+
+    MDRaisedButton:
+        text: "Simuleaza Terminare Nivel"
+        pos_hint: {"center_x": 0.5, "center_y": 0.2}
+        on_release: app.root.current = 'meniu'

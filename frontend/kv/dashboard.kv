@@ -1,0 +1,82 @@
+#:include kv/style.kv
+
+<MeniuPrincipal>:
+    name: 'meniu'
+
+    Video:
+        source: "assets/dashboard_background1.mp4"
+        state: "play"
+        options: {'eos': 'loop'}
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: 1, 1
+        pos_hint: {"center_x": .5, "center_y": .5}
+        volume: 0
+
+
+    MDBoxLayout:
+        md_bg_color: 0, 0, 0, 0.1
+        size_hint: 1, 1
+
+    MDLabel:
+        text: "CAMPIONII ROMÂNIEI"
+        halign: "center"
+        pos_hint: {"center_x": 0.503, "center_y": 0.847}
+        font_name: "assets/impact.ttf"
+        font_size: "120sp"
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 0.5
+        bold: True
+
+    MDLabel:
+        text: "CAMPIONII ROMÂNIEI"
+        halign: "center"
+        pos_hint: {"center_x": 0.5, "center_y": 0.85}
+        font_name: "assets/impact.ttf"
+        font_size: "120sp"
+        theme_text_color: "Custom"
+        text_color: 0, 0.6, 1, 1
+        outline_color: 1, 1, 1, 0.3
+        outline_width: 1
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "20dp"
+        adaptive_height: True
+        size_hint_x: 0.8
+        pos_hint: {"center_x": 0.5, "center_y": 0.45}
+
+        ButonMeniu:
+            text: "START JOC"
+            md_bg_color: 0, 0.6, 0.2, 1
+            on_release: app.root.current = 'joc'
+
+        ButonMeniu:
+            text: "COSMETICE"
+            on_release: app.root.current = 'cosmetice'
+
+        ButonMeniu:
+            text: "INVENTAR"
+            on_release: app.root.current = 'inventar'
+
+        ButonMeniu:
+            text: "STATISTICI"
+            on_release: app.root.current = 'statistici'
+
+
+    Image:
+        source: "assets/icon_owl.png"
+        size_hint: None, None
+        size: "100dp", "100dp"
+        pos_hint: {"x": 0.02, "y": 0.02}
+
+    ButonMeniu:
+        text: "IEȘIRE"
+        md_bg_color: 0.8, 0.2, 0.2, 1
+
+        size_hint_x: None
+        width: "200dp"
+
+        pos_hint: {"right": 0.98, "y": 0.02}
+
+        on_release: root.exit_app()
