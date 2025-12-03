@@ -10,6 +10,8 @@ class Transilvania:
             {'id': 2, 'name': 'Dealuri si\nPodisuri', 'unlocked': False, 'color': (0.60, 0.85, 0.55, 1)},
             {'id': 3, 'name': 'Campuri\nsi Vai', 'unlocked': False, 'color': (0.55, 0.90, 0.55, 1)},
             {'id': 4, 'name': 'Agricultura', 'unlocked': False, 'color': (0.65, 0.85, 0.50, 1)},
+            {'id': 5, 'name': 'Istorie', 'unlocked': False, 'color': (0.85, 0.65, 0.45, 1)},
+            {'id': 6, 'name': 'Cultura si\nTraditii', 'unlocked': False, 'color': (0.75, 0.55, 0.75, 1)},
         ]
 
     def select_task(self, task_id):

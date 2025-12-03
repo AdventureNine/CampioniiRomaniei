@@ -20,5 +20,5 @@ class TaskLogic:
         return user_answer.strip().lower() == self.correct_answer.strip().lower()
 
     def is_final_task(self):
-        return self.task_number == 4
+        return self.task_number == 6
 

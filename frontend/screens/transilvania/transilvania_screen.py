@@ -33,10 +33,12 @@ class TransilvaniaRegionScreen(Screen):
 
     def create_task_circles(self):
         positions = [
-            {'center_x': 0.53, 'center_y': 0.65},
-            {'center_x': 0.78, 'center_y': 0.65},
-            {'center_x': 0.53, 'center_y': 0.40},
-            {'center_x': 0.78, 'center_y': 0.40}
+            {'center_x': 0.53, 'center_y': 0.75},
+            {'center_x': 0.78, 'center_y': 0.75},
+            {'center_x': 0.53, 'center_y': 0.50},
+            {'center_x': 0.78, 'center_y': 0.50},
+            {'center_x': 0.53, 'center_y': 0.25},
+            {'center_x': 0.78, 'center_y': 0.25}
         ]
 
         main_layout = self.children[0]
@@ -91,7 +93,7 @@ class TransilvaniaRegionScreen(Screen):
             )
             container.add_widget(play_img)
         else:
-            icons = {1: "M", 2: "D", 3: "C", 4: "A"}
+            icons = {1: "M", 2: "D", 3: "C", 4: "A", 5: "I", 6: "T"}
             label_icon = Label(
                 text=icons.get(task["id"], ""),
                 font_size='56sp',
@@ -121,7 +123,7 @@ class TransilvaniaRegionScreen(Screen):
         return container
 
     def start_task(self, task_id):
-        screen_names = {1: 'task_1', 2: 'task_2', 3: 'task_3', 4: 'task_4'}
+        screen_names = {1: 'task_1', 2: 'task_2', 3: 'task_3', 4: 'task_4', 5: 'task_5', 6: 'task_6'}
         if self.manager and task_id in screen_names:
             self.manager.current = screen_names[task_id]
 

@@ -29,7 +29,7 @@ class CampioniiRomanieiApp(App):
         sm = ScreenManager()
         sm.add_widget(TransilvaniaRegionScreen())
 
-        for task_num in range(1, 5):
+        for task_num in range(1, 7):
             sm.add_widget(create_task_screen(task_num))
         sm.current = 'transilvania'
         return sm

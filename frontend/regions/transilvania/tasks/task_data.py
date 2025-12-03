@@ -106,3 +106,56 @@ TASK_4_QUESTIONS = {
     ]
 }
 
+TASK_5_QUESTIONS = {
+    'USOR': [
+        ("Unde s-a facut Marea Unire?", "Alba Iulia"),
+        ("Ce popor a trait aici inainte de romani?", "Dacii"),
+        ("Ce castel este aproape de Brasov?", "Bran"),
+        ("Marea Unire a avut loc la __.", "Alba Iulia"),
+        ("Dacii au fost cuceriti de imparatul __.", "Traian"),
+        ("Castelul Corvinilor se afla in orasul __.", "Hunedoara"),
+    ],
+    'MEDIU': [
+        ("Cum se numea capitala dacilor?", "Sarmizegetusa"),
+        ("Cine a condus lupta impotriva otomanilor?", "Iancu de Hunedoara"),
+        ("Ce popor a construit cetati fortificate in Transilvania?", "Sasii"),
+        ("Cetatea Alba Carolina a fost ridicata de __.", "Habsburgi"),
+        ("Sarmizegetusa a fost capitala __.", "Dacilor"),
+        ("Iancu de Hunedoara a luptat impotriva __.", "Turcilor"),
+    ],
+    'DIFICIL': [
+        ("Cum se numeste fortificatia din Alba Iulia?", "Alba Carolina"),
+        ("In ce secol a domnit Mihai Viteazul?", "Secolul XVI"),
+        ("Ce rascoala importanta a avut loc in 1784?", "Rascoala lui Horea"),
+        ("Cetatile dacice se afla in Munții __.", "Orastiei"),
+        ("Mihai Viteazul a unit pentru scurt timp __ tari romanesti.", "Trei"),
+        ("Alba Carolina este o cetate de tip __.", "Vauban"),
+    ]
+}
+
+TASK_6_QUESTIONS = {
+    'USOR': [
+        ("Ce castel este legat de Dracula?", "Bran"),
+        ("Ce oras este renumit pentru festivalul de teatru?", "Sibiu"),
+        ("Ce instrument lung folosesc motii?", "Tulnic"),
+        ("Podul Minciunilor se afla in orasul __.", "Sibiu"),
+        ("Lacul Sfanta Ana este un lac __.", "Vulcanic"),
+        ("Sarmalele sunt o mâncare __.", "Traditionala"),
+    ],
+    'MEDIU': [
+        ("Ce oras gazduieste festivalul Untold?", "Cluj"),
+        ("Ce sate sunt cunoscute pentru bisericile fortificate?", "Sasesti"),
+        ("Ce dans traditional este cunoscut in zona?", "Caluserul"),
+        ("Icoanele pe sticla sunt o arta populara din __.", "Transilvania"),
+        ("Festivalul de teatru are loc in orasul __.", "Sibiu"),
+        ("Tulnicul este un instrument folosit de __.", "Motii"),
+    ],
+    'DIFICIL': [
+        ("Ce localitate are o biserica fortificata UNESCO?", "Biertan"),
+        ("Ce festival medieval important se tine la Sighisoara?", "Festivalul Medieval"),
+        ("Ce regiune este cunoscuta pentru arhitectura saseasca?", "Transilvania de Sud"),
+        ("Zona Tarnavelor este renumita pentru __.", "Vin"),
+        ("Biertan este un sat cu o biserica __.", "Fortificata"),
+        ("Dansul saseac vechi de nunta se numeste __.", "Fechertanz"),
+    ]
+}

@@ -1,7 +1,8 @@
 from .task_screen_base import TaskScreenBase
 from frontend.regions.transilvania.colors import TASK_BG_COLORS
 from frontend.regions.transilvania.tasks.task_data import (
-    TASK_1_QUESTIONS, TASK_2_QUESTIONS, TASK_3_QUESTIONS, TASK_4_QUESTIONS
+    TASK_1_QUESTIONS, TASK_2_QUESTIONS, TASK_3_QUESTIONS, TASK_4_QUESTIONS,
+    TASK_5_QUESTIONS, TASK_6_QUESTIONS
 )
 
 
@@ -10,6 +11,8 @@ TASK_CONFIG = {
     2: {'questions': TASK_2_QUESTIONS, 'color': TASK_BG_COLORS['task_2']},
     3: {'questions': TASK_3_QUESTIONS, 'color': TASK_BG_COLORS['task_3']},
     4: {'questions': TASK_4_QUESTIONS, 'color': TASK_BG_COLORS['task_4']},
+    5: {'questions': TASK_5_QUESTIONS, 'color': TASK_BG_COLORS['task_5']},
+    6: {'questions': TASK_6_QUESTIONS, 'color': TASK_BG_COLORS['task_6']},
 }
 
 
