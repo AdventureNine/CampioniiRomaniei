@@ -1,0 +1,116 @@
+#:kivy 2.0
+
+<TransilvaniaRegionScreen>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: app.get_color('REGION_BG')
+            Rectangle:
+                size: 1280, 800
+                pos: 0, 0
+
+        FloatLayout:
+            size_hint: 0.95, 0.13
+            pos_hint: {'center_x': 0.5, 'top': 0.99}
+            canvas.before:
+                Color:
+                    rgba: app.get_color('HEADER_BG')
+                RoundedRectangle:
+                    pos: 32, 696
+                    size: 1216, 104
+                    radius: [25]
+
+            Label:
+                text: 'TRANSILVANIA'
+                font_size: '42sp'
+                bold: True
+                color: app.get_color('HEADER_TITLE')
+                size_hint: 1, 0.65
+                pos_hint: {'center_x': 0.5, 'top': 1.0}
+
+            Label:
+                text: 'Relieful de Poveste'
+                font_size: '24sp'
+                color: app.get_color('HEADER_SUBTITLE')
+                size_hint: 1, 0.35
+                pos_hint: {'center_x': 0.5, 'top': 0.4}
+
+        FloatLayout:
+            size_hint: 0.28, 0.7
+            pos_hint: {'x': 0.02, 'center_y': 0.48}
+
+            FloatLayout:
+                size_hint: 1, 0.45
+                pos_hint: {'center_x': 0.5, 'top': 1.0}
+
+                Image:
+                    source: root.map_source
+                    size_hint: 0.95, 0.95
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    fit_mode: "contain"
+
+            FloatLayout:
+                size_hint: 0.9, 0.5
+                pos_hint: {'center_x': 0.5, 'y': 0.05}
+
+                Image:
+                    source: root.mascot_source
+                    size_hint: 0.8, 0.8
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                    fit_mode: "contain"
+
+                Label:
+                    text: 'Geo - Muntii'
+                    font_size: '18sp'
+                    bold: True
+                    color: app.get_color('MASCOT_NAME')
+                    pos_hint: {'center_x': 0.5, 'y': 0.02}
+
+        FloatLayout:
+            size_hint: 1, 0.14
+            pos_hint: {'center_x': 0.5, 'y': 0.01}
+            canvas.before:
+                Color:
+                    rgba: app.get_color('BOTTOM_BG')
+                RoundedRectangle:
+                    pos: 0, 8
+                    size: 1280, 112
+                    radius: [30]
+
+            Button:
+                text: 'INCEPE MISIUNEA!'
+                font_size: '26sp'
+                bold: True
+                size_hint: None, None
+                size: 400, 75
+                pos_hint: {'center_x': 0.32, 'center_y': 0.5}
+                background_color: app.get_color('START_BTN_BG')
+                color: 1, 1, 1, 1
+                on_press: root.logic.start_first_unlocked()
+
+            Button:
+                text: 'Verifica'
+                font_size: '22sp'
+                bold: True
+                size_hint: None, None
+                size: 170, 65
+                pos_hint: {'center_x': 0.73, 'center_y': 0.5}
+                background_color: app.get_color('VERIFY_BTN_BG')
+                color: 1, 1, 1, 1
+
+            Button:
+                text: 'Ajutor!'
+                font_size: '18sp'
+                bold: True
+                size_hint: None, None
+                size: 130, 65
+                pos_hint: {'center_x': 0.90, 'center_y': 0.5}
+                background_color: app.get_color('HELP_BTN_BG')
+                color: 1, 1, 1, 1
+
+
+
+
+
+
+

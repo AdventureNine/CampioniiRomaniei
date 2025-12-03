@@ -1,0 +1,54 @@
+#:kivy 2.0
+
+<TaskScreenBase>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                size: root.size
+                pos: root.pos
+
+        Label:
+            id: diff_label
+            text: f'Dificultate: {root.difficulty}'
+            font_size: '21sp'
+            bold: True
+            color: app.get_color('DIFFICULTY_TEXT')
+            size_hint: 0.5, 0.1
+            pos_hint: {'center_x': 0.5, 'top': 0.9}
+
+        Label:
+            id: timer_label
+            text: f'Timp ramas: {root.timer}s'
+            font_size: '20sp'
+            color: app.get_color('TIMER_TEXT')
+            size_hint: 0.5, 0.1
+            pos_hint: {'center_x': 0.5, 'top': 0.82}
+
+        Label:
+            id: question_label
+            text: root.question or ''
+            font_size: '25sp'
+            size_hint: 0.7, 0.2
+            pos_hint: {'center_x': 0.5, 'top': 0.65}
+            color: app.get_color('PRIMARY_TEXT')
+
+        TextInput:
+            id: answer_input
+            multiline: False
+            font_size: '20sp'
+            size_hint: 0.5, 0.1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            background_color: app.get_color('INPUT_BG')
+            foreground_color: app.get_color('INPUT_TEXT')
+
+        Button:
+            text: 'Finalizare'
+            size_hint: 0.25, 0.1
+            pos_hint: {'center_x': 0.5, 'y': 0.08}
+            background_color: app.get_color('BUTTON_BG')
+            color: app.get_color('BUTTON_TEXT')
+            font_size: '20sp'
+            on_press: root.finish_task()
+

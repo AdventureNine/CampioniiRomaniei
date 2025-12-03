@@ -1,7 +1,0 @@
-# IntelliJ / PyCharm
-.idea/
-*.iml
-*.iws
-
-# GitHub Copilot
-.idea/copilot.data.*

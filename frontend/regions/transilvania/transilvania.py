@@ -1,9 +1,7 @@
-from kivy.uix.label import Label
-from kivy.uix.button import Button
+from frontend.utils.popup_helper import create_completion_popup
 
 
 class Transilvania:
-
     def __init__(self, ui_screen):
         self.ui = ui_screen
         self.selected_task_id = None
@@ -16,40 +14,36 @@ class Transilvania:
 
     def select_task(self, task_id):
         self.selected_task_id = task_id
-        self.ui.setup_ui()
 
     def start_task(self, task_number):
         self.ui.start_task(task_number)
 
     def unlock_next_task(self, completed_task_id):
-        for t in self.tasks:
-            if t["id"] == completed_task_id + 1:
-                t["unlocked"] = True
-                self.selected_task_id = t["id"]
-        self.ui.setup_ui()
+        for task in self.tasks:
+            if task["id"] == completed_task_id + 1:
+                task["unlocked"] = True
+                self.selected_task_id = task["id"]
+                break
 
     def start_first_unlocked(self):
         if not self.selected_task_id:
-            for t in self.tasks:
-                if t["unlocked"]:
-                    self.selected_task_id = t["id"]
+            for task in self.tasks:
+                if task["unlocked"]:
+                    self.selected_task_id = task["id"]
                     break
+
         if self.selected_task_id:
             self.ui.start_task(self.selected_task_id)
 
     def show_completion_popup(self):
-        from kivy.uix.boxlayout import BoxLayout
-        from kivy.uix.popup import Popup
-        box = BoxLayout(orientation='vertical', padding=20, spacing=20)
-        message = Label(text="Felicitări!\n\nAi terminat toate misiunile din Transilvania!",
-                        font_size="26sp", halign="center", valign="middle")
-        close_btn = Button(text="Înapoi la regiuni", size_hint=(1, 0.4), font_size="20sp", bold=True)
-        close_btn.bind(on_press=lambda x: self.close_popup())
-        box.add_widget(message)
-        box.add_widget(close_btn)
-        self.popup = Popup(title="Misiune Finalizată", content=box, size_hint=(0.55, 0.55), auto_dismiss=False)
-        self.popup.open()
+        def on_close():
+            self.ui.manager.current = "transilvania"
 
-    def close_popup(self):
-        self.popup.dismiss()
-        self.ui.manager.current = "transilvania"
+        popup = create_completion_popup(
+            message="Felicitări!\n\nAi terminat toate misiunile din Transilvania!",
+            button_text="Înapoi la regiuni",
+            on_close=on_close
+        )
+        popup.open()
+
+
