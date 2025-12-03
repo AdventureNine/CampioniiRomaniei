@@ -30,20 +30,10 @@ class TransilvaniaRegionScreen(Screen):
 
     def on_kv_post(self, base_widget):
         self.create_task_circles()
-
     def create_task_circles(self):
-        positions = [
-            {'center_x': 0.53, 'center_y': 0.75},
-            {'center_x': 0.78, 'center_y': 0.75},
-            {'center_x': 0.53, 'center_y': 0.50},
-            {'center_x': 0.78, 'center_y': 0.50},
-            {'center_x': 0.53, 'center_y': 0.25},
-            {'center_x': 0.78, 'center_y': 0.25}
-        ]
-
         main_layout = self.children[0]
         for i, task in enumerate(self.logic.tasks):
-            widget = self.create_single_task(task, positions[i])
+            widget = self.create_single_task(task, self.logic.TASK_POSITIONS[i])
             main_layout.add_widget(widget)
             self.task_widgets.append(widget)
 
@@ -93,9 +83,8 @@ class TransilvaniaRegionScreen(Screen):
             )
             container.add_widget(play_img)
         else:
-            icons = {1: "M", 2: "D", 3: "C", 4: "A", 5: "I", 6: "T"}
             label_icon = Label(
-                text=icons.get(task["id"], ""),
+                text=self.logic.TASK_ICONS.get(task["id"], ""),
                 font_size='56sp',
                 bold=True,
                 color=(0.5, 0.5, 0.5, 1),
@@ -123,9 +112,9 @@ class TransilvaniaRegionScreen(Screen):
         return container
 
     def start_task(self, task_id):
-        screen_names = {1: 'task_1', 2: 'task_2', 3: 'task_3', 4: 'task_4', 5: 'task_5', 6: 'task_6'}
-        if self.manager and task_id in screen_names:
-            self.manager.current = screen_names[task_id]
+        screen_name = self.logic.get_screen_name(task_id)
+        if self.manager and screen_name:
+            self.manager.current = screen_name
 
     def unlock_next_task(self, task_id):
         self.logic.unlock_next_task(task_id)

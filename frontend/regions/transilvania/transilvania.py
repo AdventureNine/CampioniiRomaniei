@@ -2,6 +2,20 @@ from frontend.utils.popup_helper import create_completion_popup
 
 
 class Transilvania:
+    TASK_POSITIONS = [
+        {'center_x': 0.53, 'center_y': 0.75},
+        {'center_x': 0.78, 'center_y': 0.75},
+        {'center_x': 0.53, 'center_y': 0.50},
+        {'center_x': 0.78, 'center_y': 0.50},
+        {'center_x': 0.53, 'center_y': 0.25},
+        {'center_x': 0.78, 'center_y': 0.25}
+    ]
+
+    TASK_ICONS = {1: "M", 2: "D", 3: "C", 4: "A", 5: "I", 6: "T"}
+
+    SCREEN_NAMES = {1: 'task_1', 2: 'task_2', 3: 'task_3',
+                    4: 'task_4', 5: 'task_5', 6: 'task_6'}
+
     def __init__(self, ui_screen):
         self.ui = ui_screen
         self.selected_task_id = None
@@ -19,6 +33,9 @@ class Transilvania:
 
     def start_task(self, task_number):
         self.ui.start_task(task_number)
+
+    def get_screen_name(self, task_id):
+        return self.SCREEN_NAMES.get(task_id)
 
     def unlock_next_task(self, completed_task_id):
         for task in self.tasks:
