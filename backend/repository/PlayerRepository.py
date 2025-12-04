@@ -1,55 +1,74 @@
 import sqlite3
-import json
 from typing import Optional
-from backend.domain.entities.Player import Player # Presupus import
+
+from backend.domain.entities.Player import Player
+
 
 class PlayerRepository:
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
         self.cursor = self.conn.cursor()
-        self.TABLE = "Player"
+        self.TABLE = "player"
 
-    def save(self, player: Player) -> None:
-        stats_json = json.dumps(player.get_statistics())
+    def save(self, player) -> None:
+        stats = player.get_statistics()
 
         self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (player.get_id(),))
         exists = self.cursor.fetchone()
 
+        regions_unlocked = '|'.join(stats['regions_unlocked'])
+        cosmetics_unlocked = '|'.join(stats['cosmetics_unlocked'])
+        cosmetics_purchased = '|'.join(stats['cosmetics_purchased'])
+
         if exists:
             sql = f"""
                 UPDATE {self.TABLE} 
-                SET name = ?, credits = ?, cosmetic = ?, statistics = ? 
+                SET name = ?, credits = ?, avg_play_time = ?, quizzes_solved = ?, 
+                    quizzes_played = ?, regions_unlocked = ?, cosmetics_unlocked = ?, 
+                    cosmetics_purchased = ?, completion_percentage = ?
                 WHERE id = ?
             """
-            self.cursor.execute(sql, (player.get_name(), player.get_credits(), player.get_cosmetic(), stats_json,
-                                      player.get_id()))
+            self.cursor.execute(sql, (
+                player.get_name(), player.get_credits(),
+                stats['avg_play_time'], stats['quizzes_solved'], stats['quizzes_played'],
+                regions_unlocked, cosmetics_unlocked, cosmetics_purchased,
+                stats['completion_percentage'], player.get_id()
+            ))
         else:
             sql = f"""
-                INSERT INTO {self.TABLE} (id, name, credits, cosmetic, statistics) 
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO {self.TABLE} (id, name, credits, avg_play_time, quizzes_solved, quizzes_played, regions_unlocked, cosmetics_unlocked, cosmetics_purchased, completion_percentage) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
-            self.cursor.execute(sql, (player.get_id(), player.get_name(), player.get_credits(), player.get_cosmetic(),
-                                      stats_json))
+            self.cursor.execute(sql, (
+                player.get_id(), player.get_name(), player.get_credits(),
+                stats['avg_play_time'], stats['quizzes_solved'], stats['quizzes_played'],
+                regions_unlocked, cosmetics_unlocked, cosmetics_purchased,
+                stats['completion_percentage']
+            ))
 
         self.conn.commit()
 
-    def get(self) -> Optional[Player]:
-        self.cursor.execute(f"SELECT id, name, credits, cosmetic, statistics FROM {self.TABLE} LIMIT 1")
+    def get(self) -> Optional[object]:
+        self.cursor.execute(f"SELECT * FROM {self.TABLE} LIMIT 1")
         row = self.cursor.fetchone()
 
         if row:
-            stats_dict = json.loads(row[4])
             player = Player(row[0], row[1])
             player.set_credits(row[2])
-            player.set_cosmetic(row[3])
-            player._Player__statistics = stats_dict
+
+            stats = {
+                "avg_play_time": row[3],
+                "quizzes_solved": row[4],
+                "quizzes_played": row[5],
+                "regions_unlocked": row[6].split('|') if row[6] else [],
+                "cosmetics_unlocked": row[7].split('|') if row[7] else [],
+                "cosmetics_purchased": row[8].split('|') if row[8] else [],
+                "completion_percentage": row[9]
+            }
+            player._Player__statistics = stats
             return player
         return None
 
     def delete(self, player_id: int) -> None:
         self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (player_id,))
-
-        if self.cursor.rowcount == 0:
-            raise KeyError(f"No Player exists with ID {player_id} for deletion.")
-
         self.conn.commit()

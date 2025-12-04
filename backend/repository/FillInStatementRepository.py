@@ -1,80 +1,68 @@
 import sqlite3
-from typing import Optional, List, Callable, Any
+from typing import Optional, List
+import re
+
 from backend.domain.entities.FillInStatement import FillInStatement
 
+
 class FillInStatementRepository:
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
         self.cursor = self.conn.cursor()
-        self.TABLE = "FillInStatement"
+        self.TASK_TABLE = "quizz_tasks"
 
-    def __serialize_list(self, data_list: list[str]) -> str:
-        return ",".join(data_list)
+    def __parse_task_text(self, task_text: str) -> tuple[list[str], list[str]]:
+        if not task_text:
+            return [], []
 
-    def __deserialize_string(self, data_string: str) -> list[str]:
-        return data_string.split(',') if data_string else []
+        answers = re.findall(r'<([^>]+)>', task_text)
 
-    def save(self, statement: FillInStatement) -> None:
-        text_segments_str = self.__serialize_list(statement.get_text_segments())
-        answer_list_str = self.__serialize_list(statement._answer_list)
+        segments_raw = re.split(r'<[^>]+>', task_text)
+        text_segments = [s for s in segments_raw]
 
-        self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (statement._id,))
+        return text_segments, answers
 
-        if self.cursor.fetchone():
-            sql = f"""
-                UPDATE {self.TABLE} 
-                SET text_segments = ?, answer_list = ? 
-                WHERE id = ?
-            """
-            self.cursor.execute(sql, (text_segments_str, answer_list_str, statement._id))
+    def __build_task_text(self, segments: list[str], answers: list[str]) -> str:
+        text = ""
+        for i in range(max(len(segments), len(answers))):
+            if i < len(segments):
+                text += segments[i]
+            if i < len(answers):
+                text += f"<{answers[i]}>"
+        return text
+
+    def save(self, statement) -> None:
+        task_text = self.__build_task_text(statement.get_text_segments(), statement._answer_list)
+
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE id = ?", (statement._id,))
+        exists = self.cursor.fetchone()
+
+        quizz_id = statement.get_quizz_id()
+
+        if exists:
+            sql = f"UPDATE {self.TASK_TABLE} SET task_text = ?, type = ?, quizz = ? WHERE id = ?"
+            self.cursor.execute(sql, (task_text, "fill-ins", quizz_id, statement._id))
         else:
-            sql = f"""
-                INSERT INTO {self.TABLE} (id, text_segments, answer_list) 
-                VALUES (?, ?, ?)
-            """
-            self.cursor.execute(sql, (statement._id, text_segments_str, answer_list_str))
+            sql = f"INSERT INTO {self.TASK_TABLE} (id, task_text, type, quizz) VALUES (?, ?, ?, ?)"
+            self.cursor.execute(sql, (statement._id, task_text, "fill-ins", quizz_id))
 
         self.conn.commit()
 
-    def get_by_id(self, fill_in_id: int) -> Optional[FillInStatement]:
-        self.cursor.execute(f"SELECT id, text_segments, answer_list FROM {self.TABLE} WHERE id = ?", (fill_in_id,))
+    def get_by_id(self, fill_in_id: int) -> Optional[object]:
+        self.cursor.execute(f"SELECT id, task_text, quizz FROM {self.TASK_TABLE} WHERE id = ? AND type = 'fill-ins'",
+                            (fill_in_id,))
         row = self.cursor.fetchone()
 
         if row:
-            text_segments = self.__deserialize_string(row[1])
-            answer_list = self.__deserialize_string(row[2])
-            return FillInStatement(row[0], text_segments, answer_list)
+            text_segments, answer_list = self.__parse_task_text(row[1])
+            return FillInStatement(row[0], text_segments, answer_list, row[2])
         return None
 
-    def get_all(self) -> List[FillInStatement]:
-        self.cursor.execute(f"SELECT id, text_segments, answer_list FROM {self.TABLE}")
-        rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            text_segments = self.__deserialize_string(row[1])
-            answer_list = self.__deserialize_string(row[2])
-            results.append(FillInStatement(row[0], text_segments, answer_list))
-
-        return results
-
     def delete_by_id(self, fill_in_id: int) -> None:
-        self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (fill_in_id,))
-
-        if self.cursor.rowcount == 0:
-            raise KeyError(f"No FillInStatement exists with ID {fill_in_id} for deletion.")
-
+        self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (fill_in_id,))
         self.conn.commit()
 
-    def find(self, where_clause: str) -> List[FillInStatement]:
-        sql = f"SELECT id, text_segments, answer_list FROM {self.TABLE} WHERE {where_clause}"
-        self.cursor.execute(sql)
+    def find(self, where_clause: str) -> List[object]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'fill-ins' AND {where_clause}")
         rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            text_segments = self.__deserialize_string(row[1])
-            answer_list = self.__deserialize_string(row[2])
-            results.append(FillInStatement(row[0], text_segments, answer_list))
-
-        return results
+        return [self.get_by_id(row[0]) for row in rows]

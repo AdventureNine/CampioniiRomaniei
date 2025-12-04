@@ -1,69 +1,60 @@
 import sqlite3
-from typing import Optional, List, Callable, Any
+from typing import Optional, List
+
 from backend.domain.entities.Question import Question
 
+
 class QuestionRepository:
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
         self.cursor = self.conn.cursor()
-        self.TABLE = "Question"
+        self.TASK_TABLE = "quizz_tasks"
+        self.ANSWER_TABLE = "answers"
 
-    def __serialize_list(self, data_list: list[str]) -> str:
-        return ",".join(data_list)
+    def save(self, question) -> None:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE id = ?", (question._id,))
+        exists = self.cursor.fetchone()
 
-    def __deserialize_string(self, data_string: str) -> list[str]:
-        return data_string.split(',') if data_string else []
+        quizz_id = question.get_quizz_id()
 
-    def save(self, question: Question) -> None:
-        answer_list_str = self.__serialize_list(question._answer_list)
+        if exists:
+            self.cursor.execute(f"UPDATE {self.TASK_TABLE} SET task_text = ?, type = ?, quizz = ? WHERE id = ?",
+                                (question.get_text(), "question", quizz_id, question._id))
 
-        self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (question._id,))
-
-        if self.cursor.fetchone():
-            sql = f"UPDATE {self.TABLE} SET text = ?, answer_list = ? WHERE id = ?"
-            self.cursor.execute(sql, (question.get_text(), answer_list_str, question._id))
+            self.cursor.execute(f"DELETE FROM {self.ANSWER_TABLE} WHERE quizz_task = ?", (question._id,))
         else:
-            sql = f"INSERT INTO {self.TABLE} (id, text, answer_list) VALUES (?, ?, ?)"
-            self.cursor.execute(sql, (question._id, question.get_text(), answer_list_str))
+            self.cursor.execute(f"INSERT INTO {self.TASK_TABLE} (id, task_text, type, quizz) VALUES (?, ?, ?, ?)",
+                                (question._id, question.get_text(), "question", quizz_id))
+
+        for answer_data in question.get_answer_data():
+            answer_text, is_correct = answer_data
+            self.cursor.execute(
+                f"INSERT INTO {self.ANSWER_TABLE} (answer_text, is_correct, quizz_task) VALUES (?, ?, ?)",
+                (answer_text, 1 if is_correct else 0, question._id))
 
         self.conn.commit()
 
-    def get_by_id(self, question_id: int) -> Optional[Question]:
-        self.cursor.execute(f"SELECT id, text, answer_list FROM {self.TABLE} WHERE id = ?", (question_id,))
-        row = self.cursor.fetchone()
+    def get_by_id(self, question_id: int) -> Optional[object]:
+        self.cursor.execute(f"SELECT id, task_text, quizz FROM {self.TASK_TABLE} WHERE id = ? AND type = 'question'",
+                            (question_id,))
+        task_row = self.cursor.fetchone()
 
-        if row:
-            answer_list = self.__deserialize_string(row[2])
-            return Question(row[0], row[1], answer_list)
+        if task_row:
+            self.cursor.execute(f"SELECT answer_text, is_correct FROM {self.ANSWER_TABLE} WHERE quizz_task = ?",
+                                (question_id,))
+            answer_rows = self.cursor.fetchall()
+
+            answer_data = [(row[0], row[1] == 1) for row in answer_rows]
+
+            return Question(task_row[0], task_row[1], answer_data, task_row[2])
         return None
 
-    def get_all(self) -> List[Question]:
-        self.cursor.execute(f"SELECT id, text, answer_list FROM {self.TABLE}")
-        rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            answer_list = self.__deserialize_string(row[2])
-            results.append(Question(row[0], row[1], answer_list))
-
-        return results
-
     def delete_by_id(self, question_id: int) -> None:
-        self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (question_id,))
-
-        if self.cursor.rowcount == 0:
-            raise KeyError(f"No Question exists with ID {question_id} for deletion.")
-
+        self.cursor.execute(f"DELETE FROM {self.ANSWER_TABLE} WHERE quizz_task = ?", (question_id,))
+        self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (question_id,))
         self.conn.commit()
 
-    def find(self, where_clause: str) -> List[Question]:
-        sql = f"SELECT id, text, answer_list FROM {self.TABLE} WHERE {where_clause}"
-        self.cursor.execute(sql)
+    def find(self, where_clause: str) -> List[object]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'question' AND {where_clause}")
         rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            answer_list = self.__deserialize_string(row[2])
-            results.append(Question(row[0], row[1], answer_list))
-
-        return results
+        return [self.get_by_id(row[0]) for row in rows]

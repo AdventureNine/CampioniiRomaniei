@@ -1,74 +1,48 @@
 import sqlite3
-from typing import Optional, List, Callable, Any
+from typing import Optional, List
+import json
+
 from backend.domain.entities.Minigame import Minigame
 
+
 class MinigameRepository:
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
         self.cursor = self.conn.cursor()
-        self.TABLE = "Minigame"
+        self.TASK_TABLE = "quizz_tasks"
 
-    def __serialize_list(self, data_list: list) -> str:
-        return ",".join(map(str, data_list))
+    def save(self, minigame) -> None:
+        win_config_json = json.dumps(minigame.get_win_configuration())
 
-    def __deserialize_string(self, data_string: str) -> list:
-        return data_string.split(',') if data_string else []
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE id = ?", (minigame.get_id(),))
+        exists = self.cursor.fetchone()
 
-    def save(self, minigame: Minigame) -> None:
-        win_config_str = self.__serialize_list(minigame.get_win_configuration())
-        current_config_str = self.__serialize_list(minigame.get_current_configuration())
+        quizz_id = minigame.get_quizz_id()
 
-        self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (minigame.get_id(),))
-
-        if self.cursor.fetchone():
-            sql = f"UPDATE {self.TABLE} SET win_configuration = ?, current_configuration = ? WHERE id = ?"
-            self.cursor.execute(sql, (win_config_str, current_config_str, minigame.get_id()))
+        if exists:
+            sql = f"UPDATE {self.TASK_TABLE} SET task_text = ?, type = ?, quizz = ? WHERE id = ?"
+            self.cursor.execute(sql, (win_config_json, "minigame", quizz_id, minigame.get_id()))
         else:
-            sql = f"INSERT INTO {self.TABLE} (id, win_configuration, current_configuration) VALUES (?, ?, ?)"
-            self.cursor.execute(sql, (minigame.get_id(), win_config_str, current_config_str))
+            sql = f"INSERT INTO {self.TASK_TABLE} (id, task_text, type, quizz) VALUES (?, ?, ?, ?)"
+            self.cursor.execute(sql, (minigame.get_id(), win_config_json, "minigame", quizz_id))
 
         self.conn.commit()
 
-    def get_by_id(self, minigame_id: int) -> Optional[Minigame]:
-        self.cursor.execute(f"SELECT id, win_configuration, current_configuration FROM {self.TABLE} WHERE id = ?",
+    def get_by_id(self, minigame_id: int) -> Optional[object]:
+        self.cursor.execute(f"SELECT id, task_text, quizz FROM {self.TASK_TABLE} WHERE id = ? AND type = 'minigame'",
                             (minigame_id,))
         row = self.cursor.fetchone()
 
         if row:
-            win_config = self.__deserialize_string(row[1])
-            current_config = self.__deserialize_string(row[2])
-            return Minigame(row[0], win_config, current_config)
+            win_config = json.loads(row[1])
+            return Minigame(row[0], win_config, row[2])
         return None
 
-    def get_all(self) -> List[Minigame]:
-        self.cursor.execute(f"SELECT id, win_configuration, current_configuration FROM {self.TABLE}")
-        rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            win_config = self.__deserialize_string(row[1])
-            current_config = self.__deserialize_string(row[2])
-            results.append(Minigame(row[0], win_config, current_config))
-
-        return results
-
     def delete_by_id(self, minigame_id: int) -> None:
-        self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (minigame_id,))
-
-        if self.cursor.rowcount == 0:
-            raise KeyError(f"No Minigame exists with ID {minigame_id} for deletion.")
-
+        self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (minigame_id,))
         self.conn.commit()
 
-    def find(self, where_clause: str) -> List[Minigame]:
-        sql = f"SELECT id, win_configuration, current_configuration FROM {self.TABLE} WHERE {where_clause}"
-        self.cursor.execute(sql)
+    def find(self, where_clause: str) -> List[object]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'minigame' AND {where_clause}")
         rows = self.cursor.fetchall()
-
-        results = []
-        for row in rows:
-            win_config = self.__deserialize_string(row[1])
-            current_config = self.__deserialize_string(row[2])
-            results.append(Minigame(row[0], win_config, current_config))
-
-        return results
+        return [self.get_by_id(row[0]) for row in rows]
