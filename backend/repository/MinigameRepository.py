@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional, List
+from typing import Optional, List, Callable, Any
 import json
 
 from backend.domain.entities.Minigame import Minigame
@@ -35,7 +35,7 @@ class MinigameRepository:
 
         if row:
             win_config = json.loads(row[1])
-            return Minigame(row[0], win_config, row[2])
+            return Minigame(row[0], win_config, None, row[2])
         return None
 
     def delete_by_id(self, minigame_id: int) -> None:

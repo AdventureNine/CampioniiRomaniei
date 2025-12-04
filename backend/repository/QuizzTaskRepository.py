@@ -8,9 +8,6 @@ class QuizzTaskRepository:
         self.cursor = self.conn.cursor()
         self.TABLE = "quizz_tasks"
 
-    def save(self, task) -> None:
-        pass
-
     def get_by_id(self, task_id: int) -> Optional[object]:
         self.cursor.execute(f"SELECT id, type FROM {self.TABLE} WHERE id = ?", (task_id,))
         row = self.cursor.fetchone()

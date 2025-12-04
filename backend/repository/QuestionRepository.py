@@ -50,7 +50,6 @@ class QuestionRepository:
         return None
 
     def delete_by_id(self, question_id: int) -> None:
-        self.cursor.execute(f"DELETE FROM {self.ANSWER_TABLE} WHERE quizz_task = ?", (question_id,))
         self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (question_id,))
         self.conn.commit()
 

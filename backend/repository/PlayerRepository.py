@@ -55,17 +55,15 @@ class PlayerRepository:
         if row:
             player = Player(row[0], row[1])
             player.set_credits(row[2])
+            player.set_cosmetic(row[11])
+            player.set_avg_play_time(row[3])
+            player.set_quizzes_solved(row[4])
+            player.set_quizzes_played(row[5])
+            player.set_regions_unlocked(row[6].split('|') if row[6] else [])
+            player.set_cosmetics_unlocked(row[7].split('|') if row[7] else [])
+            player.set_cosmetics_purchased(row[8].split('|') if row[8] else [])
+            player.set_completion_percentage(row[9])
 
-            stats = {
-                "avg_play_time": row[3],
-                "quizzes_solved": row[4],
-                "quizzes_played": row[5],
-                "regions_unlocked": row[6].split('|') if row[6] else [],
-                "cosmetics_unlocked": row[7].split('|') if row[7] else [],
-                "cosmetics_purchased": row[8].split('|') if row[8] else [],
-                "completion_percentage": row[9]
-            }
-            player._Player__statistics = stats
             return player
         return None
 

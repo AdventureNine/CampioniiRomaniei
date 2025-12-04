@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional, List
+from typing import Optional, List, Callable, Any
 import re
 
 from backend.domain.entities.FillInStatement import FillInStatement
@@ -16,9 +16,8 @@ class FillInStatementRepository:
             return [], []
 
         answers = re.findall(r'<([^>]+)>', task_text)
-
-        segments_raw = re.split(r'<[^>]+>', task_text)
-        text_segments = [s for s in segments_raw]
+        segments_raw = re.split(r'(<[^>]+>)', task_text)
+        text_segments = [s.strip() for s in segments_raw if s and not s.startswith('<')]
 
         return text_segments, answers
 
@@ -32,19 +31,19 @@ class FillInStatementRepository:
         return text
 
     def save(self, statement) -> None:
-        task_text = self.__build_task_text(statement.get_text_segments(), statement._answer_list)
+        task_text = self.__build_task_text(statement.get_text_segments(), statement.get_answer_list())
 
-        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE id = ?", (statement._id,))
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE id = ?", (statement.get_id(),))
         exists = self.cursor.fetchone()
 
         quizz_id = statement.get_quizz_id()
 
         if exists:
             sql = f"UPDATE {self.TASK_TABLE} SET task_text = ?, type = ?, quizz = ? WHERE id = ?"
-            self.cursor.execute(sql, (task_text, "fill-ins", quizz_id, statement._id))
+            self.cursor.execute(sql, (task_text, "fill-ins", quizz_id, statement.get_id()))
         else:
             sql = f"INSERT INTO {self.TASK_TABLE} (id, task_text, type, quizz) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(sql, (statement._id, task_text, "fill-ins", quizz_id))
+            self.cursor.execute(sql, (statement.get_id(), task_text, "fill-ins", quizz_id))
 
         self.conn.commit()
 

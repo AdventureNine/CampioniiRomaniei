@@ -3,7 +3,6 @@ from typing import Optional, List
 
 from backend.domain.entities.Quizz import Quizz
 
-
 class QuizzRepository:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
@@ -40,7 +39,7 @@ class QuizzRepository:
         self.conn.commit()
 
     def get_by_id(self, quizz_id: int) -> Optional[object]:
-        self.cursor.execute(f"SELECT * FROM {self.TABLE} WHERE id = ?", (quizz_id,))
+        self.cursor.execute(f"SELECT id, difficulty, completion_percentage FROM {self.TABLE} WHERE id = ?", (quizz_id,))
         row = self.cursor.fetchone()
 
         if row:
@@ -48,9 +47,14 @@ class QuizzRepository:
             task_rows = self.cursor.fetchall()
             task_ids = [row[0] for row in task_rows]
 
-            quizz = Quizz(row[0], row[1], None)
-            quizz.set_completion_percentage(row[2])
-            quizz._Quizz__task_ids = task_ids
+            quizz = Quizz(
+                quizz_id=row[0],
+                questions=[],
+                fill_in_statements=[],
+                minigames=[],
+                difficulty=row[1],
+                completion_percentage=row[2]
+            )
             return quizz
         return None
 
