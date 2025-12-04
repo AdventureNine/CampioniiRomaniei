@@ -496,13 +496,13 @@ TASK_5_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'USOR',
-        'question': 'Ce relief inconjoara Transilvania?',
+        'question': '__ sunt relieful care inconjoara Transilvania.',
         'answer': 'Muntii'
     },
     {
         'type': 'fill_in',
         'difficulty': 'USOR',
-        'question': 'Ce rau important trece prin Transilvania?',
+        'question': 'Raul important __ trece prin Transilvania.',
         'answer': 'Mures'
     },
     # MEDIU - Questions
@@ -528,7 +528,7 @@ TASK_5_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'MEDIU',
-        'question': 'Ce lac din zona Harghita este de origine vulcanica?',
+        'question': 'Lcaul din zona Harghita de origine vulcanica este __.',
         'answer': 'Sfanta Ana'
     },
     {
@@ -540,7 +540,7 @@ TASK_5_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'MEDIU',
-        'question': 'Ce munti se afla la vest de Transilvania?',
+        'question': 'Muntii la vest de Transilvania sunt __.',
         'answer': 'Apuseni'
     },
     # DIFICIL - Questions
@@ -566,19 +566,19 @@ TASK_5_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'DIFICIL',
-        'question': 'Ce monument istoric faimos se afla in Alba Iulia?',
+        'question': '__ este monumentul istoric faimos aflat in Alba Iulia.',
         'answer': 'Cetatea Alba Carolina'
     },
     {
         'type': 'fill_in',
         'difficulty': 'DIFICIL',
-        'question': 'Ce sat transilvanean este cunoscut pentru case sasesti?',
+        'question': 'Satul transilvanean cunoscut pentru case sasesti este __.',
         'answer': 'Biertan'
     },
     {
         'type': 'fill_in',
         'difficulty': 'DIFICIL',
-        'question': 'Ce relief se gaseste in interiorul Transilvaniei?',
+        'question': 'In interiorul Transilvaniei se gasesc __.',
         'answer': 'Dealuri si podisuri'
     }
 ]
@@ -613,14 +613,14 @@ TASK_6_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'USOR',
-        'question': 'Ce lac din Harghita este de origine vulcanica?',
+        'question': 'Lacul __ din Harghita este de origine vulcanica.',
         'answer': 'Sfanta Ana'
     },
     {
         'type': 'fill_in',
         'difficulty': 'USOR',
-        'question': 'Ce mancare traditionala se mananca in Transilvania?',
-        'answer': 'Sarmale'
+        'question': '__ sunt mancarea traditionala din Transilvania.',
+        'answer': 'Sarmalele'
     },
     # MEDIU - Questions
     {
@@ -651,7 +651,7 @@ TASK_6_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'MEDIU',
-        'question': 'Ce oras are o Biserica Neagra?',
+        'question': 'Orasul __ are o Biserica Neagra.',
         'answer': 'Brasov'
     },
     {
@@ -695,7 +695,7 @@ TASK_6_QUESTIONS = [
     {
         'type': 'fill_in',
         'difficulty': 'DIFICIL',
-        'question': 'Ce mestesug este faimos in Marginimea Sibiului?',
+        'question': 'Mestesugul faimos in Marginimea Sibiului este __.',
         'answer': 'Icoane pe sticla'
     }
 ]
