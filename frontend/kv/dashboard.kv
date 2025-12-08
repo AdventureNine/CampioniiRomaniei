@@ -3,6 +3,7 @@
 <MeniuPrincipal>:
     name: 'meniu'
 
+    # FUNDAL VIDEO
     Video:
         source: "assets/dashboard_background1.mp4"
         state: "play"
@@ -13,69 +14,84 @@
         pos_hint: {"center_x": .5, "center_y": .5}
         volume: 0
 
-
+    # FILTRU ÎNTUNECARE (pentru contrast)
     MDBoxLayout:
-        md_bg_color: 0, 0, 0, 0.1
+        md_bg_color: 0, 0, 0, 0.2
         size_hint: 1, 1
 
+    #TITLU (UMBRA - Spate)
     MDLabel:
         text: "CAMPIONII ROMÂNIEI"
         halign: "center"
         pos_hint: {"center_x": 0.503, "center_y": 0.847}
-        font_name: "assets/impact.ttf"
-        font_size: "120sp"
+        font_name: "assets/RAVIE.TTF"
+        font_size: "70sp"
         theme_text_color: "Custom"
         text_color: 0, 0, 0, 0.5
         bold: True
 
+    #TITLU (PRINCIPAL - Față)
     MDLabel:
         text: "CAMPIONII ROMÂNIEI"
         halign: "center"
         pos_hint: {"center_x": 0.5, "center_y": 0.85}
-        font_name: "assets/impact.ttf"
-        font_size: "120sp"
+        font_name: "assets/RAVIE.TTF"
+        font_size: "70sp"
         theme_text_color: "Custom"
         text_color: 0, 0.6, 1, 1
         outline_color: 1, 1, 1, 0.3
         outline_width: 1
 
+    # LISTA DE BUTOANE
     MDBoxLayout:
         orientation: "vertical"
-        spacing: "20dp"
+        spacing: "25dp"       # Spațiu puțin mai mare între butoane
         adaptive_height: True
-        size_hint_x: 0.8
+        size_hint_x: 0.7      # Am lățit puțin containerul
         pos_hint: {"center_x": 0.5, "center_y": 0.45}
 
+        # butoane
         ButonMeniu:
             text: "START JOC"
             md_bg_color: 0, 0.6, 0.2, 1
+            height: "80dp"    # <--- Buton mai înalt
+            font_size: "30sp" # <--- Text mai mare
             on_release: app.root.current = 'joc'
 
         ButonMeniu:
             text: "COSMETICE"
+            height: "80dp"
+            font_size: "30sp"
             on_release: app.root.current = 'cosmetice'
 
         ButonMeniu:
             text: "INVENTAR"
+            height: "80dp"
+            font_size: "30sp"
             on_release: app.root.current = 'inventar'
 
         ButonMeniu:
             text: "STATISTICI"
+            height: "80dp"
+            font_size: "30sp"
             on_release: app.root.current = 'statistici'
 
-
+    # Imaginea cu mascote
     Image:
-        source: "assets/icon_owl.png"
+        source: "assets/familia_vesela.png"
         size_hint: None, None
-        size: "100dp", "100dp"
+        size: "120dp", "120dp" # Am mărit puțin și imaginea
         pos_hint: {"x": 0.02, "y": 0.02}
 
+    # Butonul Ieșire
     ButonMeniu:
         text: "IEȘIRE"
         md_bg_color: 0.8, 0.2, 0.2, 1
 
         size_hint_x: None
-        width: "200dp"
+        width: "220dp"
+        height: "70dp"
+        font_size: "26sp"
 
         pos_hint: {"right": 0.98, "y": 0.02}
 
