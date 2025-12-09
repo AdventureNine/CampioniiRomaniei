@@ -19,6 +19,7 @@ Window.size = (1280, 800)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 Builder.load_file(os.path.join(BASE_DIR, 'screens', 'transilvania', 'transilvania_screen.kv'))
 Builder.load_file(os.path.join(BASE_DIR, 'screens', 'transilvania', 'tasks', 'task_screen_base.kv'))
+Builder.load_file(os.path.join(BASE_DIR, 'screens', 'transilvania', 'widgets', 'task_circle_widget.kv'))
 
 
 class CampioniiRomanieiApp(App):

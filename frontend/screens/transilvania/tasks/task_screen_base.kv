@@ -2,6 +2,7 @@
 
 <TaskScreenBase>:
     FloatLayout:
+        # Background
         canvas.before:
             Color:
                 rgba: root.bg_color
@@ -9,7 +10,7 @@
                 size: root.size
                 pos: root.pos
 
-        # Header section
+        # Header
         BoxLayout:
             orientation: 'horizontal'
             size_hint: 1, 0.1
@@ -46,7 +47,7 @@
                 font_size: '18sp'
                 on_press: root.quit_task()
 
-        # Question section
+        # Intrebare
         Label:
             id: question_label
             text: root.question or ''
@@ -58,7 +59,7 @@
             halign: 'center'
             valign: 'middle'
 
-        # Answer section (dynamic based on question type)
+        # Raspuns
         BoxLayout:
             id: answer_container
             orientation: 'vertical'
@@ -66,7 +67,7 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.4}
             spacing: 10
 
-        # Action buttons
+        # Butoane actiune
         BoxLayout:
             orientation: 'horizontal'
             size_hint: 0.6, 0.1

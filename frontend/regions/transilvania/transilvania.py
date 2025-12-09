@@ -11,8 +11,6 @@ class Transilvania:
         {'center_x': 0.78, 'center_y': 0.25}
     ]
 
-    TASK_ICONS = {1: "M", 2: "D", 3: "R", 4: "A", 5: "O", 6: "T"}
-
     SCREEN_NAMES = {1: 'task_1', 2: 'task_2', 3: 'task_3',
                     4: 'task_4', 5: 'task_5', 6: 'task_6'}
 
@@ -20,7 +18,7 @@ class Transilvania:
         self.ui = ui_screen
         self.selected_task_id = None
         self.tasks = [
-            {'id': 1, 'name': 'Muntii', 'unlocked': True, 'color': (0.25, 0.55, 0.35, 1)},
+            {'id': 1, 'name': 'Munti', 'unlocked': True, 'color': (0.25, 0.55, 0.35, 1)},
             {'id': 2, 'name': 'Dealuri si\nPodisuri', 'unlocked': False, 'color': (0.60, 0.85, 0.55, 1)},
             {'id': 3, 'name': 'Rauri\nsi Vai', 'unlocked': False, 'color': (0.55, 0.90, 0.55, 1)},
             {'id': 4, 'name': 'Agricultura', 'unlocked': False, 'color': (0.65, 0.85, 0.50, 1)},
@@ -64,5 +62,3 @@ class Transilvania:
             on_close=on_close
         )
         popup.open()
-
-
