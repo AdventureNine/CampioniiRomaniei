@@ -48,6 +48,11 @@ class QuestionRepository:
 
             return Question(task_row[0], task_row[1], answer_data, task_row[2])
         return None
+    
+    def get_all(self) -> List[Question]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'question'")
+        rows = self.cursor.fetchall()
+        return [self.get_by_id(row[0]) for row in rows]
 
     def delete_by_id(self, question_id: int) -> None:
         self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (question_id,))

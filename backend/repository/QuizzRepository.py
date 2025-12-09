@@ -73,6 +73,11 @@ class QuizzRepository:
     def delete_by_id(self, quizz_id: int) -> None:
         self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (quizz_id,))
         self.conn.commit()
+        
+    def get_all(self) -> List[Quizz]:
+        self.cursor.execute(f"SELECT id FROM {self.TABLE}")
+        rows = self.cursor.fetchall()
+        return [self.get_by_id(row[0]) for row in rows]
 
     def find(self, where_clause: str) -> List[object]:
         self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE {where_clause}")

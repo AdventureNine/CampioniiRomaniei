@@ -1,3 +1,5 @@
+
+
 class QuizzConfigurationDTO:
     def __init__(self, difficulty: str, time_limit: int, tasks: list):
         self.difficulty = difficulty

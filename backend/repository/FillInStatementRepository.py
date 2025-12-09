@@ -60,6 +60,8 @@ class FillInStatementRepository:
     def delete_by_id(self, fill_in_id: int) -> None:
         self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (fill_in_id,))
         self.conn.commit()
+        
+    
 
     def get_all_by_quizz_id(self, quizz_id: int) -> List[FillInStatement]:
         self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE quizz = ? AND type = 'fill-ins'", (quizz_id,))
@@ -70,6 +72,3 @@ class FillInStatementRepository:
         self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'fill-ins' AND {where_clause}")
         rows = self.cursor.fetchall()
         return [self.get_by_id(row[0]) for row in rows]
-
-    def add(self, statement, quizz_id):
-        pass

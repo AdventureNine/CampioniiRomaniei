@@ -10,7 +10,7 @@ class PlayerRepository:
         self.cursor = self.conn.cursor()
         self.TABLE = "player"
 
-    def save(self, player) -> None:
+    def save(self, player: Player) -> None:
         stats = player.get_statistics()
 
         self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (player.get_id(),))
@@ -36,17 +36,27 @@ class PlayerRepository:
             ))
         else:
             sql = f"""
-                INSERT INTO {self.TABLE} (id, name, credits, avg_play_time, quizzes_solved, quizzes_played, regions_unlocked, cosmetics_unlocked, cosmetics_purchased, completion_percentage) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO {self.TABLE} (name, credits, avg_play_time, quizzes_solved, quizzes_played, regions_unlocked, cosmetics_unlocked, cosmetics_purchased, completion_percentage) 
+                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             self.cursor.execute(sql, (
-                player.get_id(), player.get_name(), player.get_credits(),
+                player.get_name(), player.get_credits(),
                 stats['avg_play_time'], stats['quizzes_solved'], stats['quizzes_played'],
                 regions_unlocked, cosmetics_unlocked, cosmetics_purchased,
                 stats['completion_percentage']
             ))
 
         self.conn.commit()
+
+    def get_player_id_by_name(self, name: str) -> Optional[int]:
+        sql = f"""
+            SELECT id FROM {self.TABLE} WHERE name = ?
+        """
+        self.cursor.execute(sql, (name,))
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        return None
 
     def get(self) -> Optional[object]:
         self.cursor.execute(f"SELECT * FROM {self.TABLE} LIMIT 1")

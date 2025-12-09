@@ -41,6 +41,11 @@ class MinigameRepository:
     def delete_by_id(self, minigame_id: int) -> None:
         self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (minigame_id,))
         self.conn.commit()
+        
+    def get_all(self) -> List[Minigame]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'minigame'")
+        rows = self.cursor.fetchall()
+        return [self.get_by_id(row[0]) for row in rows]
 
     def get_all_by_quizz_id(self, quizz_id: int) -> List[Minigame]:
         self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE quizz = ? AND type = 'minigame'", (quizz_id,))
