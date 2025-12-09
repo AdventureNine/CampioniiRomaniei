@@ -31,6 +31,7 @@ class Player:
     def get_cosmetics_unlocked(self): return self.__statistics["cosmetics_unlocked"]
     def get_cosmetics_purchased(self): return self.__statistics["cosmetics_purchased"]
 
+    def set_id(self,id: int): self.__id = id
     def set_avg_play_time(self, avg_play_time: float): self.__statistics["avg_play_time"] = avg_play_time
     def set_quizzes_solved(self, quizzes_solved: int): self.__statistics["quizzes_solved"] = quizzes_solved
     def set_quizzes_played(self, quizzes_played: int): self.__statistics["quizzes_played"] = quizzes_played
