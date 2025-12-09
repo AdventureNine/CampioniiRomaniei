@@ -53,6 +53,11 @@ class QuestionRepository:
         self.cursor.execute(f"DELETE FROM {self.TASK_TABLE} WHERE id = ?", (question_id,))
         self.conn.commit()
 
+    def get_all_by_quizz_id(self, quizz_id: int) -> List[Question]:
+        self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE quizz = ? AND type = 'question'", (quizz_id,))
+        rows = self.cursor.fetchall()
+        return [self.get_by_id(row[0]) for row in rows]
+
     def find(self, where_clause: str) -> List[object]:
         self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE type = 'question' AND {where_clause}")
         rows = self.cursor.fetchall()
