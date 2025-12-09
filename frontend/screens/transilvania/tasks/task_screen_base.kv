@@ -1,0 +1,93 @@
+#:kivy 2.0
+
+<TaskScreenBase>:
+    FloatLayout:
+        # Background
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                size: root.size
+                pos: root.pos
+
+        # Header
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            pos_hint: {'top': 0.98}
+            padding: [20, 0]
+            spacing: 20
+
+            Label:
+                text: f'Dificultate: {root.difficulty}'
+                font_size: '21sp'
+                bold: True
+                color: app.get_color('DIFFICULTY_TEXT')
+                size_hint: 0.3, 1
+
+            Label:
+                id: timer_label
+                text: f'Timp: {root.timer}s'
+                font_size: '20sp'
+                color: app.get_color('TIMER_TEXT')
+                size_hint: 0.3, 1
+
+            Label:
+                id: progress_label
+                text: root.progress
+                font_size: '20sp'
+                color: app.get_color('PRIMARY_TEXT')
+                size_hint: 0.3, 1
+
+            Button:
+                text: 'Renunta'
+                size_hint: 0.1, 0.8
+                background_color: (0.8, 0.2, 0.2, 1)
+                color: (1, 1, 1, 1)
+                font_size: '18sp'
+                on_press: root.quit_task()
+
+        # Intrebare
+        Label:
+            id: question_label
+            text: root.question or ''
+            font_size: '25sp'
+            size_hint: 0.8, 0.2
+            pos_hint: {'center_x': 0.5, 'top': 0.75}
+            color: app.get_color('PRIMARY_TEXT')
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+
+        # Raspuns
+        BoxLayout:
+            id: answer_container
+            orientation: 'vertical'
+            size_hint: 0.7, 0.4
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            spacing: 10
+
+        # Butoane actiune
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 0.6, 0.1
+            pos_hint: {'center_x': 0.5, 'y': 0.08}
+            spacing: 20
+
+            Button:
+                id: next_btn
+                text: 'Urmatoarea'
+                background_color: app.get_color('BUTTON_BG')
+                color: app.get_color('BUTTON_TEXT')
+                font_size: '20sp'
+                disabled: True
+                on_press: root.next_question()
+
+            Button:
+                id: finish_btn
+                text: 'Finalizeaza'
+                background_color: (0.2, 0.7, 0.2, 1)
+                color: (1, 1, 1, 1)
+                font_size: '20sp'
+                disabled: True
+                on_press: root.finish_task()
