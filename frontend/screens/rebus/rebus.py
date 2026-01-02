@@ -1,11 +1,10 @@
 import random
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.clock import Clock
 
 DATA_SOURCE = {
@@ -31,12 +30,7 @@ class RebusCell(TextInput):
     correct_char = StringProperty()
     next_cell = ObjectProperty(None, allownone=True)
     prev_cell = ObjectProperty(None, allownone=True)
-    is_pivot = ObjectProperty(False)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.multiline = False
-        self.halign = 'center'
+    is_pivot = BooleanProperty(False)
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         if keycode[1] == 'backspace' and self.text == "" and self.prev_cell:
@@ -53,7 +47,7 @@ class RebusCell(TextInput):
 
 class RebusScreen(Screen):
     game_container = ObjectProperty(None)
-    is_checked = False
+    is_checked = BooleanProperty(False)
 
     def on_kv_post(self, base_widget):
         self.generate_rebus()
@@ -92,8 +86,7 @@ class RebusScreen(Screen):
                     'word': word,
                     'clue': clue,
                     'start_col': PIVOT_COLUMN - pivot_idx,
-                    'pivot_idx': pivot_idx,
-                    'row': idx
+                    'pivot_idx': pivot_idx
                 })
 
             if valid:
@@ -102,19 +95,36 @@ class RebusScreen(Screen):
         if not valid:
             return
 
-        grid = GridLayout(cols=MAX_COLS + 1, spacing=0, size_hint=(None, None))
-        grid.bind(minimum_height=grid.setter('height'))
-        grid.width = (MAX_COLS * 40) + 350
-
         self.cells = []
+        self.game_container.add_widget(self.build_grid(words_data, MAX_COLS))
+
+    def build_grid(self, words_data, max_cols):
+        grid = GridLayout(cols=2, spacing=0, size_hint=(None, None))
+        grid.bind(minimum_height=grid.setter('height'))
+        grid.width = 400 + (max_cols * 40)
 
         for word_info in words_data:
             row_cells = []
             prev_cell = None
 
-            for col in range(MAX_COLS):
+            grid.add_widget(Label(
+                text=word_info['clue'],
+                size_hint_x=None,
+                width=400,
+                color=(0, 0, 0, 1),
+                font_size='16sp',
+                halign='left',
+                valign='middle',
+                text_size=(390, None)
+            ))
+
+            row_box = GridLayout(cols=max_cols, spacing=0, size_hint=(None, None))
+            row_box.width = max_cols * 40
+            row_box.height = 40
+
+            for col in range(max_cols):
                 if col < word_info['start_col'] or col >= word_info['start_col'] + len(word_info['word']):
-                    grid.add_widget(Widget(size_hint_x=None, width=40))
+                    row_box.add_widget(Widget(size_hint_x=None, width=40))
                     row_cells.append(None)
                 else:
                     idx = col - word_info['start_col']
@@ -130,30 +140,14 @@ class RebusScreen(Screen):
                         cell.prev_cell = prev_cell
                         prev_cell.next_cell = cell
 
-                    grid.add_widget(cell)
+                    row_box.add_widget(cell)
                     row_cells.append(cell)
                     prev_cell = cell
 
-            grid.add_widget(Label(
-                text=word_info['clue'],
-                size_hint_x=None,
-                width=350,
-                color=(0, 0, 0, 1),
-                font_size='16sp',
-                halign='left',
-                valign='middle',
-                text_size=(340, None)
-            ))
-
+            grid.add_widget(row_box)
             self.cells.append(row_cells)
 
-        container = BoxLayout(size_hint_y=None)
-        container.bind(minimum_height=container.setter('height'))
-        container.add_widget(Widget())
-        container.add_widget(grid)
-        container.add_widget(Widget())
-
-        self.game_container.add_widget(container)
+        return grid
 
     def toggle_check(self):
         if self.is_checked:

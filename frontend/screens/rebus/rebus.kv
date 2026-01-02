@@ -2,6 +2,8 @@
     size_hint: None, None
     size: 40, 40
     font_size: '20sp'
+    multiline: False
+    halign: 'center'
     background_normal: ''
     cursor_color: 0, 0, 0, 1
     padding_y: [self.height / 2.0 - (self.line_height / 2.0), 0]
@@ -13,7 +15,8 @@
             rectangle: self.x, self.y, self.width, self.height
 
 <RebusScreen>:
-    game_container: container_id
+    game_container: game_container
+
     canvas.before:
         Color:
             rgba: 0.98, 0.98, 0.95, 1
@@ -23,10 +26,9 @@
 
     BoxLayout:
         orientation: 'vertical'
-        padding: [20, 20]
+        padding: 20
         spacing: 15
 
-        # Header
         BoxLayout:
             size_hint_y: None
             height: 80
@@ -39,26 +41,23 @@
                     radius: [10]
 
             Label:
-                text: "REBUS DIDACTIC - REVISTĂ"
+                text: "REBUS DIDACTIC"
                 font_size: '32sp'
                 bold: True
                 color: 1, 1, 1, 1
 
-        # Rebus grid area
         ScrollView:
-            size_hint: 1, 1
             do_scroll_x: False
             do_scroll_y: True
 
             BoxLayout:
-                id: container_id
+                id: game_container
                 orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
                 spacing: 5
-                padding: [10, 10]
+                padding: 10
 
-        # Control buttons
         BoxLayout:
             size_hint_y: None
             height: 70
