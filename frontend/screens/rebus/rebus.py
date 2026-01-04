@@ -139,12 +139,18 @@ class RebusCell(TextInput):
         self.halign = 'center'
         self.font_size = '24sp'
         self.cursor_width = 0
-        self.padding = [0, 0]
 
-        self.bind(size=self._center_vertically)
+        self.padding = [0, 0, 0, 0]
 
-    def _center_vertically(self, *_):
-        self.padding_y = (self.height - self.line_height) / 2
+        # actualizeaza padding la schimbari
+        self.bind(size=self._update_padding, font_size=self._update_padding)
+        Clock.schedule_once(lambda dt: self._update_padding())
+
+    def _update_padding(self, *_):
+        lh = self.line_height
+        vt = max(0, (self.height - lh) / 2.0)
+        self.padding = [0, vt, 0, vt]
+
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         if keycode[1] == 'backspace' and self.text == "":
