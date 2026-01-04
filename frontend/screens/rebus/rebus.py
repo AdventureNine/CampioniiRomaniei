@@ -7,116 +7,308 @@ from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.clock import Clock
 
+# date pentru cuvinte
 DATA_SOURCE = {
-    'D': [('DUNARE', 'Fluviul de la granita'), ('DECEBAL', 'Rege dac'), ('DACIA', 'Tara dacilor')],
-    'A': [('ARAD', 'Municipiu pe Mures'), ('ALBA', 'Judet ardelean'), ('ARDEAL', 'Regiunea Transilvania')],
-    'C': [('CARPATI', 'Muntii Romaniei'), ('CLUJ', 'Oras in Transilvania'), ('CRAIOVA', 'Oras in Oltenia')],
-    'I': [('ISTORIE', 'Studiul trecutului'), ('IALOMITA', 'Raul si judet'), ('IASI', 'Oras in Moldova')],
-    'R': [('ROMA', 'Capitala Imperiului'), ('RESITA', 'Oras in Banat'), ('ROMAN', 'Oras moldovean')],
-    'O': [('OLT', 'Raul care taie muntii'), ('ORADEA', 'Oras la granita'), ('ORSOVA', 'Oras pe Dunare')],
-    'N': [('NAPOCA', 'Vechiul nume al Clujului'), ('NEAMT', 'Judet in Moldova'), ('NIC', 'Prenume romanesc')],
-    'S': [('SARMIZEGETUSA', 'Capitala Daciei'), ('SIBIU', 'Oras sasesc'), ('SOMES', 'Rau in Transilvania')],
-    'T': [('TIMIS', 'Judet in Banat'), ('TOLEDO', 'Oras spaniol'), ('TITAN', 'Cartier bucurestean')],
-    'B': [('BANAT', 'Regiune in vest'), ('BRASOV', 'Oras in Carpati'), ('BUCEGI', 'Munti langa Bucuresti')],
-    'U': [('UNIRE', 'Eveniment din 1918'), ('UNIRII', 'Piata din Bucuresti'), ('URANUS', 'Planeta')],
-    'E': [('EMINESCU', 'Poet national'), ('EUROPA', 'Continent'), ('ELIADE', 'Scriitor roman')],
-    'M': [('MOLDOVA', 'Regiune istorica'), ('MURES', 'Rau si judet'), ('MIHAI', 'Prenume domnesc')]
+    'A': [
+        ('ARAD', 'Municipiu pe Mures'),
+        ('ALBA', 'Judet ardelean'),
+        ('ARDEAL', 'Regiunea Transilvania'),
+        ('AVRAM', 'Prenume revolutionar'),
+        ('ASTRA', 'Asociatie culturala')
+    ],
+    'B': [
+        ('BANAT', 'Regiune in vest'),
+        ('BRASOV', 'Oras in Carpati'),
+        ('BUCEGI', 'Munti langa Bucuresti'),
+        ('BISTRITA', 'Oras in nord'),
+        ('BUZAU', 'Judet din Muntenia')
+    ],
+    'C': [
+        ('CARPATI', 'Muntii Romaniei'),
+        ('CLUJ', 'Oras in Transilvania'),
+        ('CRAIOVA', 'Oras in Oltenia'),
+        ('CALARASI', 'Judet dunarean'),
+        ('CORVIN', 'Familie nobiliara')
+    ],
+    'D': [
+        ('DUNARE', 'Fluviul de la granita'),
+        ('DECEBAL', 'Rege dac'),
+        ('DACIA', 'Tara dacilor'),
+        ('DOBROGEA', 'Regiune istorica'),
+        ('DORU', 'Sentiment romanesc')
+    ],
+    'E': [
+        ('EMINESCU', 'Poet national'),
+        ('EUROPA', 'Continent'),
+        ('ELIADE', 'Scriitor roman'),
+        ('ENESCU', 'Compozitor roman'),
+        ('ETNIE', 'Grup cultural')
+    ],
+    'I': [
+        ('ISTORIE', 'Studiul trecutului'),
+        ('IALOMITA', 'Raul si judet'),
+        ('IASI', 'Oras in Moldova'),
+        ('ILFOV', 'Judet din jurul capitalei'),
+        ('ION', 'Prenume romanesc')
+    ],
+    'M': [
+        ('MOLDOVA', 'Regiune istorica'),
+        ('MURES', 'Rau si judet'),
+        ('MIHAI', 'Prenume domnesc'),
+        ('MARAMURES', 'Zona traditionala'),
+        ('MUNTENIA', 'Regiune sudica')
+    ],
+    'N': [
+        ('NAPOCA', 'Vechiul nume al Clujului'),
+        ('NEAMT', 'Judet in Moldova'),
+        ('NIC', 'Prenume romanesc'),
+        ('NISTRU', 'Fluviu estic'),
+        ('NASAUD', 'Zona ardeleneasca')
+    ],
+    'O': [
+        ('OLT', 'Raul care taie muntii'),
+        ('ORADEA', 'Oras la granita'),
+        ('ORSOVA', 'Oras pe Dunare'),
+        ('OLTENIA', 'Regiune sud-vestica'),
+        ('OPINCA', 'Incaltaminte traditionala')
+    ],
+    'R': [
+        ('ROMA', 'Capitala Imperiului'),
+        ('RESITA', 'Oras in Banat'),
+        ('ROMAN', 'Oras moldovean'),
+        ('ROMANIA', 'Stat european'),
+        ('RADU', 'Prenume domnesc')
+    ],
+    'S': [
+        ('SARMIZEGETUSA', 'Capitala Daciei'),
+        ('SIBIU', 'Oras sasesc'),
+        ('SOMES', 'Rau in Transilvania'),
+        ('SUCEAVA', 'Oras medieval'),
+        ('SECUI', 'Grup etnic')
+    ],
+    'T': [
+        ('TIMIS', 'Judet in Banat'),
+        ('TOLEDO', 'Oras spaniol'),
+        ('TITAN', 'Cartier bucurestean'),
+        ('TARGOVISTE', 'Fosta capitala'),
+        ('TRAIAN', 'Imparat roman')
+    ],
+    'U': [
+        ('UNIRE', 'Eveniment din 1918'),
+        ('UNIRII', 'Piata din Bucuresti'),
+        ('URANUS', 'Planeta'),
+        ('UIOARA', 'Localitate ardeleneasca'),
+        ('UTURE', 'Pasare rapitoare')
+    ]
 }
 
-SECRET_WORDS = ["DACIA", "ROMANIA", "ALBA"]
+# cuvintele secrete
+SECRET_WORDS = [
+    "DACIA",
+    "ROMANIA",
+    "ALBA",
+    "MOLDOVA",
+    "UNIRE",
+    "CARPATI",
+    "EMINESCU",
+    "ARDEAL",
+    "OLTENIA",
+    "BUCEGI"
+]
 
 
 class RebusCell(TextInput):
     correct_char = StringProperty()
+
+    # legaturi pentru focus
     next_cell = ObjectProperty(None, allownone=True)
     prev_cell = ObjectProperty(None, allownone=True)
+    next_row_first_cell = ObjectProperty(None, allownone=True)
+    prev_row_last_cell = ObjectProperty(None, allownone=True)
+
+    # marcheaza coloana pivot
     is_pivot = BooleanProperty(False)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint = (None, None)
+        self.width = 40
+        self.height = 40
+
+        self.multiline = False
+        self.halign = 'center'
+        self.font_size = '24sp'
+        self.cursor_width = 0
+        self.padding = [0, 0]
+
+        self.bind(size=self._center_vertically)
+
+    def _center_vertically(self, *_):
+        self.padding_y = (self.height - self.line_height) / 2
+
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
-        if keycode[1] == 'backspace' and self.text == "" and self.prev_cell:
-            self.prev_cell.focus = True
-            return True
+        if keycode[1] == 'backspace' and self.text == "":
+            if self.prev_cell:
+                self.prev_cell.focus = True
+                return True
+            elif self.prev_row_last_cell:
+                self.prev_row_last_cell.focus = True
+                return True
         return super().keyboard_on_key_down(window, keycode, text, modifiers)
 
     def insert_text(self, substring, from_undo=False):
+        # accepta doar litere
         if substring.upper().isalpha():
             self.text = substring.upper()
             if self.next_cell:
                 Clock.schedule_once(lambda dt: setattr(self.next_cell, 'focus', True))
+            elif self.next_row_first_cell:
+                Clock.schedule_once(lambda dt: setattr(self.next_row_first_cell, 'focus', True))
 
 
 class RebusScreen(Screen):
     game_container = ObjectProperty(None)
     is_checked = BooleanProperty(False)
+    is_completed = BooleanProperty(False)
+    background_image = StringProperty('')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.background_image = 'utils/backgrounds/background.png'
 
     def on_kv_post(self, base_widget):
+        # ruleaza dupa kv
         self.generate_rebus()
 
     def generate_rebus(self):
+        # reset ui si date
         self.game_container.clear_widgets()
         self.is_checked = False
+        self.is_completed = False
 
-        PIVOT_COLUMN = 5
         MAX_COLS = 15
+        MAX_ATTEMPTS = 80
 
-        for _ in range(50):
+        best_variant = None
+        best_score = -1
+
+        for _ in range(MAX_ATTEMPTS):
             secret_word = random.choice(SECRET_WORDS).upper()
+
+            # pivot random
+            pivot_column = random.randint(3, MAX_COLS - 4)
+
+            indexed_letters = list(enumerate(secret_word))
+            random.shuffle(indexed_letters)
+
             words_data = []
             valid = True
+            used_words = set()
 
-            for idx, char in enumerate(secret_word):
+            for original_idx, char in indexed_letters:
                 if char not in DATA_SOURCE:
                     valid = False
                     break
 
-                valid_words = []
+                candidates = []
+
                 for word, clue in DATA_SOURCE[char]:
                     word = word.upper()
-                    for pos in [i for i, c in enumerate(word) if c == char]:
-                        start = PIVOT_COLUMN - pos
-                        if 0 <= start and start + len(word) <= MAX_COLS:
-                            valid_words.append((word, clue, pos))
+                    if word in used_words:
+                        continue
 
-                if not valid_words:
+                    for pos in [i for i, c in enumerate(word) if c == char]:
+                        start = pivot_column - pos
+                        if 0 <= start and start + len(word) <= MAX_COLS:
+                            candidates.append((word, clue, pos, start))
+
+                if not candidates:
                     valid = False
                     break
 
-                word, clue, pivot_idx = random.choice(valid_words)
+                # selectie ponderata
+                word, clue, pivot_idx, start_col = random.choices(
+                    candidates,
+                    weights=[len(c[0]) for c in candidates],
+                    k=1
+                )[0]
+
+                used_words.add(word)
+
                 words_data.append({
                     'word': word,
                     'clue': clue,
-                    'start_col': PIVOT_COLUMN - pivot_idx,
-                    'pivot_idx': pivot_idx
+                    'start_col': start_col,
+                    'pivot_idx': pivot_idx,
+                    'secret_index': original_idx
                 })
 
-            if valid:
-                break
+            if not valid:
+                continue
 
-        if not valid:
+            # scor de calitate
+            lengths = [len(w['word']) for w in words_data]
+            score = (
+                    len(set(lengths)) * 2 +
+                    sum(lengths) +
+                    random.random()
+            )
+
+            if score > best_score:
+                best_score = score
+                best_variant = words_data
+
+        if not best_variant:
             return
 
+        # ordonare dupa pozitia din cuvantul secret
+        best_variant.sort(key=lambda x: x['secret_index'])
+
         self.cells = []
-        self.game_container.add_widget(self.build_grid(words_data, MAX_COLS))
+        self.game_container.add_widget(self.build_grid(best_variant, MAX_COLS))
 
     def build_grid(self, words_data, max_cols):
-        grid = GridLayout(cols=2, spacing=0, size_hint=(None, None))
+        grid = GridLayout(cols=3, spacing=0, size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'))
-        grid.width = 400 + (max_cols * 40)
 
-        for word_info in words_data:
+        number_w = 50
+        clue_w = 400
+        grid.width = number_w + clue_w + (max_cols * 40)
+
+        for row_idx, word_info in enumerate(words_data):
             row_cells = []
             prev_cell = None
+            first_cell = None
+            last_cell = None
 
-            grid.add_widget(Label(
+            row_no = row_idx + 1
+
+            # numerul randului
+            num_label = Label(
+                text=str(row_no),
+                size_hint_x=None,
+                width=number_w,
+                color=(1, 1, 1, 1),
+                font_size='18sp',
+                bold=True,
+                halign='center',
+                valign='middle'
+            )
+            num_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
+            grid.add_widget(num_label)
+
+            # indiciul / intrebarea
+            clue_label = Label(
                 text=word_info['clue'],
                 size_hint_x=None,
-                width=400,
-                color=(0, 0, 0, 1),
+                width=clue_w,
+                color=(1, 1, 1, 1),
                 font_size='16sp',
                 halign='left',
-                valign='middle',
-                text_size=(390, None)
-            ))
+                valign='middle'
+            )
+            clue_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
+            grid.add_widget(clue_label)
 
             row_box = GridLayout(cols=max_cols, spacing=0, size_hint=(None, None))
             row_box.width = max_cols * 40
@@ -130,33 +322,53 @@ class RebusScreen(Screen):
                     idx = col - word_info['start_col']
                     is_pivot = (idx == word_info['pivot_idx'])
 
+                    # celula editabila
                     cell = RebusCell(
                         correct_char=word_info['word'][idx],
                         is_pivot=is_pivot,
                         background_color=(1, 1, 0.7, 1) if is_pivot else (1, 1, 1, 1)
                     )
 
+                    if first_cell is None:
+                        first_cell = cell
+
+                    # leaga stanga-dreapta
                     if prev_cell:
                         cell.prev_cell = prev_cell
                         prev_cell.next_cell = cell
 
                     row_box.add_widget(cell)
                     row_cells.append(cell)
+                    last_cell = cell
                     prev_cell = cell
 
             grid.add_widget(row_box)
             self.cells.append(row_cells)
 
+            # leaga randuri la focus
+            if row_idx > 0 and last_cell and len(self.cells) > 1:
+                prev_row_last = None
+                for c in reversed(self.cells[-2]):
+                    if c and isinstance(c, RebusCell):
+                        prev_row_last = c
+                        break
+                if prev_row_last and first_cell:
+                    prev_row_last.next_row_first_cell = first_cell
+
         return grid
 
     def toggle_check(self):
+        # verificare
         if self.is_checked:
             self.reset_colors()
+            self.is_completed = False
         else:
             self.check_solution()
         self.is_checked = not self.is_checked
 
     def check_solution(self):
+        # coloreaza corect/gresit
+        all_correct = True
         for row in self.cells:
             for cell in row:
                 if cell and isinstance(cell, RebusCell):
@@ -164,23 +376,34 @@ class RebusScreen(Screen):
                         cell.background_color = (0.8, 1, 0.8, 1) if cell.is_pivot else (0.6, 1, 0.6, 1)
                     else:
                         cell.background_color = (1, 0.8, 0.6, 1) if cell.is_pivot else (1, 0.6, 0.6, 1)
+                        all_correct = False
+
+        self.is_completed = all_correct
 
     def reset_colors(self):
+        # revine la default
         for row in self.cells:
             for cell in row:
                 if cell and isinstance(cell, RebusCell):
                     cell.background_color = (1, 1, 0.7, 1) if cell.is_pivot else (1, 1, 1, 1)
 
     def auto_fill(self):
+        # completeaza automat
         for row in self.cells:
             for cell in row:
                 if cell and isinstance(cell, RebusCell):
                     cell.text = cell.correct_char
 
     def clear_rebus(self):
+        # goleste rebusul
         self.is_checked = False
+        self.is_completed = False
         for row in self.cells:
             for cell in row:
                 if cell and isinstance(cell, RebusCell):
                     cell.text = ""
                     cell.background_color = (1, 1, 0.7, 1) if cell.is_pivot else (1, 1, 1, 1)
+
+    def finalize_rebus(self):
+        # finalizare
+        print("Rebus finalizat cu succes!")

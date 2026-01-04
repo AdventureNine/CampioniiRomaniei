@@ -1,26 +1,9 @@
-<RebusCell>:
-    size_hint: None, None
-    size: 40, 40
-    font_size: '20sp'
-    multiline: False
-    halign: 'center'
-    background_normal: ''
-    cursor_color: 0, 0, 0, 1
-    padding_y: [self.height / 2.0 - (self.line_height / 2.0), 0]
-    canvas.after:
-        Color:
-            rgba: 0.2, 0.2, 0.2, 1
-        Line:
-            width: 2
-            rectangle: self.x, self.y, self.width, self.height
-
 <RebusScreen>:
     game_container: game_container
 
     canvas.before:
-        Color:
-            rgba: 0.98, 0.98, 0.95, 1
         Rectangle:
+            source: root.background_image
             pos: self.pos
             size: self.size
 
@@ -41,22 +24,33 @@
                     radius: [10]
 
             Label:
-                text: "REBUS DIDACTIC"
+                text: "REBUS"
                 font_size: '32sp'
                 bold: True
                 color: 1, 1, 1, 1
 
-        ScrollView:
-            do_scroll_x: False
-            do_scroll_y: True
+        # panou comun semi-transparent (baza)
+        BoxLayout:
+            padding: 14
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.35
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [14]
 
-            BoxLayout:
-                id: game_container
-                orientation: 'vertical'
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: 5
-                padding: 10
+            ScrollView:
+                do_scroll_x: False
+                do_scroll_y: True
+
+                BoxLayout:
+                    id: game_container
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 6
+                    padding: 6
 
         BoxLayout:
             size_hint_y: None
@@ -100,7 +94,7 @@
 
             Button:
                 text: "RESETEAZĂ" if root.is_checked else "VERIFICĂ"
-                size_hint_x: 0.3
+                size_hint_x: 0.25
                 background_normal: ''
                 background_color: (0.6, 0.4, 0.2, 1) if root.is_checked else (0.2, 0.6, 0.3, 1)
                 font_size: '18sp'
@@ -115,8 +109,25 @@
                 on_release: root.toggle_check()
 
             Button:
+                text: "FINALIZEAZĂ"
+                size_hint_x: 0.25
+                background_normal: ''
+                background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
+                font_size: '18sp'
+                bold: True
+                disabled: not root.is_completed
+                canvas.before:
+                    Color:
+                        rgba: self.background_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8]
+                on_release: root.finalize_rebus()
+
+            Button:
                 text: "REBUS NOU"
-                size_hint_x: 0.3
+                size_hint_x: 0.25
                 background_normal: ''
                 background_color: 0.15, 0.45, 0.75, 1
                 font_size: '18sp'
