@@ -193,10 +193,9 @@ class RebusScreen(Screen):
         self.is_completed = False
 
         MAX_COLS = 15
-        MAX_ATTEMPTS = 80
+        MAX_ATTEMPTS = 150
 
-        best_variant = None
-        best_score = -1
+        valid_variants = []
 
         for _ in range(MAX_ATTEMPTS):
             secret_word = random.choice(SECRET_WORDS).upper()
@@ -208,8 +207,8 @@ class RebusScreen(Screen):
             random.shuffle(indexed_letters)
 
             words_data = []
-            valid = True
             used_words = set()
+            valid = True
 
             for original_idx, char in indexed_letters:
                 if char not in DATA_SOURCE:
@@ -218,54 +217,42 @@ class RebusScreen(Screen):
 
                 candidates = []
 
+                # gaseste cuvinte potrivite
                 for word, clue in DATA_SOURCE[char]:
-                    word = word.upper()
-                    if word in used_words:
+                    w = word.upper()
+                    if w in used_words:
                         continue
-
-                    for pos in [i for i, c in enumerate(word) if c == char]:
+                    for pos in [i for i, c in enumerate(w) if c == char]:
                         start = pivot_column - pos
-                        if 0 <= start and start + len(word) <= MAX_COLS:
-                            candidates.append((word, clue, pos, start))
+                        if 0 <= start and start + len(w) <= MAX_COLS:
+                            candidates.append((w, clue, pos, start))
 
                 if not candidates:
                     valid = False
                     break
 
-                # selectie ponderata
-                word, clue, pivot_idx, start_col = random.choices(
-                    candidates,
-                    weights=[len(c[0]) for c in candidates],
-                    k=1
-                )[0]
-
-                used_words.add(word)
-
+                # alege un cuvant random
+                w, clue, pivot_idx, start_col = random.choice(candidates)
+                used_words.add(w)
                 words_data.append({
-                    'word': word,
+                    'word': w,
                     'clue': clue,
                     'start_col': start_col,
                     'pivot_idx': pivot_idx,
                     'secret_index': original_idx
                 })
 
-            if not valid:
-                continue
+            if valid and len(words_data) == len(secret_word):
+                valid_variants.append(words_data)
 
-            # scor de calitate
-            lengths = [len(w['word']) for w in words_data]
-            score = (
-                    len(set(lengths)) * 2 +
-                    sum(lengths) +
-                    random.random()
-            )
-
-            if score > best_score:
-                best_score = score
-                best_variant = words_data
-
-        if not best_variant:
+        if not valid_variants:
+            self.cells = []
+            self.game_container.add_widget(
+                Label(text="Nu s-a putut genera un rebus.\nÎncearcă din nou.", color=(1, 1, 1, 1)))
             return
+
+        # alege o varianta random
+        best_variant = random.choice(valid_variants)
 
         # ordonare dupa pozitia din cuvantul secret
         best_variant.sort(key=lambda x: x['secret_index'])
