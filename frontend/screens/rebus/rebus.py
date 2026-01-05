@@ -8,6 +8,7 @@ from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, Num
 from kivy.clock import Clock
 
 from backend.domain.utils.Difficulty import Difficulty
+from backend.domain.entities.Minigame import Rebus
 
 # date pentru cuvinte
 DATA_SOURCE = {
@@ -174,6 +175,8 @@ class RebusCell(TextInput):
 
 
 class RebusScreen(Screen):
+    rebus_entity = ObjectProperty(None, allownone=True)
+
     game_container = ObjectProperty(None)
     is_checked = BooleanProperty(False)
     is_completed = BooleanProperty(False)
@@ -188,9 +191,12 @@ class RebusScreen(Screen):
     current_difficulty = StringProperty("")
 
     def __init__(self, **kwargs):
+        self._initialized = False
         super().__init__(**kwargs)
         self.background_image = 'screens/rebus/background.png'
         self.current_difficulty = Difficulty[1]
+        self.words_data = []
+        self.cells = []
 
         if self.current_difficulty == Difficulty[0]:
             self.max_cols = 12
@@ -202,15 +208,24 @@ class RebusScreen(Screen):
             self.max_cols = 18
             self.max_attempts = 220
 
+    def on_parent(self, instance, parent):
+        # ruleaza la adaugare in widget tree
+        if parent and not self._initialized:
+            self._initialized = True
+            Clock.schedule_once(lambda dt: self.generate_rebus(), 0)
+
     def on_kv_post(self, base_widget):
         # ruleaza dupa kv
-        self.generate_rebus()
+        if not self._initialized:
+            self._initialized = True
+            Clock.schedule_once(lambda dt: self.generate_rebus(), 0)
 
     def generate_rebus(self):
         # reset ui si date
         self.game_container.clear_widgets()
         self.is_checked = False
         self.is_completed = False
+        self.rebus_entity = None
 
         MAX_COLS = int(self.max_cols)
         MAX_ATTEMPTS = int(self.max_attempts)
@@ -267,6 +282,7 @@ class RebusScreen(Screen):
 
         if not valid_variants:
             self.cells = []
+            self.words_data = []
             self.game_container.add_widget(
                 Label(text="Nu s-a putut genera un rebus.\nÎncearcă din nou.", color=(1, 1, 1, 1)))
             return
@@ -276,6 +292,10 @@ class RebusScreen(Screen):
 
         # ordonare dupa pozitia din cuvantul secret
         best_variant.sort(key=lambda x: x['secret_index'])
+
+        self.words_data = best_variant
+        win_cfg = {item['clue']: item['word'] for item in self.words_data}
+        self.rebus_entity = Rebus(rebus_id=1, win_configuration=win_cfg)
 
         self.cells = []
         self.game_container.add_widget(self.build_grid(best_variant, MAX_COLS))
@@ -372,6 +392,15 @@ class RebusScreen(Screen):
 
         return grid
 
+    def _build_current_config(self):
+        if not self.cells or not self.words_data:
+            return {}
+        cfg = {}
+        for row, word_info in zip(self.cells, self.words_data):
+            typed = ''.join((cell.text or '') for cell in row if cell and isinstance(cell, RebusCell)).upper()
+            cfg[word_info['clue']] = typed
+        return cfg
+
     def toggle_check(self):
         # verificare
         if self.is_checked:
@@ -382,8 +411,12 @@ class RebusScreen(Screen):
         self.is_checked = not self.is_checked
 
     def check_solution(self):
+        if not self.cells or not self.words_data:
+            self.is_completed = False
+            return
+
         # coloreaza corect/gresit
-        all_correct = True
+        all_correct_cells = True
         for row in self.cells:
             for cell in row:
                 if cell and isinstance(cell, RebusCell):
@@ -391,9 +424,19 @@ class RebusScreen(Screen):
                         cell.background_color = (0.8, 1, 0.8, 1) if cell.is_pivot else (0.6, 1, 0.6, 1)
                     else:
                         cell.background_color = (1, 0.8, 0.6, 1) if cell.is_pivot else (1, 0.6, 0.6, 1)
-                        all_correct = False
+                        all_correct_cells = False
 
-        self.is_completed = all_correct
+        is_win_by_entity = True
+        if self.rebus_entity:
+            current_cfg = self._build_current_config()
+            self.rebus_entity.set_current_configuration(current_cfg)
+            win_cfg = self.rebus_entity.get_win_configuration()
+            is_win_by_entity = all(
+                current_cfg.get(clue, '').upper() == answer.upper()
+                for clue, answer in win_cfg.items()
+            )
+
+        self.is_completed = all_correct_cells and is_win_by_entity
 
     def reset_colors(self):
         # revine la default
@@ -418,6 +461,9 @@ class RebusScreen(Screen):
                 if cell and isinstance(cell, RebusCell):
                     cell.text = ""
                     cell.background_color = (1, 1, 0.7, 1) if cell.is_pivot else (1, 1, 1, 1)
+
+        if self.rebus_entity:
+            self.rebus_entity.set_current_configuration({})
 
     def finalize_rebus(self):
         # finalizare
