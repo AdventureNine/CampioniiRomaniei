@@ -4,8 +4,10 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, NumericProperty
 from kivy.clock import Clock
+
+from backend.domain.utils.Difficulty import Difficulty
 
 # date pentru cuvinte
 DATA_SOURCE = {
@@ -119,6 +121,7 @@ SECRET_WORDS = [
 
 class RebusCell(TextInput):
     correct_char = StringProperty()
+    cell_size = NumericProperty(40)
 
     # legaturi pentru focus
     next_cell = ObjectProperty(None, allownone=True)
@@ -132,14 +135,10 @@ class RebusCell(TextInput):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (None, None)
-        self.width = 40
-        self.height = 40
-
         self.multiline = False
         self.halign = 'center'
         self.font_size = '24sp'
         self.cursor_width = 0
-
         self.padding = [0, 0, 0, 0]
 
         # actualizeaza padding la schimbari
@@ -164,12 +163,14 @@ class RebusCell(TextInput):
 
     def insert_text(self, substring, from_undo=False):
         # accepta doar litere
-        if substring.upper().isalpha():
-            self.text = substring.upper()
-            if self.next_cell:
-                Clock.schedule_once(lambda dt: setattr(self.next_cell, 'focus', True))
-            elif self.next_row_first_cell:
-                Clock.schedule_once(lambda dt: setattr(self.next_row_first_cell, 'focus', True))
+        ch = next((c for c in substring if c.isalpha()), '')
+        if not ch:
+            return
+        self.text = ch.upper()
+        if self.next_cell:
+            Clock.schedule_once(lambda dt: setattr(self.next_cell, 'focus', True))
+        elif self.next_row_first_cell:
+            Clock.schedule_once(lambda dt: setattr(self.next_row_first_cell, 'focus', True))
 
 
 class RebusScreen(Screen):
@@ -178,9 +179,28 @@ class RebusScreen(Screen):
     is_completed = BooleanProperty(False)
     background_image = StringProperty('')
 
+    number_w = NumericProperty(50)
+    clue_w = NumericProperty(400)
+    cell_w = NumericProperty(40)
+    max_cols = NumericProperty(15)
+    max_attempts = NumericProperty(150)
+
+    current_difficulty = StringProperty("")
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.background_image = 'utils/backgrounds/background.png'
+        self.background_image = 'screens/rebus/background.png'
+        self.current_difficulty = Difficulty[1]
+
+        if self.current_difficulty == Difficulty[0]:
+            self.max_cols = 12
+            self.max_attempts = 100
+        elif self.current_difficulty == Difficulty[1]:
+            self.max_cols = 15
+            self.max_attempts = 150
+        else:
+            self.max_cols = 18
+            self.max_attempts = 220
 
     def on_kv_post(self, base_widget):
         # ruleaza dupa kv
@@ -192,8 +212,8 @@ class RebusScreen(Screen):
         self.is_checked = False
         self.is_completed = False
 
-        MAX_COLS = 15
-        MAX_ATTEMPTS = 150
+        MAX_COLS = int(self.max_cols)
+        MAX_ATTEMPTS = int(self.max_attempts)
 
         valid_variants = []
 
@@ -263,10 +283,9 @@ class RebusScreen(Screen):
     def build_grid(self, words_data, max_cols):
         grid = GridLayout(cols=3, spacing=0, size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'))
+        grid.bind(minimum_width=grid.setter('width'))
 
-        number_w = 50
-        clue_w = 400
-        grid.width = number_w + clue_w + (max_cols * 40)
+        grid.width = self.number_w + self.clue_w + (max_cols * self.cell_w)
 
         for row_idx, word_info in enumerate(words_data):
             row_cells = []
@@ -278,14 +297,14 @@ class RebusScreen(Screen):
 
             # numerul randului
             num_label = Label(
-                text=str(row_no),
+                text=f"[b]{row_no}[/b]",
+                markup=True,
                 size_hint_x=None,
-                width=number_w,
+                width=self.number_w,
                 color=(1, 1, 1, 1),
                 font_size='18sp',
-                bold=True,
                 halign='center',
-                valign='middle'
+                valign='middle',
             )
             num_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
             grid.add_widget(num_label)
@@ -294,22 +313,23 @@ class RebusScreen(Screen):
             clue_label = Label(
                 text=word_info['clue'],
                 size_hint_x=None,
-                width=clue_w,
+                width=self.clue_w,
                 color=(1, 1, 1, 1),
                 font_size='16sp',
                 halign='left',
-                valign='middle'
+                valign='middle',
+                markup=True,
             )
             clue_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
             grid.add_widget(clue_label)
 
             row_box = GridLayout(cols=max_cols, spacing=0, size_hint=(None, None))
-            row_box.width = max_cols * 40
-            row_box.height = 40
+            row_box.width = max_cols * self.cell_w
+            row_box.height = self.cell_w
 
             for col in range(max_cols):
                 if col < word_info['start_col'] or col >= word_info['start_col'] + len(word_info['word']):
-                    row_box.add_widget(Widget(size_hint_x=None, width=40))
+                    row_box.add_widget(Widget(size_hint=(None, None), width=self.cell_w, height=self.cell_w))
                     row_cells.append(None)
                 else:
                     idx = col - word_info['start_col']
@@ -319,6 +339,7 @@ class RebusScreen(Screen):
                     cell = RebusCell(
                         correct_char=word_info['word'][idx],
                         is_pivot=is_pivot,
+                        cell_size=self.cell_w,
                         background_color=(1, 1, 0.7, 1) if is_pivot else (1, 1, 1, 1)
                     )
 
@@ -347,6 +368,7 @@ class RebusScreen(Screen):
                         break
                 if prev_row_last and first_cell:
                     prev_row_last.next_row_first_cell = first_cell
+                    first_cell.prev_row_last_cell = prev_row_last
 
         return grid
 
@@ -400,3 +422,7 @@ class RebusScreen(Screen):
     def finalize_rebus(self):
         # finalizare
         print("Rebus finalizat cu succes!")
+
+    def go_back(self):
+        # inapoi la nivelul anterior
+        print("Inapoi la ecranul anterior")

@@ -1,3 +1,6 @@
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,disable_multitouch')
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -16,6 +19,11 @@ class DidacticApp(App):
         self.sm_rebus = RebusScreen()
 
         self.root_layout.add_widget(self.sm_rebus)
+
+        def _eat_right_click(window, x, y, button, modifiers):
+            return True if button == 3 else False
+
+        Window.bind(on_mouse_down=_eat_right_click)
 
         return self.root_layout
 
