@@ -135,24 +135,34 @@ class RebusCell(TextInput):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.size_hint = (None, None)
-        self.multiline = False
-        self.halign = 'center'
-        self.font_size = '24sp'
-        self.cursor_width = 0
         self.padding = [0, 0, 0, 0]
 
-        # actualizeaza padding la schimbari
-        self.bind(size=self._update_padding, font_size=self._update_padding)
-        Clock.schedule_once(lambda dt: self._update_padding())
+        # actualizeaza padding dupa ce widgetul e creat
+        Clock.schedule_once(self._update_padding, 0)
+
+        # aplica dimensiuni celula
+        self._apply_size()
+        self.bind(cell_size=self._apply_size)
 
     def _update_padding(self, *_):
+        # aliniaza vertical textul in celula
         lh = self.line_height
         vt = max(0, (self.height - lh) / 2.0)
         self.padding = [0, vt, 0, vt]
 
+    def _apply_size(self, *args):
+        self.width = self.cell_size
+        self.height = self.cell_size
+
+    def _focus_next(self, dt):
+        # muta focusul la urmatoarea celula
+        if self.next_cell:
+            self.next_cell.focus = True
+        elif self.next_row_first_cell:
+            self.next_row_first_cell.focus = True
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        # navigare inapoi la celula anterioara
         if keycode[1] == 'backspace' and self.text == "":
             if self.prev_cell:
                 self.prev_cell.focus = True
@@ -162,16 +172,15 @@ class RebusCell(TextInput):
                 return True
         return super().keyboard_on_key_down(window, keycode, text, modifiers)
 
+
     def insert_text(self, substring, from_undo=False):
         # accepta doar litere
         ch = next((c for c in substring if c.isalpha()), '')
         if not ch:
             return
         self.text = ch.upper()
-        if self.next_cell:
-            Clock.schedule_once(lambda dt: setattr(self.next_cell, 'focus', True))
-        elif self.next_row_first_cell:
-            Clock.schedule_once(lambda dt: setattr(self.next_row_first_cell, 'focus', True))
+        if self.next_cell or self.next_row_first_cell:
+            Clock.schedule_once(self._focus_next)
 
 
 class RebusScreen(Screen):
@@ -188,37 +197,58 @@ class RebusScreen(Screen):
     max_cols = NumericProperty(15)
     max_attempts = NumericProperty(150)
 
-    current_difficulty = StringProperty("")
+    current_difficulty = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
         self._initialized = False
-        super().__init__(**kwargs)
+
+        # setare fundal si dificultate implicita
         self.background_image = 'screens/rebus/background.png'
-        self.current_difficulty = Difficulty[1]
+
+        difficulty_levels = list(Difficulty)
+        self.current_difficulty = difficulty_levels[1]
+
+        super().__init__(**kwargs)
+
         self.words_data = []
         self.cells = []
 
-        if self.current_difficulty == Difficulty[0]:
+        # seteaza parametri in functie de dificultate
+        difficulty_levels = list(Difficulty)
+        if self.current_difficulty == difficulty_levels[0]:
             self.max_cols = 12
             self.max_attempts = 100
-        elif self.current_difficulty == Difficulty[1]:
+        elif len(difficulty_levels) > 1 and self.current_difficulty == difficulty_levels[1]:
             self.max_cols = 15
             self.max_attempts = 150
         else:
             self.max_cols = 18
             self.max_attempts = 220
 
-    def on_parent(self, instance, parent):
-        # ruleaza la adaugare in widget tree
-        if parent and not self._initialized:
-            self._initialized = True
-            Clock.schedule_once(lambda dt: self.generate_rebus(), 0)
+    def _sync_text_size(self, inst, size):
+        # aliniaza textul in label
+        inst.text_size = size
+
+    def _generate_rebus_cb(self, dt):
+        # callback pentru generare rebus
+        self.generate_rebus()
+
+    def _build_current_config(self):
+        if not self.cells or not self.words_data:
+            return {}
+
+        # construieste configuratia curenta
+        cfg = {}
+        for row, word_info in zip(self.cells, self.words_data):
+            typed = ''.join((cell.text or '') for cell in row if cell and isinstance(cell, RebusCell)).upper()
+            cfg[word_info['clue']] = typed
+        return cfg
 
     def on_kv_post(self, base_widget):
         # ruleaza dupa kv
         if not self._initialized:
             self._initialized = True
-            Clock.schedule_once(lambda dt: self.generate_rebus(), 0)
+            Clock.schedule_once(self._generate_rebus_cb, 0)
 
     def generate_rebus(self):
         # reset ui si date
@@ -245,6 +275,7 @@ class RebusScreen(Screen):
             used_words = set()
             valid = True
 
+            # cauta cuvinte pentru fiecare litera
             for original_idx, char in indexed_letters:
                 if char not in DATA_SOURCE:
                     valid = False
@@ -326,7 +357,7 @@ class RebusScreen(Screen):
                 halign='center',
                 valign='middle',
             )
-            num_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
+            num_label.bind(size=self._sync_text_size)
             grid.add_widget(num_label)
 
             # indiciul / intrebarea
@@ -340,7 +371,7 @@ class RebusScreen(Screen):
                 valign='middle',
                 markup=True,
             )
-            clue_label.bind(size=lambda inst, val: setattr(inst, 'text_size', val))
+            clue_label.bind(size=self._sync_text_size)
             grid.add_widget(clue_label)
 
             row_box = GridLayout(cols=max_cols, spacing=0, size_hint=(None, None))
@@ -392,14 +423,6 @@ class RebusScreen(Screen):
 
         return grid
 
-    def _build_current_config(self):
-        if not self.cells or not self.words_data:
-            return {}
-        cfg = {}
-        for row, word_info in zip(self.cells, self.words_data):
-            typed = ''.join((cell.text or '') for cell in row if cell and isinstance(cell, RebusCell)).upper()
-            cfg[word_info['clue']] = typed
-        return cfg
 
     def toggle_check(self):
         # verificare
@@ -426,6 +449,7 @@ class RebusScreen(Screen):
                         cell.background_color = (1, 0.8, 0.6, 1) if cell.is_pivot else (1, 0.6, 0.6, 1)
                         all_correct_cells = False
 
+        # verifica
         is_win_by_entity = True
         if self.rebus_entity:
             current_cfg = self._build_current_config()

@@ -75,7 +75,7 @@
                         height: 40
 
                     Label:
-                        text: "[b]Dificultate:[/b] " + root.current_difficulty
+                        text: "[b]Dificultate:[/b] " + str(getattr(root.current_difficulty, 'name', root.current_difficulty or ""))
                         markup: True
                         font_size: '16sp'
                         color: 1, 1, 1, 0.95
