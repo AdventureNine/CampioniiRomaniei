@@ -17,6 +17,10 @@ class PlayerService:
         """Get the current player."""
         return self.player_repository.get()
 
+    def get_player_by_name(self, name: str) -> Optional[Player]:
+        """Get a player by their username."""
+        return self.player_repository.get_by_name(name)
+
     def update_player(self, player: Player) -> None:
         """Update an existing player."""
         self.player_repository.save(player)

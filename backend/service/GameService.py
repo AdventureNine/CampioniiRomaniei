@@ -77,6 +77,55 @@ class GameService:
             raise ValueError("No player is currently set. Please set a player first.")
         return self.__current_player
     
+    def login(self, username: str, auto_create: bool = True) -> dict:
+        """
+        Login a player by username (unique identifier).
+        
+        Args:
+            username: The unique username of the player
+            auto_create: If True, creates a new player if username doesn't exist
+        
+        Returns:
+            dict with 'success' (bool), 'player' (Player or None), 'message' (str), 'is_new' (bool)
+        """
+        # Try to find existing player
+        player = self.player_service.get_player_by_name(username)
+        
+        if player:
+            # Player exists, set as current
+            self.__current_player = player
+            return {
+                "success": True,
+                "player": player,
+                "message": f"Welcome back, {username}!",
+                "is_new": False
+            }
+        
+        # Player doesn't exist
+        if auto_create:
+            # Generate a unique ID (you might want to use a better strategy)
+            # For now, using a simple timestamp-based approach
+            import time
+            player_id = int(time.time() * 1000) % 1000000
+            
+            # Create new player
+            player = self.player_service.create_player(player_id, username)
+            self.__current_player = player
+            
+            return {
+                "success": True,
+                "player": player,
+                "message": f"Welcome, {username}! Your account has been created.",
+                "is_new": True
+            }
+        else:
+            return {
+                "success": False,
+                "player": None,
+                "message": f"No player found with username '{username}'.",
+                "is_new": False
+            }
+    
     # Player Operations
     def add_credits_to_player(self, amount: int) -> None:
         """Add credits to the current player."""
