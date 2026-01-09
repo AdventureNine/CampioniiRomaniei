@@ -25,7 +25,7 @@ class Player:
     def get_avg_play_time(self): return self.__statistics["avg_play_time"]
     def get_quizzes_solved(self): return self.__statistics["quizzes_solved"]
     def get_quizzes_played(self): return self.__statistics["quizzes_played"]
-    def get_regions_unlocked(self): return self.__statistics["regions_unlocked"]
+    def get_regions_state(self): return self.__statistics["regions_state"]
     def get_completion_percentage(self): return self.__statistics["completion_percentage"]
     def get_cosmetics_purchased(self): return self.__statistics["cosmetics_purchased"]
 
