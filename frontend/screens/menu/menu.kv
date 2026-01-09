@@ -1,0 +1,61 @@
+#:import AppColors frontend.utils.colors.AppColors
+
+<MenuBigButton@Button>:
+    background_normal: ''
+    background_color: AppColors.ACCENT
+    font_size: '24sp'
+    bold: True
+    color: AppColors.WHITE
+    size_hint: None, None
+    size: 250, 80
+    background_down: ''
+    canvas.before:
+        Color:
+            rgba: self.background_color if self.state == 'normal' else AppColors.PRIMARY
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20,]
+
+<MenuScreen>:
+    canvas.before:
+        Color:
+            rgba: AppColors.BACKGROUND
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        # Titlul Aplicației
+        Label:
+            text: "Campionii Geografiei"
+            font_size: '60sp'
+            pos_hint: {'center_x': 0.5, 'y': 0.3}
+            color: AppColors.PRIMARY
+            bold: True
+
+        # Grila cu cele 4 butoane conform specificațiilor
+        GridLayout:
+            cols: 2
+            spacing: 50
+            padding: 50
+            size_hint: None, None
+            size: 600, 300
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+
+            MenuBigButton:
+                text: "JOC"
+                # Aici declanșăm navigarea
+                on_release: app.clouds.change_screen('map')
+
+            MenuBigButton:
+                text: "COSMETICE"
+                background_color: 0.6, 0.2, 0.6, 1
+
+            MenuBigButton:
+                text: "INVENTAR"
+                background_color: 0, 0.7, 0.8, 1
+
+            MenuBigButton:
+                text: "STATISTICI"
+                background_color: 0.4, 0.5, 0.5, 1
