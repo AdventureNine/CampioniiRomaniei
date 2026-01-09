@@ -50,7 +50,7 @@ class MinigameRepository:
             return {k: (v.lower() == 'true') for k, v in pairs}
 
         if m_type == "map_guesser":
-            return [(int(x), int(y)) for x, y in pairs]
+            return [(float(x), float(y)) for x, y in pairs]
 
         return raw_str
 
@@ -66,8 +66,8 @@ class MinigameRepository:
             sql = f"UPDATE {self.TABLE} SET win_configuration = ?, type = ?, quizz = ? WHERE id = ?"
             self.cursor.execute(sql, (win_config_str, task_type, quizz_id, minigame.get_id()))
         else:
-            sql = f"INSERT INTO {self.TABLE} (id, win_configuration, type, quizz) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(sql, (minigame.get_id(), win_config_str, task_type, quizz_id))
+            sql = f"INSERT INTO {self.TABLE} (win_configuration, type, quizz) VALUES (?, ?, ?)"
+            self.cursor.execute(sql, (win_config_str, task_type, quizz_id))
 
         self.conn.commit()
 
