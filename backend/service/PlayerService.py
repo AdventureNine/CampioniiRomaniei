@@ -7,9 +7,10 @@ class PlayerService:
     def __init__(self, player_repository: PlayerRepository):
         self.player_repository = player_repository
 
-    def create_player(self, player_id: int, name: str) -> Player:
-        """Create a new player and save it to the repository."""
-        player = Player(player_id, name)
+    def create_player(self, name: str) -> Player:
+        """Create a new player and save it to the repository. ID is auto-generated."""
+        # Use 0 as placeholder ID - will be replaced by database autoincrement
+        player = Player(0, name)
         self.player_repository.save(player)
         return player
 

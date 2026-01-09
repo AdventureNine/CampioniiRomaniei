@@ -36,15 +36,17 @@ class PlayerRepository:
             ))
         else:
             sql = f"""
-                INSERT INTO {self.TABLE} (id, name, credits, avg_play_time, quizzes_solved, quizzes_played, regions_unlocked, cosmetics_unlocked, cosmetics_purchased, completion_percentage) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO {self.TABLE} (name, credits, avg_play_time, quizzes_solved, quizzes_played, regions_unlocked, cosmetics_unlocked, cosmetics_purchased, completion_percentage) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             self.cursor.execute(sql, (
-                player.get_id(), player.get_name(), player.get_credits(),
+                player.get_name(), player.get_credits(),
                 stats['avg_play_time'], stats['quizzes_solved'], stats['quizzes_played'],
                 regions_unlocked, cosmetics_unlocked, cosmetics_purchased,
                 stats['completion_percentage']
             ))
+            # Update player object with the auto-generated ID
+            player._Player__id = self.cursor.lastrowid
 
         self.conn.commit()
 
