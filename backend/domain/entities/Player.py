@@ -3,7 +3,7 @@ class Player:
         self.__id = pid
         self.__name = name
         self.__credits = 0
-        self.__cosmetic = "/backend/domain/cosmetics/default.png"
+        self.__cosmetic = 'backend/domain/assets/default.png'
         self.__statistics = {
             "avg_play_time": 0.0,
             "quizzes_solved": 0,
