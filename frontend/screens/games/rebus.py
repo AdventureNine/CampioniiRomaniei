@@ -190,6 +190,7 @@ class RebusScreen(Screen):
     is_checked = BooleanProperty(False)
     is_completed = BooleanProperty(False)
     background_image = StringProperty('')
+    bg_image = StringProperty('')
 
     number_w = NumericProperty(50)
     clue_w = NumericProperty(400)
@@ -198,13 +199,13 @@ class RebusScreen(Screen):
     max_attempts = NumericProperty(150)
 
     current_difficulty = ObjectProperty(None, allownone=True)
+    regeneration_count = NumericProperty(0)
+    max_regenerations = NumericProperty(4)
 
     def __init__(self, **kwargs):
         self._initialized = False
 
-        # setare fundal si dificultate implicita
-        self.background_image = 'screens/rebus/background.png'
-
+        # dificultate implicita
         difficulty_levels = list(Difficulty)
         self.current_difficulty = difficulty_levels[1]
 
@@ -212,6 +213,7 @@ class RebusScreen(Screen):
 
         self.words_data = []
         self.cells = []
+        self.regeneration_count = 0
 
         # seteaza parametri in functie de dificultate
         difficulty_levels = list(Difficulty)
@@ -251,6 +253,13 @@ class RebusScreen(Screen):
             Clock.schedule_once(self._generate_rebus_cb, 0)
 
     def generate_rebus(self):
+        # Verifica limita de regenerari
+        if self.regeneration_count >= self.max_regenerations:
+            print(f"Ai atins limita de {self.max_regenerations} regenerări!")
+            return
+
+        self.regeneration_count += 1
+
         # reset ui si date
         self.game_container.clear_widgets()
         self.is_checked = False
@@ -492,7 +501,31 @@ class RebusScreen(Screen):
     def finalize_rebus(self):
         # finalizare
         print("Rebus finalizat cu succes!")
+        from kivy.app import App
+        app = App.get_running_app()
+        dashboard = app.sm.get_screen('region_dashboard')
+        dashboard.load_next_step()
 
     def go_back(self):
-        # inapoi la nivelul anterior
-        print("Inapoi la ecranul anterior")
+        # inapoi la region dashboard
+        from kivy.app import App
+        app = App.get_running_app()
+        app.clouds.change_screen('region_dashboard')
+
+    def load_data(self, data, step_number):
+        self.regeneration_count = 0
+
+        # Seteaza dificultatea daca e specificata
+        if 'difficulty' in data:
+            difficulty_map = {
+                'easy': 0,
+                'medium': 1,
+                'hard': 2
+            }
+            difficulty_idx = difficulty_map.get(data['difficulty'], 1)
+            difficulty_levels = list(Difficulty)
+            if 0 <= difficulty_idx < len(difficulty_levels):
+                self.current_difficulty = difficulty_levels[difficulty_idx]
+
+        # Regenereaza rebusul
+        self.generate_rebus()

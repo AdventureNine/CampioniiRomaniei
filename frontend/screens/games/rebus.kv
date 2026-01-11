@@ -19,103 +19,36 @@
 
     canvas.before:
         Rectangle:
-            source: root.background_image
+            source: root.bg_image
             pos: self.pos
             size: self.size
 
     BoxLayout:
         orientation: 'vertical'
-        padding: 20
-        spacing: 15
+        padding: 0
+        spacing: 5
 
-        BoxLayout:
-            size_hint_y: None
-            height: 110
-            padding: 14
+        StandardHeader:
+            title: "REBUS"
+            pos_hint: {'top': 1}
+            back_screen: 'region_dashboard'
+
+        FloatLayout:
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 0.35
                 RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [14]
-
-            BoxLayout:
-                orientation: 'horizontal'
-                spacing: 12
-
-                Button:
-                    text: "[b]ÎNAPOI[/b]"
-                    markup: True
-                    size_hint_x: None
-                    width: 100
-                    background_normal: ''
-                    background_color: 0.8, 0.2, 0.2, 1
-                    font_size: '16sp'
-                    canvas.before:
-                        Color:
-                            rgba: self.background_color
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [8]
-                    on_release: root.go_back()
-
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint_x: 1
-                    spacing: 2
-
-                    Label:
-                        text: "[b]REBUS[/b]"
-                        markup: True
-                        font_size: '32sp'
-                        color: 1, 1, 1, 1
-                        size_hint_y: None
-                        height: 40
-
-                    Label:
-                        text: "[b]Dificultate:[/b] " + str(getattr(root.current_difficulty, 'name', root.current_difficulty or ""))
-                        markup: True
-                        font_size: '16sp'
-                        color: 1, 1, 1, 0.95
-                        halign: 'center'
-                        valign: 'middle'
-                        size_hint_y: None
-                        height: 24
-                        text_size: self.size
-
-                Button:
-                    text: "[b]ÎNAINTE[/b]"
-                    markup: True
-                    size_hint_x: None
-                    width: 140
-                    background_normal: ''
-                    background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
-                    font_size: '16sp'
-                    disabled: not root.is_completed
-                    canvas.before:
-                        Color:
-                            rgba: self.background_color
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [8]
-                    on_release: root.finalize_rebus()
-
-        BoxLayout:
-            padding: 14
-            canvas.before:
-                Color:
-                    rgba: 0, 0, 0, 0.35
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
+                    pos: self.x + 14, self.y + 5
+                    size: self.width - 28, self.height - 10
                     radius: [14]
 
             ScrollView:
                 do_scroll_x: False
                 do_scroll_y: True
+                size_hint: None, None
+                width: root.width - 28
+                height: root.height - 200
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
                 BoxLayout:
                     id: game_container
@@ -191,11 +124,12 @@
                     on_release: root.toggle_check()
 
                 Button:
-                    text: "REBUS NOU"
+                    text: "REBUS NOU (" + str(root.max_regenerations - root.regeneration_count) + ")"
                     size_hint_x: 0.25
                     background_normal: ''
-                    background_color: 0.15, 0.45, 0.75, 1
+                    background_color: (0.15, 0.45, 0.75, 1) if root.regeneration_count < root.max_regenerations else (0.3, 0.3, 0.3, 1)
                     font_size: '18sp'
+                    disabled: root.regeneration_count >= root.max_regenerations
                     canvas.before:
                         Color:
                             rgba: self.background_color
@@ -204,3 +138,21 @@
                             size: self.size
                             radius: [8]
                     on_release: root.generate_rebus()
+
+                Button:
+                    text: "[b]FINALIZEAZĂ[/b]"
+                    markup: True
+                    size_hint_x: 0.25
+                    background_normal: ''
+                    background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
+                    font_size: '18sp'
+                    disabled: not root.is_completed
+                    canvas.before:
+                        Color:
+                            rgba: self.background_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [8]
+                    on_release: root.finalize_rebus()
+
