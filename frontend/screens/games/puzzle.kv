@@ -1,0 +1,46 @@
+#:import AppColors frontend.utils.colors.AppColors
+
+<PuzzleTile>:
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+
+<GenericGameScreen>:
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    Widget:
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.5
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+    FloatLayout:
+        StandardHeader:
+            title: "Reconstituie Imaginea"
+            pos_hint: {'top': 1}
+            back_screen: 'region_dashboard'
+
+        BoxLayout:
+            size_hint: None, None
+            size: 500, 500
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: 5
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 0.2
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [10,]
+
+            GridLayout:
+                id: puzzle_grid
+                cols: 4
+                rows: 4
+                spacing: 2

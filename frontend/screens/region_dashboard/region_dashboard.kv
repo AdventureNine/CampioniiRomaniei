@@ -1,0 +1,63 @@
+#:import AppColors frontend.utils.colors.AppColors
+
+<RegionDashboardScreen>:
+
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    FloatLayout:
+        # Header
+        StandardHeader:
+            title: root.region_name
+            pos_hint: {'top': 1}
+            back_screen: 'map'
+
+        # Titlu Misiune
+        Label:
+            text: root.mission_text
+            font_size: '32sp'
+            bold: True
+            color: AppColors.TEXT_PRIMARY
+            pos_hint: {'center_x': 0.5, 'top': 0.85}
+
+        # Gridul cu Nivele (Insulele)
+        GridLayout:
+            cols: 3
+            spacing: 60
+            padding: 40
+            size_hint: None, None
+            size: 500, 350
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            LevelCircle:
+                text: "1"
+                disabled: not root.levels_status[0]
+                on_release: root.start_level(1)
+
+            LevelCircle:
+                text: "2"
+                disabled: not root.levels_status[1]
+                on_release: root.start_level(2)
+
+            LevelCircle:
+                text: "3"
+                disabled: not root.levels_status[2]
+                on_release: root.start_level(3)
+
+            LevelCircle:
+                text: "4"
+                disabled: not root.levels_status[3]
+                on_release: root.start_level(4)
+
+            LevelCircle:
+                text: "5"
+                disabled: not root.levels_status[4]
+                on_release: root.start_level(5)
+
+            LevelCircle:
+                text: "6"
+                disabled: not root.levels_status[5]
+                on_release: root.start_level(6)

@@ -1,0 +1,48 @@
+#:import Window kivy.core.window.Window
+
+<CloudWidget@Widget>:
+    size_hint: None, None
+    size: 1000, 1000
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<CloudTransitionLayout>:
+    id: cloud_layout
+
+    # --- NORI CARDINALI (Sus, Jos, Stânga, Dreapta) ---
+    CloudWidget:
+        id: c_top
+        pos: (root.width / 2) - (self.width / 2), root.height
+
+    CloudWidget:
+        id: c_bottom
+        pos: (root.width / 2) - (self.width / 2), -self.height
+
+    CloudWidget:
+        id: c_left
+        pos: -self.width, (root.height / 2) - (self.height / 2)
+
+    CloudWidget:
+        id: c_right
+        pos: root.width, (root.height / 2) - (self.height / 2)
+
+    # --- NORI COLȚURI (Diagonală) ---
+    CloudWidget:
+        id: c_tl # Top-Left
+        pos: -self.width, root.height
+
+    CloudWidget:
+        id: c_tr # Top-Right
+        pos: root.width, root.height
+
+    CloudWidget:
+        id: c_bl # Bottom-Left
+        pos: -self.width, -self.height
+
+    CloudWidget:
+        id: c_br # Bottom-Right
+        pos: root.width, -self.height
