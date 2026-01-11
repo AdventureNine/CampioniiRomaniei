@@ -1,68 +1,42 @@
 import sqlite3
-from typing import Optional, List
-
+from typing import Optional
 from backend.domain.entities.Quizz import Quizz
 
 class QuizzRepository:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.cursor = self.conn.cursor()
         self.TABLE = "quizzes"
         self.TASK_TABLE = "quizz_tasks"
 
-    def save(self, quizz) -> None:
-        self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (quizz.get_id(),))
-        exists = self.cursor.fetchone()
-
-        player_id = quizz.get_player().get_id()
-
-        if exists:
-            sql = f"""
-                UPDATE {self.TABLE} 
-                SET difficulty = ?, completion_percentage = ?, player = ?
-                WHERE id = ?
-            """
-            self.cursor.execute(sql, (
-                quizz.get_difficulty(), quizz.get_completion_percentage(),
-                player_id, quizz.get_id()
-            ))
+    def save(self, quizz, player_id) -> None:
+        cursor = self.conn.cursor()
+        cursor.execute(f"SELECT id FROM {self.TABLE} WHERE id = ?", (quizz.get_id(),))
+        if cursor.fetchone():
+            sql = f"UPDATE {self.TABLE} SET difficulty = ?, player = ? WHERE id = ?"
+            cursor.execute(sql,(quizz.get_difficulty(), player_id, quizz.get_id()))
         else:
-            sql = f"""
-                INSERT INTO {self.TABLE} (id, difficulty, completion_percentage, player) 
-                VALUES (?, ?, ?, ?)
-            """
-            self.cursor.execute(sql, (
-                quizz.get_id(), quizz.get_difficulty(), quizz.get_completion_percentage(),
-                player_id
-            ))
+            sql = f"INSERT INTO {self.TABLE} (difficulty, player) VALUES (?, ?)"
+            cursor.execute(sql, (quizz.get_difficulty(),player_id))
 
         self.conn.commit()
 
-    def get_by_id(self, quizz_id: int) -> Optional[object]:
-        self.cursor.execute(f"SELECT id, difficulty, completion_percentage FROM {self.TABLE} WHERE id = ?", (quizz_id,))
-        row = self.cursor.fetchone()
+    def get_by_id(self, quizz_id: int) -> Optional[Quizz]:
+        row = self.conn.cursor().execute(f"SELECT difficulty FROM {self.TABLE} WHERE id = ?", (quizz_id,)).fetchone()
 
         if row:
-            self.cursor.execute(f"SELECT id FROM {self.TASK_TABLE} WHERE quizz = ?", (quizz_id,))
-            task_rows = self.cursor.fetchall()
-            task_ids = [row[0] for row in task_rows]
-
             quizz = Quizz(
-                quizz_id=row[0],
+                quizz_id=quizz_id,
                 questions=[],
                 fill_in_statements=[],
                 minigames=[],
-                difficulty=row[1],
-                completion_percentage=row[2]
+                difficulty=row[0]
             )
             return quizz
         return None
 
     def delete_by_id(self, quizz_id: int) -> None:
-        self.cursor.execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (quizz_id,))
+        self.conn.cursor().execute(f"DELETE FROM {self.TABLE} WHERE id = ?", (quizz_id,))
         self.conn.commit()
 
-    def find(self, where_clause: str) -> List[object]:
-        self.cursor.execute(f"SELECT id FROM {self.TABLE} WHERE {where_clause}")
-        rows = self.cursor.fetchall()
-        return [self.get_by_id(row[0]) for row in rows]
+    def find_all(self) -> list[Quizz]:
+        return [self.get_by_id(row[0]) for row in self.conn.cursor().execute(f"SELECT id FROM {self.TABLE} ORDER BY id").fetchall()]

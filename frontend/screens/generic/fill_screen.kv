@@ -1,0 +1,74 @@
+#:import AppColors frontend.utils.colors.AppColors
+
+<GenericFillScreen>:
+    # --- STRATUL 1: FUNDALUL ---
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    # --- STRATUL 2: OVERLAY ÎNTUNECAT ---
+    Widget:
+        size_hint: 1, 1
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+    # --- STRATUL 3: INTERFAȚA ---
+    FloatLayout:
+        StandardHeader:
+            title: "Completează spațiul"
+            pos_hint: {'top': 1}
+            back_screen: 'region_dashboard'
+
+        # Cardul cu Întrebarea
+        Label:
+            text: root.question_text
+            font_size: '28sp'
+            bold: True
+            color: AppColors.TEXT_PRIMARY
+
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.width - 40, self.height - 40
+
+            size_hint: None, None
+            size: 800, 250
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [20,]
+
+        # Input Box
+        TextInput:
+            id: input_box
+            hint_text: "Scrie aici..."
+            size_hint: 0.5, None
+            height: 60
+            multiline: False
+            font_size: '22sp'
+            padding: [0, 15, 0, 15]
+            halign: 'center'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+            on_text_validate: root.check_answer()
+
+        # Buton Verifică
+        Button:
+            text: "Verifică"
+            size_hint: None, None
+            size: 200, 60
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            background_normal: ''
+            background_color: AppColors.ACCENT
+            font_size: '20sp'
+            bold: True
+            on_release: root.check_answer()
