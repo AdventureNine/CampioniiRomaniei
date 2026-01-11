@@ -1,5 +1,9 @@
 #:include kv/style.kv
 
+<ImageButton@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+
 <MeniuPrincipal>:
     name: 'meniu'
 
@@ -23,7 +27,7 @@
     MDLabel:
         text: "CAMPIONII ROMÂNIEI"
         halign: "center"
-        pos_hint: {"center_x": 0.503, "center_y": 0.847}
+        pos_hint: {"center_x": 0.503, "center_y": 0.744}
         font_name: "assets/RAVIE.TTF"
         font_size: "70sp"
         theme_text_color: "Custom"
@@ -34,7 +38,7 @@
     MDLabel:
         text: "CAMPIONII ROMÂNIEI"
         halign: "center"
-        pos_hint: {"center_x": 0.5, "center_y": 0.85}
+        pos_hint: {"center_x": 0.503, "center_y": 0.747}
         font_name: "assets/RAVIE.TTF"
         font_size: "70sp"
         theme_text_color: "Custom"
@@ -45,54 +49,29 @@
     # LISTA DE BUTOANE
     MDBoxLayout:
         orientation: "vertical"
-        spacing: "25dp"       # Spațiu puțin mai mare între butoane
+        spacing: "25dp"
         adaptive_height: True
-        size_hint_x: 0.7      # Am lățit puțin containerul
-        pos_hint: {"center_x": 0.5, "center_y": 0.45}
+        size_hint_x: 0.7
+        pos_hint: {"center_x": 0.5, "center_y": 0.35}
 
         # butoane
-        ButonMeniu:
-            text: "START JOC"
-            md_bg_color: 0, 0.6, 0.2, 1
-            height: "80dp"    # <--- Buton mai înalt
-            font_size: "30sp" # <--- Text mai mare
+        ImageButton:
+            source: "assets/btn_start.png"
+            size_hint_y: None
+            height: "250dp"
             on_release: app.root.current = 'joc'
 
         ButonMeniu:
             text: "COSMETICE"
-            height: "80dp"
-            font_size: "30sp"
+            height: "70dp"
+            font_size: "28sp"
             on_release: app.root.current = 'cosmetice'
 
         ButonMeniu:
-            text: "INVENTAR"
-            height: "80dp"
-            font_size: "30sp"
-            on_release: app.root.current = 'inventar'
-
-        ButonMeniu:
             text: "STATISTICI"
-            height: "80dp"
-            font_size: "30sp"
+            height: "70dp"
+            font_size: "28sp"
             on_release: app.root.current = 'statistici'
 
-    # Imaginea cu mascote
-    Image:
-        source: "assets/familia_vesela.png"
-        size_hint: None, None
-        size: "120dp", "120dp" # Am mărit puțin și imaginea
-        pos_hint: {"x": 0.02, "y": 0.02}
-
-    # Butonul Ieșire
-    ButonMeniu:
-        text: "IEȘIRE"
-        md_bg_color: 0.8, 0.2, 0.2, 1
-
-        size_hint_x: None
-        width: "220dp"
-        height: "70dp"
-        font_size: "26sp"
-
-        pos_hint: {"right": 0.98, "y": 0.02}
-
-        on_release: root.exit_app()
+    # BUTON IEȘIRE
+    ButonIesireComun:

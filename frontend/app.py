@@ -10,8 +10,7 @@ from kivy.uix.screenmanager import ScreenManager, FadeTransition
 
 
 from screens.dashboard import MeniuPrincipal
-from screens.game import EcranJoc
-
+from frontend.screens.statistici import PaginaStatistici
 
 class CampioniiRomanieiApp(MDApp):
     def build(self):
@@ -19,12 +18,12 @@ class CampioniiRomanieiApp(MDApp):
         self.theme_cls.theme_style = "Dark"
 
         Builder.load_file('kv/dashboard.kv')
-        Builder.load_file('kv/game.kv')
+        Builder.load_file('kv/statistici.kv')
 
         sm = ScreenManager(transition=FadeTransition())
 
         sm.add_widget(MeniuPrincipal(name='meniu'))
-        sm.add_widget(EcranJoc(name='joc'))
+        sm.add_widget(PaginaStatistici(name='statistici'))
 
         return sm
 

@@ -1,5 +1,22 @@
 #:include kv/style.kv
+#:import ButtonBehavior kivy.uix.behaviors.ButtonBehavior
 
+<ImageButton@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+
+# buton de iesire (exit)
+<ButonIesireComun@ImageButton>:
+    source: "assets/btn_iesire.png"
+    size_hint: None, None
+    height: "180dp"
+    width: self.height * (16/9)
+    allow_stretch: True
+    keep_ratio: True
+    pos_hint: {"top": 1.01, "right": 1.01}
+    on_release: root.exit_app()
+
+#buton meniu
 <ButonMeniu@MDFillRoundFlatButton>:
     font_size: "24sp"
     size_hint_x: 0.4
@@ -8,11 +25,13 @@
     md_bg_color: 0.2, 0.4, 0.8, 1
     text_color: 1, 1, 1, 1
 
-
-<ButonInapoi@MDIconButton>:
-    icon: "arrow-left-bold-circle"
-    user_font_size: "48sp"
+#buton inapoi
+<ButonInapoi@ImageButton>:
+    source: "assets/back.png"
+    size_hint: None, None
+    height: "100dp"
+    width: self.height * (16/9)
+    allow_stretch: True
+    keep_ratio: True
     pos_hint: {"x": 0.02, "top": 0.98}
-    theme_text_color: "Custom"
-    text_color: 1, 1, 1, 1
     on_release: app.root.current = 'meniu'
