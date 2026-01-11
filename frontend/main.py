@@ -4,6 +4,8 @@ import sys
 # --- CONFIGURARE ---
 from kivy.config import Config
 
+from frontend.screens.games.map_guess import MapGuessScreen
+
 Config.set('graphics', 'width', '1280')
 Config.set('graphics', 'height', '800')
 Config.set('graphics', 'resizable', False)
@@ -48,7 +50,7 @@ class DidacticApp(App):
         Builder.load_file('screens/region_dashboard/region_dashboard.kv')
         Builder.load_file('screens/generic/quiz_screen.kv')
         Builder.load_file('screens/generic/fill_screen.kv')
-
+        Builder.load_file('screens/games/map_guess.kv')
         Builder.load_file('screens/games/puzzle.kv')
 
         # 2. Layout Principal
@@ -62,6 +64,7 @@ class DidacticApp(App):
         self.sm.add_widget(GenericQuizScreen(name='generic_quiz'))
         self.sm.add_widget(GenericFillScreen(name='generic_fill'))
         self.sm.add_widget(PuzzleGameScreen(name='puzzle'))
+        self.sm.add_widget(MapGuessScreen(name='map_guess'))
 
         # 4. Strat Nori
         self.clouds = CloudTransitionLayout()

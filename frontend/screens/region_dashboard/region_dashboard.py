@@ -125,6 +125,11 @@ class RegionDashboardScreen(Screen):
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('puzzle')
 
+            elif ex_type == 'map_guess':
+                screen = app.sm.get_screen('map_guess')
+                screen.load_data(ex_data, self.current_step_index + 1)
+                app.clouds.change_screen('map_guess')
+
             self.current_step_index += 1
         else:
             self.finish_level_sequence()
@@ -138,18 +143,31 @@ class RegionDashboardScreen(Screen):
         app.score += points_earned
 
         next_index = self.current_level_id
+
+        if self.levels_status[self.current_level_id]:
+            popup = FeedbackPopup(
+                type='level_complete',
+                title_text="Nivel Complet!",
+                message_text=f"Felicitări! Ai recompletat acest nivel",
+                button_text="Super!"
+            )
+            popup.bind(on_dismiss=self.go_back_to_levels)
+            popup.open()
+        else:
+            popup = FeedbackPopup(
+                type='level_complete',
+                title_text="Nivel Complet!",
+                message_text=f"Felicitări! Ai câștigat {points_earned} puncte.",
+                button_text="Super!"
+            )
+            popup.bind(on_dismiss=self.go_back_to_levels)
+            popup.open()
+
         if next_index < 6:
             self.levels_status[next_index] = True
             USER_PROGRESS[self.region_id] = self.levels_status
 
-        popup = FeedbackPopup(
-            type='level_complete',
-            title_text="Nivel Complet!",
-            message_text=f"Felicitări! Ai câștigat {points_earned} puncte.",
-            button_text="Super!"
-        )
-        popup.bind(on_dismiss=self.go_back_to_levels)
-        popup.open()
+
 
     def go_back_to_levels(self, instance):
         app = App.get_running_app()
