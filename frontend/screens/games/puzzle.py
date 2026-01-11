@@ -18,7 +18,7 @@ class PuzzleTile(ButtonBehavior, RelativeLayout):
     is_empty = False
 
 
-class GenericGameScreen(Screen):
+class PuzzleGameScreen(Screen):
     bg_image = StringProperty("")
     game_grid = ObjectProperty(None)
 
