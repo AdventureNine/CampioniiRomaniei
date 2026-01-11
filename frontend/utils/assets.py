@@ -8,10 +8,10 @@ def image_path(filename):
     Exemplu: image_path('menu/background.png')
     Returnează: C:/Users/.../CampioniiGeografiei/assets/images/menu/background.png
     """
-    return os.path.join(BASE_DIR, 'frontend', 'assets', 'images', filename)
+    return os.path.join(BASE_DIR, 'backend', 'assets', 'images', filename)
 
 def font_path(filename):
-    return os.path.join(BASE_DIR, 'frontend', 'assets', 'fonts', filename)
+    return os.path.join(BASE_DIR, 'backend', 'assets', 'fonts', filename)
 
 def sound_path(filename):
-    return os.path.join(BASE_DIR, 'frontend', 'assets', 'sounds', filename)
+    return os.path.join(BASE_DIR, 'backend', 'assets', 'sounds', filename)

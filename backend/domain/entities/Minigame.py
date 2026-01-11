@@ -1,6 +1,3 @@
-from fastjsonschema.ref_resolver import get_id
-
-
 class Minigame:
     def __init__(self, minigame_id: int, win_configuration=None, current_configuration=None):
         self.__id = minigame_id
