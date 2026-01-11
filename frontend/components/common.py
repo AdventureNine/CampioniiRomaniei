@@ -37,3 +37,4 @@ class StandardHeader(BoxLayout):
     show_back_button = OptionProperty(True, options=[True, False])
 
     back_screen = StringProperty('menu')
+    back_image = image_path(f"ui/back.png")

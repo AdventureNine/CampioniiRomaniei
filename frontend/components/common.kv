@@ -1,6 +1,10 @@
 #:import hex kivy.utils.get_color_from_hex
 #:import AppColors frontend.utils.colors.AppColors
 
+<IconButton@ButtonBehavior+Image>:
+    size_hint: None, None
+    fit_mode: "contain"
+
 # --- WIDGET SCOR ---
 <ScoreDisplay>:
     size_hint: None, None
@@ -28,13 +32,11 @@
         source: root.coin_image
         size_hint: 1, 1
 
-
 # --- HEADER STANDARD ---
 <StandardHeader>:
     size_hint_y: None
     height: 80
-    padding: [20, 10]
-    spacing: 20
+
     canvas.before:
         Color:
             rgba: AppColors.PRIMARY
@@ -42,41 +44,52 @@
             pos: self.pos
             size: self.size
 
-    BoxLayout:
-        size_hint_x: None
-        width: 140 if root.show_back_button else 0
+    # --- 1. BUTONUL DE ÎNAPOI (Săgeată) ---
+    IconButton:
+        source: root.back_image
+
+        size: 200, 200
+        pos_hint: {'x': 0.05, 'center_y': 0.5}
+
         opacity: 1 if root.show_back_button else 0
+        disabled: not root.show_back_button
 
-        Button:
-            text: "< Înapoi"
-            size_hint: None, None
-            size: 140, 50
-            background_normal: ''
-            background_color: AppColors.PRIMARY
-            font_size: '18sp'
-            bold: True
-            # Navigare înapoi
-            on_release: app.clouds.change_screen(root.back_screen) if hasattr(app, 'clouds') else None
+        on_release: app.clouds.change_screen(root.back_screen) if hasattr(app, 'clouds') else None
 
+    # --- 2. TITLUL (CENTRAT PERFECT) ---
     Label:
         text: root.title
-        font_size: '28sp'
+        font_size: '26sp'
         bold: True
         color: AppColors.WHITE
+
         halign: 'center'
         valign: 'middle'
         text_size: self.width, None
 
+        pos_hint: {'center_x': 0.7, 'center_y': 0.5}
+
+    # --- 3. ZONA DREAPTĂ (Timer + Scor) ---
     BoxLayout:
-        size_hint_x: None
+        size_hint: None, 1
         width: 250
         spacing: 10
+        pos_hint: {'right': 0.95, 'center_y': 0.5}
+
+        orientation: 'horizontal'
+
+        Widget:
+            size_hint_x: 1
 
         Label:
             text: app.timer_text
             font_size: '22sp'
             bold: True
             color: hex('#FFEB3B')
+            size_hint_x: None
+            width: 70
+            halign: 'right'
+            valign: 'middle'
             opacity: 1 if app.timer_text else 0
 
         ScoreDisplay:
