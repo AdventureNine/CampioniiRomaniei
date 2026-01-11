@@ -17,6 +17,9 @@
             size: self.size
             radius: [20,]
 
+<PlayButton@MenuBigButton>:
+    size: 550, 80
+
 <MenuScreen>:
     canvas.before:
         Color:
@@ -34,27 +37,27 @@
             color: AppColors.PRIMARY
             bold: True
 
-        # Grila cu cele 4 butoane conform specificațiilor
+        GridLayout:
+            cols: 2
+            padding: 50
+            size_hint: None, None
+            size: 600, 300
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            PlayButton:
+                text: "JOC"
+                on_release: app.clouds.change_screen('map')
+
         GridLayout:
             cols: 2
             spacing: 50
             padding: 50
             size_hint: None, None
             size: 600, 300
-            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-
-            MenuBigButton:
-                text: "JOC"
-                # Aici declanșăm navigarea
-                on_release: app.clouds.change_screen('map')
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
 
             MenuBigButton:
                 text: "COSMETICE"
                 background_color: 0.6, 0.2, 0.6, 1
-
-            MenuBigButton:
-                text: "INVENTAR"
-                background_color: 0, 0.7, 0.8, 1
 
             MenuBigButton:
                 text: "STATISTICI"

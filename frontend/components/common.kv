@@ -4,10 +4,11 @@
 # --- WIDGET SCOR ---
 <ScoreDisplay>:
     size_hint: None, None
-    size: 150, 50
+    size: 130, 50
     pos_hint: {'center_y': 0.5}
-    padding: [10, 5]
-    canvas.before:
+    padding: [15, 5]
+
+    canvas:
         Color:
             rgba: (0, 0, 0, 0.2)
         RoundedRectangle:
@@ -16,12 +17,17 @@
             radius: [15,]
 
     Label:
-        text: "Scor: " + str(app.score) if hasattr(app, 'score') else "Scor: 0"
+        text: str(app.score) if hasattr(app, 'score') else "0"
         font_size: '20sp'
         bold: True
         color: hex('#FFEB3B')
-        halign: 'center'
         valign: 'middle'
+
+
+    Image:
+        source: root.coin_image
+        size_hint: 1, 1
+
 
 # --- HEADER STANDARD ---
 <StandardHeader>:

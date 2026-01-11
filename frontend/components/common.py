@@ -4,10 +4,12 @@ from kivy.uix.button import Button
 from kivy.properties import StringProperty, OptionProperty, NumericProperty
 from kivy.app import App
 
+from frontend.utils.assets import image_path
+
 
 # --- 1. WIDGET SCOR ---
 class ScoreDisplay(BoxLayout):
-    pass
+    coin_image = image_path(f"ui/coin.png")
 
 
 # --- 2. POPUP FEEDBACK (Fără Mascotă) ---

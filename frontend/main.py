@@ -26,6 +26,7 @@ from frontend.screens.map.map import MapScreen
 from frontend.screens.region_dashboard.region_dashboard import RegionDashboardScreen
 from frontend.screens.generic.quiz_screen import GenericQuizScreen
 from frontend.screens.generic.fill_screen import GenericFillScreen
+from frontend.screens.games.puzzle import GenericGameScreen
 
 from kivy.factory import Factory
 
@@ -48,6 +49,8 @@ class DidacticApp(App):
         Builder.load_file('screens/generic/quiz_screen.kv')
         Builder.load_file('screens/generic/fill_screen.kv')
 
+        Builder.load_file('screens/games/puzzle.kv')
+
         # 2. Layout Principal
         self.root_layout = FloatLayout()
 
@@ -58,6 +61,7 @@ class DidacticApp(App):
         self.sm.add_widget(RegionDashboardScreen(name='region_dashboard'))
         self.sm.add_widget(GenericQuizScreen(name='generic_quiz'))
         self.sm.add_widget(GenericFillScreen(name='generic_fill'))
+        self.sm.add_widget(GenericGameScreen(name='puzzle'))
 
         # 4. Strat Nori
         self.clouds = CloudTransitionLayout()

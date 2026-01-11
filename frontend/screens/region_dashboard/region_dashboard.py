@@ -87,7 +87,7 @@ class RegionDashboardScreen(Screen):
         popup = FeedbackPopup(
             type='fail',
             title_text="Timpul a expirat!",
-            message_text="Nu ai terminat nivelul la timp. Scor neacordat.",
+            message_text="Nu ai terminat nivelul la timp. Încearcă încă o dată.",
             button_text="Înapoi la Hartă"
         )
         popup.bind(on_dismiss=self.return_to_dashboard)
@@ -109,14 +109,21 @@ class RegionDashboardScreen(Screen):
             if ex_type == 'quiz':
                 screen = app.sm.get_screen('generic_quiz')
                 screen.load_data(ex_data, self.current_step_index + 1)
-                screen.bg_image = self.bg_image  # Trimitem fundalul mai departe
+                screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_quiz')
 
             elif ex_type == 'fill':
                 screen = app.sm.get_screen('generic_fill')
                 screen.load_data(ex_data, self.current_step_index + 1)
-                screen.bg_image = self.bg_image  # Trimitem fundalul mai departe
+                screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_fill')
+
+            elif ex_type == 'puzzle':
+                screen = app.sm.get_screen('puzzle')
+                screen.game_grid = screen.ids.puzzle_grid
+                screen.load_data(ex_data, self.current_step_index + 1)
+                screen.bg_image = self.bg_image
+                app.clouds.change_screen('puzzle')
 
             self.current_step_index += 1
         else:
