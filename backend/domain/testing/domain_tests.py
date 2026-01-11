@@ -8,12 +8,11 @@ from backend.domain.utils.Difficulty import Difficulty
 def test_player(player: Player):
     assert (player.get_name() == "nume")
     assert (player.get_credits() == 0)
-    assert (player.get_cosmetic() == "/backend/domain/cosmetics/default.png")
+    assert (player.get_cosmetic() == "backend/domain/assets/default.png")
     assert (player.get_statistics()["quizzes_solved"] == 0)
     assert (player.get_statistics()["quizzes_played"] == 0)
-    assert (player.get_statistics()["regions_unlocked"] == ["Transilvania"])
-    assert (player.get_statistics()["cosmetics_unlocked"] == ["/backend/domain/cosmetics/default.png"])
-    assert (player.get_statistics()["cosmetics_purchased"] == ["/backend/domain/cosmetics/default.png"])
+    assert (player.get_statistics()["regions_state"] == {})
+    assert (player.get_statistics()["cosmetics_purchased"] == ["backend/domain/assets/default.png"])
     assert (player.get_statistics()["completion_percentage"] == 0.0)
     assert (player.get_id() == 1)
 
