@@ -10,6 +10,7 @@
         source: root.bg_image
         fit_mode: "cover"
         size_hint: 1, 1
+        size: [800, 800]
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
     Widget:
@@ -28,7 +29,7 @@
 
         BoxLayout:
             size_hint: None, None
-            size: 500, 500
+            size: 900, 900
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             padding: 5
             canvas.before:
@@ -41,6 +42,6 @@
 
             GridLayout:
                 id: puzzle_grid
-                cols: 4
-                rows: 4
+                cols: 3
+                rows: 3
                 spacing: 2

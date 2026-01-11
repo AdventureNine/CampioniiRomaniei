@@ -22,8 +22,8 @@ class PuzzleGameScreen(Screen):
     bg_image = StringProperty("")
     game_grid = ObjectProperty(None)
 
-    rows = 4
-    cols = 4
+    rows = 3
+    cols = 3
     tiles = []
     empty_index = 0
 
