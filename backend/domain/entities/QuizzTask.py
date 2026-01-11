@@ -3,6 +3,7 @@ class QuizzTask:
         self._id = task_id
         self._answer_list = answer_list
 
+    def get_id(self): return self._id
     def get_answer_list(self): return self._answer_list
     def check_answers(self, answers: list[str]):
         for answer in answers:

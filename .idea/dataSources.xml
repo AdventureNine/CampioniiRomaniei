@@ -8,12 +8,5 @@
       <jdbc-url>jdbc:sqlite:F:\Uni work\An3Sem1\IOC\CampioniiRomaniei\backend\domain\data.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="data" uuid="189e7eda-a864-4f8f-b053-fa0b17eb3b95">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/backend/domain/data.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
   </component>
 </project>
