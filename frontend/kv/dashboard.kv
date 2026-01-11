@@ -1,0 +1,77 @@
+#:include kv/style.kv
+
+<ImageButton@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+
+<MeniuPrincipal>:
+    name: 'meniu'
+
+    # FUNDAL VIDEO
+    Video:
+        source: "assets/dashboard_background1.mp4"
+        state: "play"
+        options: {'eos': 'loop'}
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: 1, 1
+        pos_hint: {"center_x": .5, "center_y": .5}
+        volume: 0
+
+    # FILTRU ÎNTUNECARE (pentru contrast)
+    MDBoxLayout:
+        md_bg_color: 0, 0, 0, 0.2
+        size_hint: 1, 1
+
+    #TITLU (UMBRA - Spate)
+    MDLabel:
+        text: "CAMPIONII ROMÂNIEI"
+        halign: "center"
+        pos_hint: {"center_x": 0.503, "center_y": 0.744}
+        font_name: "assets/RAVIE.TTF"
+        font_size: "70sp"
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 0.5
+        bold: True
+
+    #TITLU (PRINCIPAL - Față)
+    MDLabel:
+        text: "CAMPIONII ROMÂNIEI"
+        halign: "center"
+        pos_hint: {"center_x": 0.503, "center_y": 0.747}
+        font_name: "assets/RAVIE.TTF"
+        font_size: "70sp"
+        theme_text_color: "Custom"
+        text_color: 0, 0.6, 1, 1
+        outline_color: 1, 1, 1, 0.3
+        outline_width: 1
+
+    # LISTA DE BUTOANE
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "25dp"
+        adaptive_height: True
+        size_hint_x: 0.7
+        pos_hint: {"center_x": 0.5, "center_y": 0.35}
+
+        # butoane
+        ImageButton:
+            source: "assets/btn_start.png"
+            size_hint_y: None
+            height: "250dp"
+            on_release: app.root.current = 'joc'
+
+        ButonMeniu:
+            text: "COSMETICE"
+            height: "70dp"
+            font_size: "28sp"
+            on_release: app.root.current = 'cosmetice'
+
+        ButonMeniu:
+            text: "STATISTICI"
+            height: "70dp"
+            font_size: "28sp"
+            on_release: app.root.current = 'statistici'
+
+    # BUTON IEȘIRE
+    ButonIesireComun:
