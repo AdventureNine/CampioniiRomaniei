@@ -1,0 +1,95 @@
+<BingoCell>:
+    size_hint: None, None
+    size: 90, 90
+    font_size: '14sp'
+    halign: 'center'
+    valign: 'middle'
+    text_size: self.size
+    background_normal: ''
+    disabled_color: [0, 0, 0, 1] if self.background_color == [1, 1, 1, 1] else [1, 1, 1, 1]
+    background_disabled_normal: ''
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8]
+
+<BingoScreen>:
+    game_container: game_container
+
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    Widget:
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.5
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+    FloatLayout:
+        StandardHeader:
+            title: "Bingo Educativ"
+            pos_hint: {'top': 1}
+            back_screen: 'region_dashboard'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.95, 0.85
+            pos_hint: {'center_x': 0.5, 'y': 0.02}
+            padding: 20
+            spacing: 15
+
+            # Zona de joc
+            BoxLayout:
+                padding: 20
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.35
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [14]
+
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'center'
+                    BoxLayout:
+                        id: game_container
+                        orientation: 'vertical'
+                        size_hint: None, None
+                        size: self.minimum_size
+
+            # Footer cu butoane de control
+            BoxLayout:
+                size_hint_y: None
+                height: 80
+                spacing: 20
+                padding: [100, 10]
+
+                Button:
+                    text: "ȘTERGE"
+                    disabled: root.is_wrong or root.is_completed # Blocat dacă e greșit
+                    on_release: root.clear_bingo()
+
+                Button:
+                    text: "VERIFICĂ"
+                    disabled: root.is_wrong or root.is_completed # Blocat dacă e greșit
+                    on_release: root.check_solution()
+                    background_color: 0.2, 0.6, 0.3, 1
+
+                Button:
+                    text: "JOC NOU"
+                    on_release: root.generate_bingo()
+
+                Button:
+                    text: "FINALIZEAZĂ"
+                    disabled: not root.is_completed
+                    background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
+                    on_release: root.go_next()

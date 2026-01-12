@@ -4,6 +4,7 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.clock import Clock
+from kivy.app import App
 
 from backend.domain.utils.Difficulty import Difficulty
 from backend.domain.entities.Minigame import Bingo
@@ -69,7 +70,7 @@ class BingoScreen(Screen):
     game_container = ObjectProperty(None)
     is_completed = BooleanProperty(False)
     is_wrong = BooleanProperty(False)
-    background_image = StringProperty('screens/bingo/background.png')
+    bg_image = StringProperty('')
     current_difficulty = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
@@ -150,5 +151,11 @@ class BingoScreen(Screen):
             cell.background_color = (1, 1, 1, 1)
         self.is_completed = False
 
+    def go_next(self):
+        app = App.get_running_app()
+        dashboard = app.sm.get_screen('region_dashboard')
+        dashboard.load_next_step()
+
     def go_back(self):
-        print("Înapoi")
+        app = App.get_running_app()
+        app.clouds.change_screen('region_dashboard')
