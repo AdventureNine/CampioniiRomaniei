@@ -43,7 +43,7 @@ class Pairs(Minigame):
     def __str__(self): return f"Pairs {self.get_id()}, Win configuration: {self.get_win_configuration()}"
 
 class MapGuesser(Minigame):
-    ## Win Configuration DB save format: "<x><y>;<y><x>;..."
+    ## Win Configuration DB save format: "<intrebare><x><y>;<intrebare><y><x>;..."
     ## Current and Win Configuration proposed format: [(x,y), (y,x), ...]
     def __init__(self, map_guesser_id: int, win_configuration): super().__init__(map_guesser_id, win_configuration, [])
     def __str__(self): return f"Map Guesser {self.get_id()}, Win configuration: {self.get_win_configuration()}"
