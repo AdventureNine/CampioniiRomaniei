@@ -1,0 +1,75 @@
+#:import AppColors frontend.utils.colors.AppColors
+#:import image_path frontend.utils.assets.image_path
+
+<MapScreen>:
+    canvas.before:
+        Color:
+            rgba: AppColors.WHITE
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        # 1. IMAGINEA DE FUNDAL
+        Image:
+            source: image_path('map/unified_map.png')
+            fit_mode: "fill"
+            size_hint: 1, 1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        # Header Score (din components/common.kv)
+        ScoreDisplay:
+            pos_hint: {'top': 0.98, 'right': 0.98}
+
+        # 2. ZONELE ACTIVE (Butoane Poligonale)
+        # Transilvania (Centru)
+        PolygonButton:
+            size_hint: 1, 1
+            pos_hint: {'x': 0, 'y': 0}
+            debug_mode: False
+            relative_points: [0.3438, 0.9166, 0.1946, 0.6453, 0.3845, 0.4277, 0.6213, 0.4477, 0.5009, 0.8328]
+            on_release: root.open_region(1)
+
+        # Moldova (Est)
+        PolygonButton:
+            size_hint: 1, 1
+            pos_hint: {'x': 0, 'y': 0}
+            debug_mode: False
+            relative_points: [0.5072, 0.8378, 0.6259, 0.4764, 0.7158, 0.3952, 0.79, 0.4064, 0.7674, 0.7028, 0.6572, 0.9479]
+            on_release: root.open_region(2)
+
+        # Țara Românească (Sud)
+        PolygonButton:
+            size_hint: 1, 1
+            pos_hint: {'x': 0, 'y': 0}
+            debug_mode: False
+            relative_points: [0.3829, 0.4052, 0.2407, 0.2363, 0.3181, 0.105, 0.5392, 0.0575, 0.776, 0.2076, 0.6963, 0.2801, 0.6822, 0.3514, 0.7135, 0.3902, 0.6252, 0.4727, 0.5361, 0.3827]
+            on_release: root.open_region(3)
+
+        # Dobrogea (Sud-Est)
+        PolygonButton:
+            size_hint: 1, 1
+            pos_hint: {'x': 0, 'y': 0}
+            debug_mode: False
+            relative_points: [0.79, 0.4039, 0.6869, 0.3526, 0.701, 0.2826, 0.758, 0.2826, 0.7822, 0.1926, 0.7049, 0.1526, 0.826, 0.085, 0.9127, 0.2889, 0.9135, 0.3927]
+            on_release: root.open_region(4)
+
+        # Banat (Vest)
+        PolygonButton:
+            size_hint: 1, 1
+            pos_hint: {'x': 0, 'y': 0}
+            debug_mode: False
+            relative_points: [0.193, 0.634, 0.0867, 0.5402, 0.2407, 0.2464, 0.3767, 0.4077, 0.3134, 0.5752]
+            on_release: root.open_region(5)
+
+        # Buton Înapoi
+        Button:
+            text: "< Meniu"
+            size_hint: None, None
+            size: 140, 50
+            pos_hint: {'x': 0.02, 'top': 0.98}
+            background_normal: ''
+            background_color: AppColors.PRIMARY
+            font_size: '18sp'
+            bold: True
+            on_release: app.clouds.change_screen('menu')

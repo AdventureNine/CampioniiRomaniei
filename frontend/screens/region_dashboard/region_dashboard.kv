@@ -1,0 +1,73 @@
+#:import AppColors frontend.utils.colors.AppColors
+
+<LevelIcon>:
+    size_hint: None, None
+    size: 350, 350
+    fit_mode: "contain"
+
+<RegionDashboardScreen>:
+
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    FloatLayout:
+        # Header (Sus)
+        StandardHeader:
+            title: root.region_name + ' - ' + root.mission_text
+            pos_hint: {'top': 1}
+            back_screen: 'map'
+
+        GridLayout:
+            cols: 3
+            spacing: 30
+            padding: 0
+
+            size_hint: None, None
+            size: self.minimum_size
+
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+
+            LevelIcon:
+                level_index: 1
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[0]
+                on_release: root.start_level(1)
+
+            LevelIcon:
+                level_index: 2
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[1]
+                on_release: root.start_level(2)
+
+            LevelIcon:
+                level_index: 3
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[2]
+                on_release: root.start_level(3)
+
+            LevelIcon:
+                level_index: 4
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[3]
+                on_release: root.start_level(4)
+
+            LevelIcon:
+                level_index: 5
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[4]
+                on_release: root.start_level(5)
+
+            LevelIcon:
+                level_index: 6
+                region_id: root.region_id
+                region_name: root.region_name
+                is_locked: not root.levels_status[5]
+                on_release: root.start_level(6)
