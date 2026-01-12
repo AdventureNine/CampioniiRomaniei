@@ -70,7 +70,7 @@ class RegionDashboardScreen(Screen):
             self.mission_text = data['mission']
 
             try:
-                self.bg_image = image_path(f"backgrounds/bg_{self.region_id}.png")
+                self.bg_image = image_path(f"backgrounds/bg_{self.region_id}.jpg")
             except:
                 self.bg_image = ""
 
