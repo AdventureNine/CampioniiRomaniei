@@ -9,7 +9,7 @@ QUESTIONS_DATA = {
         1: [
             {
                 "type": "puzzle",
-                "image": "puzzle1.jpg",
+                "image": "puzzle4.jpg",
                 "question": "Rezolvă puzzle-ul!"
             }
         ],

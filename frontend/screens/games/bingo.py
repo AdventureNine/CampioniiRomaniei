@@ -109,7 +109,7 @@ class BingoScreen(Screen):
         random.shuffle(sample)
 
         win_cfg = {item[0]: item[1] for item in sample}
-        self.bingo_entity = Bingo(bingo_id=2, win_configuration=win_cfg)
+        self.bingo_entity = Bingo(bingo_id=2, win_configuration=win_cfg, theme= "dummy") # TODO backend connection
 
         grid = GridLayout(cols=5, spacing=10, size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'), minimum_width=grid.setter('width'))
