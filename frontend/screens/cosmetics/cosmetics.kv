@@ -1,0 +1,70 @@
+<CosmeticCard>:
+    orientation: 'vertical'
+    size_hint: None, None
+    size: dp(280), dp(350)
+    spacing: dp(10)
+    padding: dp(10)
+
+    canvas.before:
+        Color:
+            rgba: (0, 0, 0, 0.3)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15]
+
+    RelativeLayout:
+        Image:
+            source: root.source
+            # Efect de gri dacă nu e deținut
+            color: (1, 1, 1, 1) if root.is_owned else (0.4, 0.4, 0.4, 1)
+
+        Image:
+            source: "backend/domain/assets/images/ui/lock.png" # Verifică dacă ai această imagine
+            size_hint: None, None
+            size: dp(40), dp(40)
+            pos_hint: {'top': 0.95, 'right': 0.95}
+            opacity: 0 if root.is_owned else 1
+
+    Label:
+        text: root.item_name
+        size_hint_y: None
+        height: dp(30)
+        font_size: '18sp'
+        bold: True
+
+    Label:
+        text: root.price + " Credite" if not root.is_owned else "Deținut"
+        size_hint_y: None
+        height: dp(20)
+        color: (1, 0.8, 0, 1)
+
+    Button:
+        text: "ECHIPAT" if root.is_equipped else ("ECHIPEAZĂ" if root.is_owned else "CUMPĂRĂ")
+        size_hint_y: None
+        height: dp(45)
+        background_normal: ''
+        background_color: (0.2, 0.6, 0.2, 1) if not root.is_owned else (0.2, 0.4, 0.8, 1)
+        disabled: root.is_equipped
+        on_release: app.sm.get_screen('cosmetics').handle_action(root)
+
+<CosmeticsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        StandardHeader:
+            title: "MAGAZIN COSMETICE"
+            pos_hint: {'top': 1}
+            back_screen: 'menu'
+
+        ScrollView:
+            do_scroll_x: False
+            bar_width: dp(10)
+
+            GridLayout:
+                id: cosmetics_grid
+                cols: 4
+                spacing: dp(30)
+                padding: dp(40)
+                size_hint_y: None
+                height: self.minimum_height # CRITIC pentru ScrollView
