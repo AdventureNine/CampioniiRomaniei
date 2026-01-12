@@ -6,7 +6,8 @@ def _parse_win_config(raw_str: str, m_type: str):
     if not raw_str: return None
     if m_type == "puzzle": return raw_str
     pairs = re.findall(r'<(.*?)><(.*?)>', raw_str)
-    if m_type in ["rebus", "pairs"]: return {k: v for k, v in pairs}
+    if m_type in "pairs": return {k: v for k, v in pairs}
+    if m_type in "rebus": return raw_str.split(';')[0],{k: v for k, v in pairs}
     if m_type == "bingo": return {k: (v.lower() == 'true') for k, v in pairs}
     if m_type == "map_guesser": return [(float(x), float(y)) for x, y in pairs]
     return raw_str
@@ -14,7 +15,8 @@ def _parse_win_config(raw_str: str, m_type: str):
 def _format_win_config(minigame) -> str:
     config = minigame.get_win_configuration()
     if isinstance(minigame, Puzzle): return str(minigame.get_image_path())
-    if isinstance(minigame, (Rebus, Pairs)): return "".join([f"<{k}><{v}>;" for k, v in config.items()])
+    if isinstance(minigame, Pairs): return "".join([f"<{k}><{v}>;" for k, v in config.items()])
+    if isinstance(minigame, Rebus): return minigame.get_secret_word()+";"+"".join([f"<{k}><{v}>;" for k, v in config.items()])
     if isinstance(minigame, Bingo): return "".join([f"<{k}><{str(v).lower()}>;" for k, v in config.items()])
     if isinstance(minigame, MapGuesser): return "".join([f"<{x}><{y}>;" for x, y in config])
     return str(config)
@@ -53,9 +55,11 @@ class MinigameRepository:
 
         if row:
             m_id, raw_config, m_type = row
+            if m_type == "rebus":
+                secret_word,win_config = _parse_win_config(raw_config, m_type)
+                return Rebus(m_id, win_config, secret_word)
             win_config = _parse_win_config(raw_config, m_type)
             if m_type == "puzzle": return Puzzle(m_id, win_config)
-            elif m_type == "rebus": return Rebus(m_id, win_config)
             elif m_type == "bingo": return Bingo(m_id, win_config)
             elif m_type == "pairs": return Pairs(m_id, win_config)
             elif m_type == "map_guesser": return MapGuesser(m_id, win_config)

@@ -38,6 +38,7 @@ def test_quizz(quizz: Quizz, singleResponseQuestion: Question, multipleResponseQ
     assert (quizz.get_minigames()[1].get_win_configuration() == {"intrebare1": "raspuns1", "intrebare2": "raspuns2", "intrebare3": "raspuns3"})
     assert (quizz.get_minigames()[2].get_win_configuration() == {"bingo_cell1_text": True, "bingo_cell2_text": False, "bingo_cell3_text": True, "bingo_cell4_text": False})
     assert (quizz.get_minigames()[3].get_win_configuration() == {"question1": "answer1", "question2": "answer2", "question3": "answer3"})
+    assert (quizz.get_minigames()[1].get_secret_word() == "secret_word")
     assert (quizz.get_minigames()[4].get_win_configuration() == [(1,2), (2,1), (3,4), (4,3)])
 
 
@@ -47,7 +48,7 @@ def test_domain():
     singleResponseQuestion = Question(1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit?", [answers[2]])
     multipleResponseQuestion = Question(2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit?", answers)
     puzzle = Puzzle(1, "backend/domain/assets/images/ui/coin.png")
-    rebus = Rebus(1, {"intrebare1": "raspuns1", "intrebare2": "raspuns2", "intrebare3": "raspuns3"})
+    rebus = Rebus(1, {"intrebare1": "raspuns1", "intrebare2": "raspuns2", "intrebare3": "raspuns3"},"secret_word")
     bingo = Bingo(1, {"bingo_cell1_text": True, "bingo_cell2_text": False, "bingo_cell3_text": True, "bingo_cell4_text": False})
     pairs = Pairs(1, {"question1": "answer1", "question2": "answer2", "question3": "answer3"})
     mapGuesser = MapGuesser(1, [(1,2), (2,1), (3,4), (4,3)])
