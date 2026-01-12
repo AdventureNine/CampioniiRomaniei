@@ -112,6 +112,11 @@ QUESTIONS_DATA = {
 
         # NIVEL 5: Geografie Avansată (Greu)
         5: [
+            # Test pt bingo
+            {
+                "type": "bingo",
+                "difficulty": "Medium"
+            },
             {
                 "type": "quiz",
                 "question": "Care este cel mai înalt vârf din România?",

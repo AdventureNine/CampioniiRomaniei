@@ -169,6 +169,12 @@ class RegionDashboardScreen(Screen):
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('rebus')
 
+            elif ex_type == 'bingo':
+                screen = app.sm.get_screen('bingo')
+                screen.current_difficulty = ex_data.get('difficulty', screen.current_difficulty)
+                screen.bg_image = self.bg_image
+                app.clouds.change_screen('bingo')
+
             self.current_step_index += 1
         else:
             self.finish_level_sequence()
