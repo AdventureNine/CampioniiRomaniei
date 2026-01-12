@@ -149,6 +149,11 @@ QUESTIONS_DATA = {
 
         # NIVEL 6: Recapitulare
         6: [
+            # Am pus pentru testare
+            {
+                "type": "rebus",
+                "difficulty": "medium"
+            },
             {
                 "type": "quiz",
                 "question": "Lângă ce munți este orașul Brașov?",
