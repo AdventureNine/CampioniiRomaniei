@@ -335,7 +335,11 @@ class RebusScreen(Screen):
 
         self.words_data = best_variant
         win_cfg = {item['clue']: item['word'] for item in self.words_data}
-        self.rebus_entity = Rebus(rebus_id=1, win_configuration=win_cfg)
+
+        # extrage cuvantul secret din best_variant
+        secret_word = ''.join([item['word'][item['pivot_idx']] for item in self.words_data])
+
+        self.rebus_entity = Rebus(rebus_id=1, win_configuration=win_cfg, secret_word=secret_word)
 
         self.cells = []
         self.game_container.add_widget(self.build_grid(best_variant, MAX_COLS))
