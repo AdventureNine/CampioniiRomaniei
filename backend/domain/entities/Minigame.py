@@ -29,21 +29,25 @@ class Rebus(Minigame):
     def __str__(self): return f"Rebus {self.get_id()}, Win configuration: {self.get_win_configuration()}"
 
 class Bingo(Minigame):
-    ## Win Configuration DB save format: "<bingo_cell1_text><true>;<bingo_cell2_text><false>;..."
+    ## Win Configuration DB save format: "THEME;<bingo_cell1_text><true>;<bingo_cell2_text><false>;..."
     ## Current and Win Configurations proposed format: {"bingo_cell1_text": true, "bingo_cell2_text": false, ...}
     ## If win_configuration["bingo_cellX_text"] == true, then this cell is considered part of the bingo
     ## If current_configuration["bingo_cellX_text"] == true, then this cell is clicked by the player
-    def __init__(self, bingo_id: int, win_configuration): super().__init__(bingo_id, win_configuration, [])
+    def __init__(self, bingo_id: int, win_configuration, theme: str):
+        super().__init__(bingo_id, win_configuration, {})
+        self.__theme = theme
+    def get_theme(self) -> str: return self.__theme
+    def set_theme(self, theme: str): self.__theme = theme
     def __str__(self): return f"Bingo {self.get_id()}, Win configuration: {self.get_win_configuration()}"
 
 class Pairs(Minigame):
     ## Win Configuration DB save format: "<question><answer>;<question><answer>;..."
     ## Win Configuration proposed format: {"question1": "answer1", "question2": "answer2", ...}
-    def __init__(self, pairs_id: int, win_configuration): super().__init__(pairs_id, win_configuration, [])
+    def __init__(self, pairs_id: int, win_configuration): super().__init__(pairs_id, win_configuration, {})
     def __str__(self): return f"Pairs {self.get_id()}, Win configuration: {self.get_win_configuration()}"
 
 class MapGuesser(Minigame):
     ## Win Configuration DB save format: "<intrebare><x><y>;<intrebare><y><x>;..."
-    ## Current and Win Configuration proposed format: [(x,y), (y,x), ...]
-    def __init__(self, map_guesser_id: int, win_configuration): super().__init__(map_guesser_id, win_configuration, [])
+    ## Current and Win Configuration proposed format: {"intrebare": (x,y), "intrebare": (y,x), ...}
+    def __init__(self, map_guesser_id: int, win_configuration): super().__init__(map_guesser_id, win_configuration, {})
     def __str__(self): return f"Map Guesser {self.get_id()}, Win configuration: {self.get_win_configuration()}"
