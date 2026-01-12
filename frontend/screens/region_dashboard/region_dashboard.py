@@ -163,6 +163,12 @@ class RegionDashboardScreen(Screen):
                 screen.load_data(ex_data, self.current_step_index + 1)
                 app.clouds.change_screen('map_guess')
 
+            elif ex_type == 'rebus':
+                screen = app.sm.get_screen('rebus')
+                screen.load_data(ex_data, self.current_step_index + 1)
+                screen.bg_image = self.bg_image
+                app.clouds.change_screen('rebus')
+
             self.current_step_index += 1
         else:
             self.finish_level_sequence()
