@@ -1,18 +1,22 @@
 from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, OptionProperty, NumericProperty
+from kivy.properties import StringProperty, OptionProperty, NumericProperty, ColorProperty
 from kivy.app import App
 
 from frontend.utils.assets import image_path
+from frontend.utils.colors import AppColors
 
 
-# --- 1. WIDGET SCOR ---
+# --- WIDGET SCOR ---
 class ScoreDisplay(BoxLayout):
     coin_image = image_path(f"ui/coin.png")
 
+# --- WIDGET TIMER ---
+class TimerDisplay(BoxLayout):
+    timer_image = image_path("ui/timer.png")
 
-# --- 2. POPUP FEEDBACK (Fără Mascotă) ---
+# --- POPUP FEEDBACK ---
 class FeedbackPopup(ModalView):
     title_text = StringProperty("Info")
     message_text = StringProperty("Mesaj")
@@ -26,15 +30,15 @@ class FeedbackPopup(ModalView):
         self.background_color = (0, 0, 0, 0.7)
 
 
-# --- 3. BUTON RĂSPUNS QUIZ ---
+# --- BUTON RĂSPUNS QUIZ ---
 class AnswerButton(Button):
     pass
 
-
-# --- 4. HEADER STANDARD ---
 class StandardHeader(BoxLayout):
     title = StringProperty("Titlu")
     show_back_button = OptionProperty(True, options=[True, False])
-
     back_screen = StringProperty('menu')
     back_image = image_path(f"ui/back.png")
+
+    # Proprietate nouă
+    header_color = ColorProperty(AppColors.PRIMARY)

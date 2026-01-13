@@ -1,75 +1,112 @@
 #:import AppColors frontend.utils.colors.AppColors
 
+<QuizAnswerButton>:
+    background_color: (0, 0, 0, 0)
+    color: AppColors.WHITE
+    font_size: '20sp'
+    bold: True
+    text_size: self.width - 20, None
+    halign: 'center'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: self.btn_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+        Color:
+            rgba: 1, 1, 1, 0.3
+        Line:
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+            width: 2
+
 <GenericQuizScreen>:
-    # --- STRATUL 1: FUNDALUL ---
     Image:
         source: root.bg_image
         fit_mode: "cover"
         size_hint: 1, 1
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    # --- STRATUL 2: OVERLAY ÎNTUNECAT ---
-    # Folosim un Widget gol pentru a evita eroarea de parser
     Widget:
         size_hint: 1, 1
         canvas:
             Color:
-                rgba: 0, 0, 0, 0.3
+                rgba: 0, 0, 0, 0.4
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-    # --- STRATUL 3: INTERFAȚA ---
     FloatLayout:
-        # Header
         StandardHeader:
             title: "Întrebare Fulger"
+            header_color: root.primary_color
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
 
-        # Cardul cu Întrebarea (Cu fundal personalizat/alb)
-        Label:
-            text: root.question_text
-            font_size: '28sp'
-            bold: True
-            color: AppColors.TEXT_PRIMARY
-
-            halign: 'center'
-            valign: 'middle'
-            text_size: self.width - 40, self.height - 40
-
+        # --- CASETA CU ÎNTREBAREA ---
+        RelativeLayout:
             size_hint: None, None
-            size: 800, 250
-            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            size: 900, 500
+            pos_hint: {'center_x': 0.5, 'center_y': 0.68}
 
-            canvas.before:
-                Color:
-                    rgba: 1, 1, 1, 1
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [20,]
+            Image:
+                source: root.question_bg_image
+                fit_mode: "contain"
+                size_hint: 1, 1
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                opacity: 1 if root.question_bg_image else 0
 
-        # Grila de Răspunsuri
+            Widget:
+                size_hint: 0.9, 0.7
+                pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+                opacity: 0 if root.question_bg_image else 1
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.9
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [20,]
+
+            Label:
+                text: root.question_text
+                font_size: '24sp'
+                bold: True
+                color: AppColors.TEXT_PRIMARY
+
+                halign: 'center'
+                valign: 'middle'
+
+                text_size: self.width * 0.6, self.height * 0.6
+
+                size_hint: 1, 1
+                pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+
+        # --- GRILA DE RĂSPUNSURI MODIFICATĂ ---
         GridLayout:
             cols: 2
-            spacing: 30
-            padding: 50
-            size_hint: 0.9, 0.4
-            pos_hint: {'center_x': 0.5, 'y': 0.05}
+            spacing: 50
+            padding: [60, 20]
+            size_hint: 0.85, 0.35
+            pos_hint: {'center_x': 0.5, 'y': 0.08}
 
-            AnswerButton:
+            QuizAnswerButton:
                 text: root.options[0] if len(root.options) > 0 else ""
+                btn_color: root.primary_color
                 on_release: root.check_answer(self.text)
 
-            AnswerButton:
+            QuizAnswerButton:
                 text: root.options[1] if len(root.options) > 1 else ""
+                btn_color: root.primary_color
                 on_release: root.check_answer(self.text)
 
-            AnswerButton:
+            QuizAnswerButton:
                 text: root.options[2] if len(root.options) > 2 else ""
+                btn_color: root.primary_color
                 on_release: root.check_answer(self.text)
 
-            AnswerButton:
+            QuizAnswerButton:
                 text: root.options[3] if len(root.options) > 3 else ""
+                btn_color: root.primary_color
                 on_release: root.check_answer(self.text)

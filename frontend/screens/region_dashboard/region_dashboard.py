@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty
+from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty, ColorProperty
 from kivy.clock import Clock
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
@@ -10,6 +10,7 @@ from frontend.data.question_data import QUESTIONS_DATA
 from frontend.data.user_progress import USER_PROGRESS
 from frontend.utils.assets import image_path
 from frontend.components.common import FeedbackPopup
+from frontend.utils.colors import AppColors
 
 
 class LevelIcon(ButtonBehavior, Image):
@@ -46,7 +47,6 @@ class LevelIcon(ButtonBehavior, Image):
 
 
 class RegionDashboardScreen(Screen):
-
     region_id = NumericProperty(0)
     region_name = StringProperty("Regiune")
     mission_text = StringProperty("Descriere Misiune")
@@ -62,7 +62,11 @@ class RegionDashboardScreen(Screen):
     timer_event = None
     seconds_left = 0
 
+    dashboard_color = ColorProperty(AppColors.PRIMARY)
+
     def on_pre_enter(self, *args):
+        self.stop_and_clear_timer()
+
         App.get_running_app().timer_text = ""
         data = REGIONS_DATA.get(self.region_id)
         if data:
@@ -77,7 +81,34 @@ class RegionDashboardScreen(Screen):
         if self.region_id in USER_PROGRESS:
             self.levels_status = USER_PROGRESS[self.region_id]
 
+        self.set_header_color()
+
+    def set_header_color(self):
+        colors = {1: AppColors.TRANSILVANIA, 2: AppColors.MOLDOVA, 3: AppColors.TARA_ROMANEASCA, 4: AppColors.DOBROGEA, 5: AppColors.BANAT}
+        self.dashboard_color = colors.get(self.region_id, AppColors.PRIMARY)
+
+    def get_level_settings(self, level_index):
+        """
+        Returnează setările specifice nivelului (timp, dificultate, puncte)
+        """
+        # 1, 2 -> USOR (5 min = 300s, 10p)
+        # 3, 4 -> MEDIU (7 min = 420s, 20p)
+        # 5, 6 -> GREU (10 min = 600s, 30p)
+
+        if level_index in [1, 2]:
+            return {"time_limit": 300, "difficulty": "easy", "points": 10}
+        elif level_index in [3, 4]:
+            return {"time_limit": 420, "difficulty": "medium", "points": 20}
+        else:
+            return {"time_limit": 600, "difficulty": "hard", "points": 30}
+
     def start_level(self, level_index):
+        status_index = level_index - 1
+
+        if not self.levels_status[status_index]:
+            print(f"Nivelul {level_index} este blocat! Completează nivelul anterior.")
+            return
+
         self.current_level_id = level_index
         region_data = QUESTIONS_DATA.get(self.region_id, {})
         if not region_data:
@@ -92,7 +123,9 @@ class RegionDashboardScreen(Screen):
         self.current_level_queue = exercises
         self.current_step_index = 0
 
-        self.seconds_left = 180
+        settings = self.get_level_settings(level_index)
+        self.seconds_left = settings["time_limit"]
+
         self.update_timer_label(0)
 
         if self.timer_event: self.timer_event.cancel()
@@ -111,8 +144,15 @@ class RegionDashboardScreen(Screen):
             app.timer_text = "00:00"
             self.trigger_game_over()
 
+    def stop_and_clear_timer(self):
+        app = App.get_running_app()
+        if self.timer_event:
+            self.timer_event.cancel()
+            self.timer_event = None
+        app.timer_text = ""
+
     def trigger_game_over(self):
-        if self.timer_event: self.timer_event.cancel()
+        self.stop_and_clear_timer()
         popup = FeedbackPopup(
             type='fail',
             title_text="Timpul a expirat!",
@@ -123,26 +163,32 @@ class RegionDashboardScreen(Screen):
         popup.open()
 
     def return_to_dashboard(self, instance=None):
+        self.stop_and_clear_timer()
         app = App.get_running_app()
-        app.timer_text = ""
-        if self.timer_event: self.timer_event.cancel()
         app.clouds.change_screen('region_dashboard')
 
     def load_next_step(self):
         app = App.get_running_app()
 
         if self.current_step_index < len(self.current_level_queue):
+            is_last_step = (self.current_step_index == len(self.current_level_queue) - 1)
+
+            if is_last_step:
+                self.stop_and_clear_timer()
+
             ex_data = self.current_level_queue[self.current_step_index]
             ex_type = ex_data['type']
 
             if ex_type == 'quiz':
                 screen = app.sm.get_screen('generic_quiz')
+                screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_quiz')
 
             elif ex_type == 'fill':
                 screen = app.sm.get_screen('generic_fill')
+                screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_fill')
@@ -157,6 +203,7 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'map_guess':
                 screen = app.sm.get_screen('map_guess')
                 screen.load_data(ex_data, self.current_step_index + 1)
+                screen.bg_image = self.bg_image
                 app.clouds.change_screen('map_guess')
 
             elif ex_type == 'rebus':
@@ -182,36 +229,47 @@ class RegionDashboardScreen(Screen):
             self.finish_level_sequence()
 
     def finish_level_sequence(self):
+        self.stop_and_clear_timer()
+
         app = App.get_running_app()
-        if self.timer_event: self.timer_event.cancel()
-        app.timer_text = ""
 
-        points_earned = 50
-        app.score += points_earned
+        settings = self.get_level_settings(self.current_level_id)
+        base_points = settings.get("points")
+        points_to_award = 0
 
-        next_index = self.current_level_id
+        next_level_unlock_index = self.current_level_id
 
-        if self.levels_status[
-            self.current_level_id]:
+        already_completed = False
+
+        if next_level_unlock_index < 6:
+            if self.levels_status[next_level_unlock_index] == True:
+                already_completed = True
+        else:
             pass
 
-        # Mesajele popup
+        if not already_completed:
+            points_to_award = base_points
+            app.score += points_to_award
+            title = "Nivel Complet!"
+            msg = f"Felicitări! Ai câștigat {points_to_award} puncte."
+        else:
+            title = "Nivel Rejucat"
+            msg = "Felicitări! Ai terminat din nou nivelul!"
+
+        if next_level_unlock_index < 6:
+            new_status = list(self.levels_status)
+            new_status[next_level_unlock_index] = True
+            self.levels_status = new_status
+            USER_PROGRESS[self.region_id] = self.levels_status
+
         popup = FeedbackPopup(
             type='level_complete',
-            title_text="Nivel Complet!",
-            message_text=f"Felicitări! Ai câștigat {points_earned} puncte.",
+            title_text=title,
+            message_text=msg,
             button_text="Super!"
         )
         popup.bind(on_dismiss=self.go_back_to_levels)
         popup.open()
-
-        if next_index < 6:
-            new_status = list(self.levels_status)
-
-            if self.current_level_id < 6:
-                new_status[self.current_level_id] = True
-                self.levels_status = new_status
-                USER_PROGRESS[self.region_id] = self.levels_status
 
     def go_back_to_levels(self, instance):
         app = App.get_running_app()
