@@ -1,0 +1,169 @@
+#:import hex kivy.utils.get_color_from_hex
+#:import image_path frontend.utils.assets.image_path
+#:import font_path frontend.utils.assets.font_path
+#:import StandardHeader frontend.components.common.StandardHeader
+
+# --- STIL PENTRU ELEMENTUL CARE SE TRAGE (Răspunsul) ---
+<DraggableAnswer>:
+    size_hint: None, None
+    size: 220, 60
+    drag_rectangle: self.x, self.y, self.width, self.height
+    drag_timeout: 10000000
+    drag_distance: 0
+
+    canvas.before:
+        # Umbră mică
+        Color:
+            rgba: 0, 0, 0, 0.3
+        RoundedRectangle:
+            pos: self.x + 3, self.y - 3
+            size: self.size
+            radius: [15,]
+        # Fundal
+        Color:
+            # Portocaliu/Auriu când e normal, mai deschis când e apăsat
+            rgba: hex('#FFA726') if self.state == 'normal' else hex('#FFCC80')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+        # Contur
+        Color:
+            rgba: 1, 1, 1, 0.5
+        Line:
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+            width: 1.5
+
+    Label:
+        text: root.text
+        pos: root.pos
+        size: root.size
+        color: 1, 1, 1, 1
+
+        font_size: "14sp"
+        text_size: self.width - 10, None
+        halign: 'center'
+        valign: 'middle'
+
+# --- SLOTUL GOL (Unde se pune răspunsul) ---
+<AnswerSlot>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.2
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+        Color:
+            rgba: 1, 1, 1, 0.3
+        Line:
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+            width: 2
+            dash_offset: 5
+            dash_length: 5
+
+# --- RÂNDUL DE JOC (Întrebare stânga - Slot dreapta) ---
+<GameRow>:
+    size_hint_y: None
+    height: 80
+    spacing: 20
+    padding: [10, 5]
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 0.1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10,]
+
+    # ÎNTREBAREA (Fixă)
+    Label:
+        text: root.question_text
+        color: 1, 1, 1, 1
+
+        font_size: "16sp"
+        text_size: self.width, None
+        halign: 'right'
+        valign: 'middle'
+        size_hint_x: 0.5
+        padding_x: 10
+
+    # SLOTUL (Receptor)
+    BoxLayout:
+        size_hint_x: 0.5
+        padding: [10, 10]
+
+        AnswerSlot:
+            id: slot
+            # Slotul ocupă tot spațiul disponibil în containerul din dreapta
+
+# --- ECRANUL PRINCIPAL AL JOCULUI ---
+<PairsGameScreen>:
+    name: 'pairs_game'
+
+    FloatLayout:
+        # 1. FUNDAL
+        Image:
+            source: image_path("ui/dashboard_background1.png")
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: 1, 1
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+        # 2. FILTRU ÎNTUNECARE
+        MDBoxLayout:
+            md_bg_color: 0, 0, 0, 0.5
+            size_hint: 1, 1
+
+        # 3. HEADER STANDARD
+        StandardHeader:
+            title: "ASOCIAZA PERECHILE"
+            back_screen: 'menu'
+            show_back_button: True
+            pos_hint: {"top": 1}
+
+        # 4. ZONA DE JOC (Scrollabilă)
+        ScrollView:
+            size_hint: 0.9, 0.7
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            bar_width: 10
+
+            GridLayout:
+                id: rows_container
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 15
+                padding: [0, 20, 0, 20]
+
+        # 5. INSTRUCȚIUNI (Jos)
+        Label:
+            text: "Trage raspunsurile (portocalii) in casutele goale!"
+            font_size: "16sp"
+            color: 1, 1, 1, 0.8
+            pos_hint: {'center_x': 0.5, 'y': 0.12}
+            size_hint_y: None
+            height: 30
+
+        # 6. BUTON VERIFICARE
+        Button:
+            text: "VERIFICA"
+            size_hint: None, None
+            size: 250, 60
+            pos_hint: {'center_x': 0.5, 'y': 0.03}
+            background_normal: ''
+            background_color: hex('#66BB6A') # Verde
+            color: 1, 1, 1, 1
+
+            font_size: "20sp"
+
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.2
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [15,]
+
+            on_release: root.check_win_condition()

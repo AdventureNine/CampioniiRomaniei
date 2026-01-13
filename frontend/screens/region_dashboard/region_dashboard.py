@@ -171,6 +171,12 @@ class RegionDashboardScreen(Screen):
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('bingo')
 
+            elif ex_type == 'pairs':
+                screen = app.sm.get_screen('pairs_game')
+                if hasattr(screen, 'start_new_game'):
+                    screen.start_new_game()
+                app.clouds.change_screen('pairs_game')
+
             self.current_step_index += 1
         else:
             self.finish_level_sequence()
