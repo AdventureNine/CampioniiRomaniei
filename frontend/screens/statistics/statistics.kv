@@ -1,0 +1,128 @@
+
+<RandStatistica@MDBoxLayout>:
+    titlu: ""
+    valoare: ""
+    orientation: "horizontal"
+    size_hint_y: None
+    height: "45dp"
+    padding: "10dp", 0
+    spacing: "10dp"
+
+    MDLabel:
+        text: root.titlu
+        font_name: image_path("ui/RAVIE.TTF")
+        font_size: "18sp"
+        theme_text_color: "Custom"
+        text_color: 0.9, 0.9, 0.9, 1
+        halign: "left"
+        valign: "center"
+        size_hint_x: 0.6
+
+    MDLabel:
+        id: val_label
+        text: root.valoare
+        font_name: image_path("ui/RAVIE.TTF")
+        font_size: "20sp"
+        theme_text_color: "Custom"
+        text_color: hex('#FFD700')  # Auriu (Gold)
+        halign: "right"
+        valign: "center"
+        size_hint_x: 0.4
+
+
+<PaginaStatistici>:
+    name: 'statistici'
+
+    # FUNDAL
+    Image:
+        source: image_path("ui/dashboard_background1.png")
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: 1, 1
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+    MDBoxLayout:
+        md_bg_color: 0, 0, 0, 0.6
+        size_hint: 1, 1
+
+    # TITLU PAGINĂ
+        StandardHeader:
+            title: "STATISTICI JUCATOR"
+            back_screen: 'menu'
+            show_back_button: True
+            pos_hint: {"top": 1}
+            id: header
+
+    # CONȚINUT PRINCIPAL
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        adaptive_height: True
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+        # CARD CENTRAL CU DATELE
+        MDCard:
+            orientation: "vertical"
+            size_hint: None, None
+            size: "700dp", "500dp"
+            pos_hint: {"center_x": 0.5, "center_y": 0.45}
+
+            # STILIZARE CARD
+            radius: [25,]
+            md_bg_color: 0.1, 0.1, 0.2, 0.85 # Albastru închis, transparent
+            line_color: hex('#448AFF')       # Contur albastru deschis
+            line_width: 2
+            elevation: 4
+
+            padding: "30dp"
+            spacing: "15dp"
+
+            # -- LISTA DE STATISTICI --
+
+            # Nume
+            RandStatistica:
+                titlu: "NUME:"
+                valoare: "-"
+                # Legăm id-ul intern al label-ului de proprietatea globală a rândului
+                on_valoare: self.ids.val_label.text = self.valoare
+                # suprascriem id-ul în codul Python
+                id: row_nume
+
+            # Credite
+            RandStatistica:
+                titlu: "CREDITE:"
+                valoare: "0"
+                id: row_credite
+
+            # Linie despărțitoare
+            MDBoxLayout:
+                size_hint_y: None
+                height: "2dp"
+                md_bg_color: 1, 1, 1, 0.2
+                padding: [0, 10, 0, 10]
+
+            RandStatistica:
+                titlu: "QUIZ-URI JUCATE:"
+                valoare: "0"
+                id: row_jucate
+
+            RandStatistica:
+                titlu: "QUIZ-URI REZOLVATE:"
+                valoare: "0"
+                id: row_rezolvate
+
+            RandStatistica:
+                titlu: "TIMP MEDIU:"
+                valoare: "0.0 min"
+                id: row_timp
+
+            RandStatistica:
+                titlu: "REGIUNI:"
+                valoare: "0 / 10"
+                id: row_regiuni
+
+            RandStatistica:
+                titlu: "PROGRES TOTAL:"
+                valoare: "0%"
+                id: row_progres
