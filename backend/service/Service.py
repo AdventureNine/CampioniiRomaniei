@@ -1,18 +1,43 @@
-import sqlite3
-import random
 from typing import Optional
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.entities.Question import Question
-from backend.domain.entities.FillInStatement import FillInStatement
-from backend.domain.entities.Minigame import Minigame, Puzzle, Rebus, Bingo, Pairs, MapGuesser
-
+from backend.domain.entities.Minigame import MapGuesser
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
 from backend.repository.MinigameRepository import MinigameRepository
 from backend.repository.QuizzRepository import QuizzRepository
 from backend.repository.QuizzTaskRepository import QuizzTaskRepository
+
+
+def convert_MapGuesser_to_frontend_format(map_guesser: MapGuesser) -> dict:
+    """Convert a MapGuesser minigame to frontend-compatible format."""
+    config = map_guesser.get_win_configuration() or {}
+    targets = [{'question': k, 'x': v[0], 'y': v[1]} for k, v in config.items()]
+    return {
+        'type': 'map_guess',
+        'targets': targets
+    }
+
+def convert_question_to_frontend_format(question: Question) -> dict:
+    """Convert a Question to frontend-compatible format."""
+    answers = question.get_answer_list()
+    return {
+        'id': question.get_id(),
+        'question': question.get_text(),
+        'options': answers,
+        'correct': answers[0] if answers else ''
+    }
+
+def _get_region_name_by_id(region_id: int) -> str | None:
+    match region_id:
+        case 1: return "Transilvania"
+        case 2: return "Moldova"
+        case 3: return "Țara Românească"
+        case 4: return "Dobrogea"
+        case 5: return "Banat"
+    return None
 
 
 class Service:
@@ -23,22 +48,17 @@ class Service:
                     quizz_repository: QuizzRepository,
                     quizz_task_repository: QuizzTaskRepository
                 ):
-            self.__player_repository = player_repository
-            self.__question_repository = question_repository
-            self.__fill_in_repository = fill_in_repository
-            self.__minigame_repository = minigame_repository
-            self.__quizz_repository = quizz_repository
-            self.__quizz_task_repository = quizz_task_repository
+        self.__player_repository = player_repository
+        self.__question_repository = question_repository
+        self.__fill_in_repository = fill_in_repository
+        self.__minigame_repository = minigame_repository
+        self.__quizz_repository = quizz_repository
+        self.__quizz_task_repository = quizz_task_repository
 
-
-
-    def get_player(self) -> Optional[Player]:
-        return self.__player_repository.get()
+    def get_player(self) -> Optional[Player]: return self.__player_repository.get()
 
     def save_player(self, player: Player) -> None:
-        """Save the current player to database."""
-        if player:
-            self.__player_repository.save(player)
+        if player: self.__player_repository.save(player)
 
     def add_credits(self, amount: int) -> int:
         """Add credits to current player. Returns new total."""
@@ -55,7 +75,7 @@ class Service:
         player = self.get_player()
         if player and player.get_credits() >= amount:
             player.set_credits(player.get_credits() - amount)
-            self.save_player(player )
+            self.save_player(player)
             return True
         return False
 
@@ -110,85 +130,30 @@ class Service:
         player = self.get_player()
         if player:
             player.set_quizzes_solved(player.get_quizzes_solved() + 1)
-            self.save_player()
+            self.save_player(player)
 
     def update_play_time(self, session_time: float) -> None:
-        """Update average play time with new session time."""
+        """Update average playtime with new session time."""
         player = self.get_player()
-        if self.__current_player:
+        if player:
             played = player.get_quizzes_played()
             current_avg = player.get_avg_play_time()
             new_avg = ((current_avg * played) + session_time) / (played + 1) if played > 0 else session_time
             player.set_avg_play_time(new_avg)
             self.save_player(player)
 
-      
-
-   
-    
-    
-    
-    def convert_MapGuesser_to_frontend_format(self, map_guesser: MapGuesser, quizz: Quizz) -> dict:
-        """Convert a MapGuesser minigame to frontend-compatible format."""
-        config = map_guesser.get_win_configuration() or {}
-        targets = [{'question': k, 'x': v[0], 'y': v[1]} for k, v in config.items()]
-        return {
-            'type': 'map_guess',
-            'targets': targets
-        }
-    
-    def convert_question_to_frontend_format(self, question: Question) -> dict:
-        """Convert a Question to frontend-compatible format."""
-        answers = question.get_answer_list()
-        return {
-            'id': question.get_id(),
-            'question': question.get_text(),
-            'options': answers,
-            'correct': answers[0] if answers else ''
-        }
-        
-    
-
-    def __get_region_name_by_id(self, region_id: int) -> str:
-        match region_id:
-            case 1:
-                return "Transilvania"
-            case 2:
-                return "Moldova"
-            case 3:
-                return "Țara Românească"
-            case 4:
-                return "Dobrogea"
-            case 5:
-                return "Banat"
-                
-
-
     def is_level_unlocked(self, region_id: int, level_index: int) -> bool:
         region_status = self.__player_repository.get().get_regions_state()
-        region_name = self.__get_region_name_by_id(region_id)
-        if region_status[region_name] >= level_index:
-            return True
-        
+        region_name = _get_region_name_by_id(region_id)
+        if region_status[region_name] >= level_index: return True
         return False
-             
 
-
-    # TODO: CHECK MORE
     def get_quizz_by_id(self, quizz_id: int) -> Optional[Quizz]:
-        
         quizz: Quizz = self.__quizz_repository.get_by_id(quizz_id)
         questions = self.__question_repository.find(f"quizz = {quizz_id}")
         fill_ins = self.__fill_in_repository.find(f"quizz = {quizz_id}")
         minigames = self.__minigame_repository.find(f"quizz = {quizz_id}")[0]
-        
-        
         quizz.set_questions(questions)
         quizz.set_fill_in_statements(fill_ins)
         quizz.set_minigame(minigames)
-        
         return quizz
-    
-    
-
-
