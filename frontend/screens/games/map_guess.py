@@ -76,7 +76,7 @@ class MapGuessScreen(Screen):
             self.current_target_text = f"{self.current_index + 1}. {t['name']}"
             self.target_x = t['x']
             self.target_y = t['y']
-            self.tolerance = t.get('tolerance', 0.05)
+            self.tolerance = t.get('tolerance', 0.1)
 
             self.map_container.clear_widgets()
         else:

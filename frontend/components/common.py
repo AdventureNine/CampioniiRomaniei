@@ -7,12 +7,15 @@ from kivy.app import App
 from frontend.utils.assets import image_path
 
 
-# --- 1. WIDGET SCOR ---
+# --- WIDGET SCOR ---
 class ScoreDisplay(BoxLayout):
     coin_image = image_path(f"ui/coin.png")
 
+# --- WIDGET TIMER ---
+class TimerDisplay(BoxLayout):
+    timer_image = image_path("ui/timer.png")
 
-# --- 2. POPUP FEEDBACK (Fără Mascotă) ---
+# --- POPUP FEEDBACK ---
 class FeedbackPopup(ModalView):
     title_text = StringProperty("Info")
     message_text = StringProperty("Mesaj")
@@ -26,12 +29,12 @@ class FeedbackPopup(ModalView):
         self.background_color = (0, 0, 0, 0.7)
 
 
-# --- 3. BUTON RĂSPUNS QUIZ ---
+# --- BUTON RĂSPUNS QUIZ ---
 class AnswerButton(Button):
     pass
 
 
-# --- 4. HEADER STANDARD ---
+# --- HEADER STANDARD ---
 class StandardHeader(BoxLayout):
     title = StringProperty("Titlu")
     show_back_button = OptionProperty(True, options=[True, False])

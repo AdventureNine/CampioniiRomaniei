@@ -8,10 +8,102 @@ QUESTIONS_DATA = {
         # NIVEL 1: Munți și Relief General (Ușor)
         1: [
             {
-                "type": "puzzle",
-                "image": "puzzle4.jpg",
-                "question": "Rezolvă puzzle-ul!"
+                "type": "map_guess",
+                "question": "Găsește următoarele 3 locații pe hartă:",
+                "image": "harta_map_guess.png",
+                "targets": [
+                    {
+                        "name": "Unde a avut loc Marea Unire de la 1918?",
+                        "x": 0.38, "y": 0.53
+                    },
+                    {
+                        "name": "Indică orașul considerat 'inima' Transilvaniei, mare centru universitar.",
+                        "x": 0.38, "y": 0.68
+                    },
+                    {
+                        "name": "Unde se află Castelul Corvinilor (Huniade)?",
+                        "x": 0.32, "y": 0.47
+                    }
+                ]
+            },
+            {
+                        "type": "map_guess",
+                        "question": "Găsește următoarele 3 locații pe hartă:",
+                        "image": "harta_map_guess.png",
+                        "targets": [
+                            {
+                                "name": "Unde se află Palatul Culturii și Bojdeuca lui Ion Creangă?",
+                                "x": 0.74, "y": 0.76
+                            },
+                            {
+                                "name": "Indică fosta Cetate de Scaun a lui Ștefan cel Mare.",
+                                "x": 0.62, "y": 0.87
+                            },
+                            {
+                                "name": "Care este cel mai mare port fluvial la Dunăre din estul țării?",
+                                "x": 0.79, "y": 0.41
+                            }
+                        ]
+            },
+{
+            "type": "map_guess",
+            "question": "Găsește următoarele 3 locații pe hartă:",
+            "image": "harta_map_guess.png",
+            "targets": [
+                {
+                    "name": "Unde se află Casa Poporului, a doua cea mai mare clădire din lume?",
+                    "x": 0.61, "y": 0.18
+                },
+                {
+                    "name": "Unde se află hidrocentrala Porțile de Fier?",
+                    "x": 0.29, "y": 0.23
+                },
+                {
+                    "name": "Lângă ce oraș se produc mașinile Dacia?",
+                    "x": 0.51, "y": 0.26
+                }
+            ]
+        },
+{
+            "type": "map_guess",
+            "question": "Găsește următoarele 3 locații pe hartă:",
+            "image": "harta_map_guess.png",
+            "targets": [
+                {
+                    "name": "Unde se află Cazinoul antic de pe faleză și marele port maritim?",
+                    "x": 0.84, "y": 0.14
+                },
+                {
+                    "name": "La ce mare are deschidere România?",
+                    "x": 0.89, "y": 0.19
+                },
+                {
+                    "name": "Indică locul unde Dunărea se varsă în mare, formând o rezervație.",
+                    "x": 0.88, "y": 0.37
+                }
+            ]
+        },
+
+            {
+                "type": "map_guess",
+                "question": "Găsește următoarele 3 locații pe hartă:",
+                "image": "harta_map_guess.png",
+                "targets": [
+                    {
+                        "name": "În ce oraș a început Revoluția din 1989?",
+                        "x": 0.17, "y": 0.49
+                    },
+                    {
+                        "name": "Care este cel mai important oraș din Crișana, cu clădiri Art Nouveau?",
+                        "x": 0.23, "y": 0.75
+                    },
+                    {
+                        "name": "Orașul din nord-vest, aproape de granița cu Ungaria și Ucraina.",
+                        "x": 0.32, "y": 0.89
+                    }
+                ]
             }
+
         ],
 
         # NIVEL 2: Dealuri, Podișuri și Orașe (Ușor/Mediu)

@@ -5,6 +5,39 @@
     size_hint: None, None
     fit_mode: "contain"
 
+# --- WIDGET TIMER (NOU) ---
+<TimerDisplay@BoxLayout>:
+    size_hint: None, None
+    size: 130, 50
+    padding: [10, 5]
+    spacing: 5
+    opacity: 1 if app.timer_text else 0
+
+    canvas.before:
+        Color:
+            rgba: (0, 0, 0, 0.2)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+
+    # Iconița de ceas
+    Image:
+        source: root.timer_image
+        size_hint: None, 1
+        width: 30
+        fit_mode: "contain"
+
+    # Textul timpului
+    Label:
+        text: app.timer_text
+        font_size: '20sp'
+        bold: True
+        color: hex('#FFEB3B') # Galben
+        valign: 'middle'
+        halign: 'left'
+        text_size: self.width, None
+
 # --- WIDGET SCOR ---
 <ScoreDisplay>:
     size_hint: None, None
@@ -72,26 +105,19 @@
     # --- 3. ZONA DREAPTĂ (Timer + Scor) ---
     BoxLayout:
         size_hint: None, 1
-        width: 250
-        spacing: 10
-        pos_hint: {'right': 0.95, 'center_y': 0.5}
-
+        width: 280 # Mărim puțin lățimea containerului
+        spacing: 15
+        pos_hint: {'right': 0.98, 'center_y': 0.5}
         orientation: 'horizontal'
 
+        # Spacer
         Widget:
             size_hint_x: 1
 
-        Label:
-            text: app.timer_text
-            font_size: '22sp'
-            bold: True
-            color: hex('#FFEB3B')
-            size_hint_x: None
-            width: 70
-            halign: 'right'
-            valign: 'middle'
-            opacity: 1 if app.timer_text else 0
+        # 1. Componenta Timer (Nouă)
+        TimerDisplay:
 
+        # 2. Componenta Scor (Existentă)
         ScoreDisplay:
 
 # --- POPUP FEEDBACK (Fără Mascotă) ---
