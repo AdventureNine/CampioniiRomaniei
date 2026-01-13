@@ -10,46 +10,92 @@ from backend.domain.utils.Difficulty import Difficulty
 from backend.domain.entities.Minigame import Bingo
 
 BINGO_DATA_SOURCE = {
-    # --- ISTORIE ROMÂNIA (TRUE) ---
     'ISTORIE': [
-    ('Decebal', True), ('Traian', True), ('Burebista', True), ('Mircea cel Bătrân', True),
-    ('Ștefan cel Mare', True), ('Mihai Viteazul', True), ('Alexandru Ioan Cuza', True),
-    ('Carol I', True), ('Ferdinand I', True), ('Regina Maria', True), ('Vlad Țepeș', True),
-    ('Basarab I', True), ('Marea Unire', True), ('Independența României', True),
-    ('1 Decembrie', True), ('Alba Iulia', True), ('Sarmizegetusa Regia', True),
-    ('Matei Corvin', True), ('Nicolae Bălcescu', True), ('Avram Iancu', True),
-    ('Tudor Vladimirescu', True), ('Nicolae Iorga', True), ('Bătălia de la Posada', True),
-    ('Bătălia de la Rovine', True), ('Podul lui Traian', True), ('Curtea de Argeș', True),
-    ('Regele Mihai I', True), ('Regina Elisabeta', True), ('Transilvania', True),
-    ('Moldova', True), ('Muntenia', True), ('Basarabia', True), ('Dobrogea', True),
-    ('Crișana', True), ('Banat', True)],
-
-    # --- GEOGRAFIE ROMÂNIA (TRUE) ---
-    'GEOGRAFIE': [('Dunărea', True), ('Marea Neagră', True), ('Munții Carpați', True), ('Vârful Moldoveanu', True),
-    ('Delta Dunării', True), ('Râul Prut', True), ('Râul Siret', True), ('Râul Mureș', True),
-    ('Râul Olt', True), ('Râul Ialomița', True), ('Râul Someș', True), ('Lacul Sfânta Ana', True),
-    ('Lacul Roșu', True), ('Transfăgărășan', True), ('Transalpina', True), ('Sfinxul', True),
-    ('Babele', True), ('Peștera Scărișoara', True), ('Porțile de Fier', True), ('Câmpia Română', True),
-    ('Podișul Moldovei', True), ('Dealurile de Vest', True), ('București', True), ('Iași', True),
-    ('Cluj-Napoca', True), ('Timișoara', True), ('Constanța', True), ('Brașov', True),
-    ('Craiova', True), ('Galați', True), ('Munții Apuseni', True), ('Munții Bucegi', True),
-    ('Munții Parâng', True), ('Munții Retezat', True), ('Munții Rodnei', True)],
-
-    # --- DISTRAGERI / ELEMENTE STRĂINE (FALSE) ---
-    'FALS': [('Paris', False), ('Londra', False), ('Berlin', False), ('Viena', False),
-    ('Roma', False), ('Madrid', False), ('Lisabona', False), ('Amsterdam', False),
-    ('Praga', False), ('Varșovia', False), ('Munții Alpi', False), ('Munții Pirinei', False),
-    ('Munții Anzi', False), ('Munții Himalaya', False), ('Fluviul Nil', False),
-    ('Fluviul Amazon', False), ('Fluviul Mississippi', False), ('Fluviul Volga', False),
-    ('Napoleon Bonaparte', False), ('Iulius Cezar', False), ('Abraham Lincoln', False),
-    ('Cristofor Columb', False), ('Leonardo da Vinci', False), ('Isaac Newton', False),
-    ('Albert Einstein', False), ('W.A. Mozart', False), ('Ludwig van Beethoven', False),
-    ('William Shakespeare', False), ('Pablo Picasso', False), ('Planeta Marte', False),
-    ('Planeta Jupiter', False), ('Marele Zid Chinezesc', False), ('Statuia Libertății', False),
-    ('Turnul Eiffel', False), ('Piramidele din Giza', False), ('Cascada Niagara', False),
-    ('Marele Canion', False), ('Deșertul Sahara', False), ('Australia', False),
-    ('Brazilia', False), ('Canada', False), ('Japonia', False), ('Oceanul Pacific', False),
-    ('Oceanul Atlantic', False), ('Muntele Kilimanjaro', False)]
+        # --- ROMÂNIA (TRUE) - 30 intrări ---
+        ('Decebal', True), ('Traian', True), ('Burebista', True), ('Mircea cel Bătrân', True),
+        ('Ștefan cel Mare', True), ('Mihai Viteazul', True), ('Al. Ioan Cuza', True), ('Carol I', True),
+        ('Ferdinand I', True), ('Regina Maria', True), ('Vlad Țepeș', True), ('Basarab I', True),
+        ('Iancu de Hunedoara', True), ('Constantin Brâncoveanu', True), ('Neagoe Basarab', True),
+        ('Nicolae Bălcescu', True), ('Avram Iancu', True), ('Tudor Vladimirescu', True),
+        ('Ecaterina Teodoroiu', True), ('Marea Unire', True), ('Independența', True),
+        ('Revoluția 1848', True), ('Bătălia de la Rovine', True), ('Bătălia de la Podul Înalt', True),
+        ('Bătălia de la Călugăreni', True), ('Sarmizegetusa', True), ('Pacea de la Buftea', True),
+        ('Tratatul de la Trianon', True), ('Dacia Preistorică', True), ('Gelu, Glad și Menumorut', True),
+        # --- STRĂIN (FALSE) - 20 intrări ---
+        ('Napoleon Bonaparte', False), ('Iulius Cezar', False), ('Abraham Lincoln', False),
+        ('Winston Churchill', False), ('Alexandru cel Mare', False), ('Genghis Han', False),
+        ('Cleopatra', False), ('Tutankhamun', False), ('Regina Victoria', False), ('Simon Bolivar', False),
+        ('Nelson Mandela', False), ('Mao Zedong', False), ('George Washington', False), ('Hannibal', False),
+        ('Leonida', False), ('Pericle', False), ('Otto von Bismarck', False), ('Ivan cel Groaznic', False),
+        ('Ludovic al XIV-lea', False), ('Cristofor Columb', False)
+    ],
+    'GEOGRAFIE': [
+        # --- ROMÂNIA (TRUE) - 30 intrări ---
+        ('Dunărea', True), ('Marea Neagră', True), ('Munții Carpați', True), ('Vârful Moldoveanu', True),
+        ('Delta Dunării', True), ('Râul Prut', True), ('Râul Siret', True), ('Râul Mureș', True),
+        ('Râul Olt', True), ('Râul Ialomița', True), ('Râul Someș', True), ('Lacul Sfânta Ana', True),
+        ('Lacul Roșu', True), ('Transfăgărășan', True), ('Transalpina', True), ('Sfinxul', True),
+        ('Babele', True), ('Peștera Scărișoara', True), ('Porțile de Fier', True), ('Câmpia Română', True),
+        ('Podișul Moldovei', True), ('Dealurile de Vest', True), ('Munții Apuseni', True), ('Munții Bucegi', True),
+        ('Munții Parâng', True), ('Munții Retezat', True), ('Munții Rodnei', True), ('Defileul Jiului', True),
+        ('Podișul Dobrogei', True), ('Subcarpații Getici', True),
+        # --- STRĂIN (FALSE) - 20 intrări ---
+        ('Fluviul Nil', False), ('Munții Alpi', False), ('Muntele Everest', False), ('Fluviul Amazon', False),
+        ('Deșertul Sahara', False), ('Munții Himalaya', False), ('Marele Canion', False), ('Fluviul Mississippi', False),
+        ('Muntele Fuji', False), ('Oceanul Pacific', False), ('Munții Anzi', False), ('Marea Mediterană', False),
+        ('Insula Groenlanda', False), ('Cascada Niagara', False), ('Lacul Baikal', False), ('Vârful Kilimanjaro', False),
+        ('Marea Moartă', False), ('Canalul Panama', False), ('Strâmtoarea Gibraltar', False), ('Podișul Tibet', False)
+    ],
+    'NATURA': [
+        # --- ROMÂNIA (TRUE) - 30 intrări ---
+        ('Urs carpatin', True), ('Râs', True), ('Capră neagră', True), ('Zimbru', True),
+        ('Pelican', True), ('Mistreț', True), ('Cerb', True), ('Căprioară', True),
+        ('Cocoș de munte', True), ('Acvilă de munte', True), ('Șacal aurit', True), ('Bursuc', True),
+        ('Vidră', True), ('Salamandră', True), ('Țestoasă de uscat', True), ('Floarea de colț', True),
+        ('Bujorul românesc', True), ('Narcisa sălbatică', True), ('Ghiocel', True), ('Toporaș', True),
+        ('Stejar', True), ('Fag', True), ('Brad', True), ('Molid', True), ('Pin', True),
+        ('Tei', True), ('Salcie', True), ('Plop', True), ('Frasin', True), ('Măceș', True),
+        # --- STRĂIN (FALSE) - 20 intrări ---
+        ('Leu', False), ('Tigru', False), ('Elefant', False), ('Girafă', False),
+        ('Zebră', False), ('Hipopotam', False), ('Pinguin', False), ('Cangur', False),
+        ('Urs Koala', False), ('Urs Panda', False), ('Cămilă', False), ('Balenă albastră', False),
+        ('Rechin alb', False), ('Baobab', False), ('Palmier', False), ('Bambus', False),
+        ('Cactus', False), ('Sequoia', False), ('Eucalipt', False), ('Orhidee tropicală', False)
+    ],
+    'OBIECTIVE': [
+        # --- ROMÂNIA (TRUE) - 30 intrări ---
+        ('Castelul Bran', True), ('Castelul Peleș', True), ('Mănăstirea Voroneț', True), ('Cetatea Neamț', True),
+        ('Coloana Infinitului', True), ('Palatul Parlamentului', True), ('Cazinoul Constanța', True), ('Cetatea Alba Carolina', True),
+        ('Curtea de Argeș', True), ('Mănăstirea Putna', True), ('Castelul Corvinilor', True), ('Biserica Neagră', True),
+        ('Turnul Sfatului', True), ('Cetatea de Scaun', True), ('Ateneul Român', True), ('Arcul de Triumf', True),
+        ('Salina Turda', True), ('Mănăstirea Cozia', True), ('Cetatea Râșnov', True), ('Cimitirul Vesel', True),
+        ('Palatul Culturii', True), ('Mănăstirea Horezu', True), ('Cetatea Enisala', True), ('Biserica de lemn Ieud', True),
+        ('Cetatea Devei', True), ('Mausoleul Mărășești', True), ('Podul Prieteniei', True), ('Opera Națională', True),
+        ('Grădina Botanică', True), ('Muzeul Satului', True),
+        # --- STRĂIN (FALSE) - 20 intrări ---
+        ('Turnul Eiffel', False), ('Piramidele Giza', False), ('Colosseum', False), ('Statuia Libertății', False),
+        ('Big Ben', False), ('Taj Mahal', False), ('Marele Zid', False), ('Acropola Ateniană', False),
+        ('Sagrada Familia', False), ('Machu Picchu', False), ('Opera din Sydney', False), ('Burj Khalifa', False),
+        ('Catedrala Notre-Dame', False), ('Muntele Rushmore', False), ('Stonehenge', False), ('Poarta Brandenburg', False),
+        ('Louvre', False), ('Panteonul', False), ('Vatican', False), ('Podul Golden Gate', False)
+    ],
+    'ORASE': [
+        # --- ROMÂNIA (TRUE) - 30 intrări ---
+        ('București', True), ('Iași', True), ('Cluj-Napoca', True), ('Timișoara', True),
+        ('Constanța', True), ('Craiova', True), ('Brașov', True), ('Galați', True),
+        ('Oradea', True), ('Ploiești', True), ('Brăila', True), ('Arad', True),
+        ('Pitești', True), ('Sibiu', True), ('Bacău', True), ('Târgu Mureș', True),
+        ('Baia Mare', True), ('Buzău', True), ('Botoșani', True), ('Satu Mare', True),
+        ('Râmnicu Vâlcea', True), ('Drobeta-Turnu Severin', True), ('Suceava', True), ('Piatra Neamț', True),
+        ('Târgu Jiu', True), ('Târgoviște', True), ('Tulcea', True), ('Bistrița', True),
+        ('Reșița', True), ('Slatina', True),
+        # --- STRĂIN (FALSE) - 20 intrări ---
+        ('Paris', False), ('Londra', False), ('Berlin', False), ('Madrid', False),
+        ('Roma', False), ('Viena', False), ('Amsterdam', False), ('Praga', False),
+        ('Varșovia', False), ('Budapesta', False), ('Tokyo', False), ('New York', False),
+        ('Los Angeles', False), ('Beijing', False), ('Cairo', False), ('Moscova', False),
+        ('Istanbul', False), ('Sydney', False), ('Rio de Janeiro', False), ('Toronto', False)
+    ]
 }
 
 class BingoCell(Button):
@@ -100,9 +146,13 @@ class BingoScreen(Screen):
 
         all_true = []
         all_false = []
-        for cat in BINGO_DATA_SOURCE.values():
-            all_true.extend([item for item in cat if item[1] is True])
-            all_false.extend([item for item in cat if item[1] is False])
+
+        available_categories = list(BINGO_DATA_SOURCE.keys())
+        selected_category_name = random.choice(available_categories)
+        selected_items = BINGO_DATA_SOURCE[selected_category_name]
+
+        all_true.extend([item for item in selected_items if item[1] is True])
+        all_false.extend([item for item in selected_items if item[1] is False])
 
         sample = random.sample(all_true, min(len(all_true), num_true)) + \
                  random.sample(all_false, min(len(all_false), num_false))

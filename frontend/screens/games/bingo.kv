@@ -6,6 +6,7 @@
     valign: 'middle'
     text_size: self.size
     background_normal: ''
+    color: [0, 0, 0, 1] if self.background_color == [1, 1, 1, 1] else [1, 1, 1, 1]
     disabled_color: [0, 0, 0, 1] if self.background_color == [1, 1, 1, 1] else [1, 1, 1, 1]
     background_disabled_normal: ''
     canvas.before:
