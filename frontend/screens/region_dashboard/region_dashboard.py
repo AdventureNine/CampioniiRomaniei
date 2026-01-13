@@ -46,10 +46,6 @@ class LevelIcon(ButtonBehavior, Image):
 
 
 class RegionDashboardScreen(Screen):
-    # ... Restul codului tău rămâne NESCHIMBAT ...
-    # Copiază exact codul tău de la "region_id = NumericProperty(0)" în jos.
-    # Nu trebuie să modifici nimic în logică, deoarece 'levels_status' se actualizează deja,
-    # iar noua componentă va reacționa automat la schimbare.
 
     region_id = NumericProperty(0)
     region_name = StringProperty("Regiune")
@@ -74,7 +70,7 @@ class RegionDashboardScreen(Screen):
             self.mission_text = data['mission']
 
             try:
-                self.bg_image = image_path(f"backgrounds/bg_{self.region_id}.png")
+                self.bg_image = image_path(f"backgrounds/bg_{self.region_id}.jpg")
             except:
                 self.bg_image = ""
 
@@ -175,6 +171,12 @@ class RegionDashboardScreen(Screen):
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('bingo')
 
+            elif ex_type == 'pairs':
+                screen = app.sm.get_screen('pairs_game')
+                if hasattr(screen, 'start_new_game'):
+                    screen.start_new_game()
+                app.clouds.change_screen('pairs_game')
+
             self.current_step_index += 1
         else:
             self.finish_level_sequence()
@@ -189,10 +191,8 @@ class RegionDashboardScreen(Screen):
 
         next_index = self.current_level_id
 
-        # Verificăm dacă nivelul era deja completat
         if self.levels_status[
-            self.current_level_id]:  # Atenție la indexare, aici pare să fie o mică confuzie în logică ta originală vs index, dar păstrez logica ta
-            # Logică: current_level_id este indexul nivelului jucat (ex: 0 pentru Nivel 1)
+            self.current_level_id]:
             pass
 
         # Mesajele popup
@@ -205,30 +205,12 @@ class RegionDashboardScreen(Screen):
         popup.bind(on_dismiss=self.go_back_to_levels)
         popup.open()
 
-        # DEBLOCAREA NIVELULUI URMĂTOR
-        # Aceasta este partea critică pentru schimbarea culorii
         if next_index < 6:
-            # next_index este de fapt următorul nivel în lista ta (ex: ai jucat 0, deblochezi 1)
-            # Notă: În codul tău `current_level_id` este parametrul dat funcției start_level (1, 2...).
-            # Dacă start_level(1) înseamnă index 0, atunci `next_index` (care e egal cu 1) este indexul corect pentru nivelul 2.
-
-            # Kivy ListProperty nu observă întotdeauna schimbările unui element individual.
-            # Pentru a fi siguri că interfața se actualizează, facem o reasignare:
-
-            # 1. Copiem lista curentă
             new_status = list(self.levels_status)
-            # 2. Modificăm statusul nivelului următor (dacă există)
-            # Ex: Am terminat Nivel 1 (index 0). current_level_id a fost setat la 1 în apel, dar în logică ar trebui să fie 0.
-            # Să presupunem că start_level primește 1 pt Nivel 1. Atunci indexul în listă e `level_index - 1`.
 
-            # Corecție logică de indexare bazată pe codul tău din KV:
-            # În KV ai: start_level(1).
-            # Deci în Python: self.current_level_id devine 1.
-            # Nivelul 2 este la indexul 1 în listă.
-
-            if self.current_level_id < 6:  # Dacă nu am terminat ultimul nivel
-                new_status[self.current_level_id] = True  # Deblocăm nivelul următor
-                self.levels_status = new_status  # Asta declanșează actualizarea vizuală!
+            if self.current_level_id < 6:
+                new_status[self.current_level_id] = True
+                self.levels_status = new_status
                 USER_PROGRESS[self.region_id] = self.levels_status
 
     def go_back_to_levels(self, instance):

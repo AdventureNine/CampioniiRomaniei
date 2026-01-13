@@ -1,10 +1,12 @@
 import sqlite3
 from backend.domain.entities.FillInStatement import FillInStatement
+from backend.domain.entities.Minigame import Puzzle, Pairs, Rebus, Bingo, MapGuesser
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Question import Question
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.utils.Difficulty import Difficulty
 from backend.repository.FillInStatementRepository import FillInStatementRepository
+from backend.repository.MinigameRepository import MinigameRepository
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.QuizzRepository import QuizzRepository
@@ -60,6 +62,78 @@ def insert_questions(repoQuestions: QuestionRepository) -> None:
     repoQuestions.save(Question(-1,"Câte cetăți de scaun a avut Moldova?",["Două (Suceava și Iași)", "Una", "Trei", "Niciuna"]), 12)
     repoQuestions.save(Question(-1,"„Perla Moldovei” este stațiunea...",["Slănic Moldova", "Vatra Dornei", "Sovata", "Sinaia"]), 12)
 
+    repoQuestions.save(Question(-1,"Cine este considerat întemeietorul Țării Românești?","Basarab I, Mircea cel Bătrân, Vlad Țepeș, Mihai Viteazul".split(", ")),13)
+    repoQuestions.save(Question(-1,"Care este cea mai joasă formă de relief din zonă?","Câmpia Română, Podișul Getic, Subcarpații, Munții Bucegi".split(", ")),13)
+    repoQuestions.save(Question(-1,"Ce râu traversează Bucureștiul?","Dâmbovița, Dunărea, Argeș, Olt".split(", ")),13)
+
+    repoQuestions.save(Question(-1,"Ce domnitor a luptat la Rovine în 1395?","Mircea cel Bătrân, Ștefan cel Mare, Vlad Țepeș, Cuza".split(", ")),14)
+    repoQuestions.save(Question(-1,"În timpul cui a fost atestat documentar Bucureștiul (1459)?","Vlad Țepeș, Basarab I, Mihai Viteazul, Matei Basarab".split(", ")),14)
+    repoQuestions.save(Question(-1,"Ce mare unire a realizat Mihai Viteazul în 1600?","Unirea celor 3 țări, Mica Unire, Unirea cu Dobrogea, Unirea cu Banatul".split(", ")),14)
+
+    repoQuestions.save(Question(-1,"Ce resurse se extrag din Podișul Getic?","Petrol și Gaze, Aur și Argint, Uraniu, Diamante".split(", ")),15)
+    repoQuestions.save(Question(-1,"De ce s-a dezvoltat agricultura în Câmpia Română?","Soluri fertile, Multe păduri, Multe dealuri, Climă rece".split(", ")),15)
+    repoQuestions.save(Question(-1,"Unde se află Vârful Omu?","Munții Bucegi, Munții Făgăraș, Munții Retezat, Munții Apuseni".split(", ")),15)
+
+    repoQuestions.save(Question(-1,"Ce reformă importantă a făcut Cuza?","Legea învățământului, A construit metroul, A fondat Bucureștiul, A cucerit Turcia".split(", ")),16)
+    repoQuestions.save(Question(-1,"De ce este Bucureștiul un nod de comunicație?","Are multe legături rutiere și feroviare, Are port la mare, Este la munte, Nu este nod".split(", ")),16)
+    repoQuestions.save(Question(-1,"Curtea de Argeș este cunoscută pentru...","Mănăstirea Meșterului Manole, Turnul Chindiei, Podul lui Saligny, Castelul Peleș".split(", ")),16)
+
+    repoQuestions.save(Question(-1,"Unde se află \"Coloana Infinitului\"?","Târgu Jiu, Craiova, Pitești, Ploiești".split(", ")),17)
+    repoQuestions.save(Question(-1,"Barajul Vidraru se află pe râul...","Argeș, Olt, Dâmbovița, Ialomița".split(", ")),17)
+    repoQuestions.save(Question(-1,"Cine a sculptat \"Poarta Sărutului\"?","Brâncuși, Grigorescu, Enescu, Tonitza".split(", ")),17)
+
+    repoQuestions.save(Question(-1,"În ce an a avut loc Bătălia de la Posada?","1330, 1475, 1600, 1859".split(", ")),18)
+    repoQuestions.save(Question(-1,"Care este principala bogăție a solului în zona Ploiești?","Petrol, Aur, Fier, Cupru".split(", ")),18)
+    repoQuestions.save(Question(-1,"Câmpia Română este...","Grânarul țării, Zona minieră, Zona muntoasă, Delta".split(", ")),18)
+
+    repoQuestions.save(Question(-1,"Care este cea mai joasă unitate de relief din România?","Delta Dunării, Câmpia de Vest, Podișul Getic, Lunca Siretului".split(", ")),19)
+    repoQuestions.save(Question(-1,"Ce mare mărginește Dobrogea la est?","Marea Neagră, Marea Mediterană, Marea Roșie, Marea Caspică".split(", ")),19)
+    repoQuestions.save(Question(-1,"Care sunt brațele Dunării?","\"Chilia, Sulina, Sf. Gheorghe\"; \"Olt, Mureș, Siret\"; \"Borcea, Măcin, Vâlciu\"; \"Niciunul\"".split("; ")),19)
+
+    repoQuestions.save(Question(-1,"Cine este considerat întemeietorul statului medieval Dobrogea?","Dobrotici, Mircea cel Bătrân, Burebista, Decebal".split(", ")),20)
+    repoQuestions.save(Question(-1,"Numiți o colonie grecească antică din Dobrogea.","Histria, Sarmizegetusa, Apulum, Potaissa".split(", ")),20)
+    repoQuestions.save(Question(-1,"Cărui imperiu a fost cedată Dobrogea în 1417?","Imperiul Otoman, Imperiul Roman, Imperiul Austro-Ungar, Imperiul Rus".split(", ")),20)
+
+    repoQuestions.save(Question(-1,"Ce popor minoritar a influențat Dobrogea?","Turcii/Tătarii, Ungurii, Sârbii, Polonezii".split(", ")),21)
+    repoQuestions.save(Question(-1,"În ce an a revenit Dobrogea la România (Războiul de Independență)?","1878, 1918, 1600, 1417".split(", ")),21)
+    repoQuestions.save(Question(-1,"Ce tip de vegetație este specific Podișului Dobrogei?","Stepa, Pădurea de brad, Tundra, Savana".split(", ")),21)
+
+    repoQuestions.save(Question(-1,"De ce este Delta Dunării rezervație naturală?","Pentru biodiversitate (păsări, pești); Pentru petrol; Pentru industrie; Pentru agricultură".split("; ")),22)
+    repoQuestions.save(Question(-1,"Care sunt cei mai vechi munți din România, aflați în Dobrogea?","Munții Măcinului, Munții Bucegi, Munții Făgăraș, Munții Retezat".split(", ")),22)
+    repoQuestions.save(Question(-1,"Podul de la Cernavodă a fost construit de...","Anghel Saligny, Henri Coandă, Ana Aslan, Aurel Vlaicu".split(", ")),22)
+
+    repoQuestions.save(Question(-1,"Care braț al Dunării este cel mai scurt și folosit pentru navigație?","Sulina, Chilia, Sf. Gheorghe, Peța".split(", ")),23)
+    repoQuestions.save(Question(-1,"Portul principal al României la Marea Neagră este...","Constanța, Mangalia, Tulcea, Sulina".split(", ")),23)
+    repoQuestions.save(Question(-1,"Lacul Razim este un lac...","Lagună (fost golf), Vulcanic, Glaciar, De acumulare".split(", ")),23)
+
+    repoQuestions.save(Question(-1,"Peștera Sfântului Andrei se află în...","Dobrogea, Moldova, Banat, Oltenia".split(", ")),24)
+    repoQuestions.save(Question(-1,"Care braț al Dunării transportă cea mai mare cantitate de apă?","Chilia, Sulina, Sf. Gheorghe, Niciunul".split(", ")),24)
+    repoQuestions.save(Question(-1,"Dobrogea este o zonă cu climă...","Secetoasă și caldă, Umedă și rece, Polară, Tropicală".split(", ")),24)
+
+    repoQuestions.save(Question(-1,"În ce oraș a început Revoluția din 1989?","Timișoara, București, Cluj, Iași".split(", ")),25)
+    repoQuestions.save(Question(-1,"Capitala județului Timiș este...","Timișoara, Arad, Lugoj, Reșița".split(", ")),25)
+    repoQuestions.save(Question(-1,"Banatul se află în partea de ... a țării.","Sud-Vest, Est, Nord, Sud-Est".split(", ")),25)
+
+    repoQuestions.save(Question(-1,"Care este cel mai important oraș din Crișana?","Oradea, Satu Mare, Zalău, Baia Mare".split(", ")),26)
+    repoQuestions.save(Question(-1,"Crișana se învecinează la vest cu...","Ungaria, Ucraina, Serbia, Bulgaria".split(", ")),26)
+    repoQuestions.save(Question(-1,"De câte râuri \"Criș\" este străbătută Crișana?","Trei (Alb, Negru, Repede); Unul; Două; Patru".split("; ")),26)
+
+    repoQuestions.save(Question(-1,"Maramureșul este faimos pentru...","Porțile din lemn, Castele de nisip, Zgârie-nori, Podgorii".split(", ")),27)
+    repoQuestions.save(Question(-1,"Ce lanț muntos se află în Maramureș?","Carpații Maramureșului și Bucovinei, Munții Banatului, Făgăraș, Bucegi".split(", ")),27)
+    repoQuestions.save(Question(-1,"Unde este situat Maramureșul?","Nordul României, Sudul României, Estul României, Vestul României".split(", ")),27)
+
+    repoQuestions.save(Question(-1,"Ce resurse importante se găseau în Munții Apuseni (zona auriferă)?","Aur și Argint, Sare, Petrol, Cărbune".split(", ")),28)
+    repoQuestions.save(Question(-1,"Ce au trimis provinciile (Crișana, Maramureș) la Alba Iulia în 1918?","Delegați pentru Unire, Soldați, Bani, Mâncare".split(", ")),28)
+    repoQuestions.save(Question(-1,"Memorialul Victimelor Comunismului se află la...","Sighetu Marmației, Baia Mare, Satu Mare, Arad".split(", ")),28)
+
+    repoQuestions.save(Question(-1,"Castelul Corvinilor (Huniade) este aproape de Banat, în...","Hunedoara, Timișoara, Arad, Deva".split(", ")),29)
+    repoQuestions.save(Question(-1,"Cascada Bigăr se află în regiunea...","Banat, Dobrogea, Moldova, Muntenia".split(", ")),29)
+    repoQuestions.save(Question(-1,"Cetatea Aradului este construită în stil...","Vauban (stea), Gotic, Modern, Dacic".split(", ")),29)
+
+    repoQuestions.save(Question(-1,"Fluviul Dunărea intră în țară prin regiunea...","Banat (Baziaș), Dobrogea, Moldova, Crișana".split(", ")),30)
+    repoQuestions.save(Question(-1,"Bisericile de lemn din Maramureș sunt în patrimoniul...","UNESCO, NATO, UE, ONU".split(", ")),30)
+    repoQuestions.save(Question(-1,"Care este un oraș important din județul Arad?","Lipova, Mangalia, Făgăraș, Sighișoara".split(", ")),30)
+
 def insert_fillins(repoFillins: FillInStatementRepository) -> None:
     repoFillins.save(FillInStatement(-1,["Pe vârful munților crește doar ____."],["iarbă"]), 1)
     #repoFillins.save(FillInStatement(37,["Pe vârful munților crește doar ____."],["iarba"]), 1)
@@ -98,20 +172,265 @@ def insert_fillins(repoFillins: FillInStatementRepository) -> None:
     repoFillins.save(FillInStatement(-1,["Bucovina este renumită pentru mănăstrile ____."],["pictate"]), 12)
     repoFillins.save(FillInStatement(-1,["Orașul Iași se află pe cele 7 ____."],["coline"]), 12)
 
+    repoFillins.save(FillInStatement(-1,["Fluviul care formează limita de sud a țării este ____."],["dunărea"]),13)
+    repoFillins.save(FillInStatement(-1,["Capitala României se află în orașul ____."],["bucurești"]),13)
+
+    repoFillins.save(FillInStatement(-1,["Bătălia de la Posada (1330) a asigurat ____ "," țării."],["independența"]),14)
+    repoFillins.save(FillInStatement(-1,["Alexandru Ioan Cuza a realizat Mica ____ "," în 1859."],["unire"]),14)
+
+    repoFillins.save(FillInStatement(-1,["Între Carpați și Câmpia Română se află Podișul ____."],["getic"]),15)
+    repoFillins.save(FillInStatement(-1,["Ocupația principală la sate este ____."],["agricultura"]),15)
+
+    repoFillins.save(FillInStatement(-1,["Vlad Țepeș era cunoscut pentru severitate și ____."],["dreptate"]),16)
+    repoFillins.save(FillInStatement(-1,["Cel mai mare port la Dunăre din această regiune este ____."],["giurgiu"]),16)
+
+    repoFillins.save(FillInStatement(-1,["Reședința domnească a lui Vlad Țepeș a fost la Târgoviște, unde vedem Turnul ____."],["chindiei"]),17)
+    repoFillins.save(FillInStatement(-1,["Cunoscuta stațiune de pe Valea Prahovei este ____."],["sinaia"]),17)
+
+    repoFillins.save(FillInStatement(-1,["Râul Olt trece prin defileul Turnu ____."],["roșu"]),18)
+    repoFillins.save(FillInStatement(-1,["Mihai Viteazul a fost domn al Țării ____."],["românești"]),18)
+
+    repoFillins.save(FillInStatement(-1,["Porțiunile de uscat din Deltă formate din mâl se numesc ____."],["grinduri"]),19)
+    repoFillins.save(FillInStatement(-1,["Orașul-port la vărsarea brațului mijlociu este ____."],["sulina"]),19)
+
+    repoFillins.save(FillInStatement(-1,["Vechiul nume al orașului Constanța este ____."],["tomis"]),20)
+    repoFillins.save(FillInStatement(-1,["Monumentul Tropaeum Traiani se află la ____."],["adamclisi"]),20)
+
+    repoFillins.save(FillInStatement(-1,["Pentru irigații, în Dobrogea este nevoie de multă ____."],["apă"]),21)
+    repoFillins.save(FillInStatement(-1,["Litoralul este renumit pentru stațiunile ____."],["turistice"]),21)
+
+    repoFillins.save(FillInStatement(-1,["Ocupația principală a oamenilor din Deltă este ____."],["pescuitul"]),22)
+    repoFillins.save(FillInStatement(-1,["Pasărea simbol a Deltei Dunării este ____."],["pelicanul"]),22)
+
+    repoFillins.save(FillInStatement(-1,["Orașul Tulcea este poarta de intrare în ____."],["delta dunarii"]),23)
+    repoFillins.save(FillInStatement(-1,["Vânturile din Dobrogea, numite Crivăț, sunt foarte ____."],["reci"]),23)
+
+    repoFillins.save(FillInStatement(-1,["Centrala nucleară de la Cernavodă produce ____."],["energie"]),24)
+    repoFillins.save(FillInStatement(-1,["Insula Popina se află în lacul ____."],["razim"]),24)
+
+    repoFillins.save(FillInStatement(-1,["Râul care trece prin Timișoara (canal navigabil) este ____."],["bega"]),25)
+    repoFillins.save(FillInStatement(-1,["Banatul a revenit României după anul ____."],["1918"]),25)
+
+    repoFillins.save(FillInStatement(-1,["Forma de relief predominantă la granița de vest este ____."],["câmpia de vest"]),26)
+    repoFillins.save(FillInStatement(-1,["La Oradea se află stațiunea Băile ____."],["felix"]),26)
+
+    repoFillins.save(FillInStatement(-1,["Cimitirul Vesel se află în localitatea ____."],["săpânța"]),27)
+    repoFillins.save(FillInStatement(-1,["Trenul cu aburi de pe Valea Vaserului se numește ____."],["mocănița"]),27)
+
+    repoFillins.save(FillInStatement(-1,["Zona tradițională din nord se numește Țara ____."],["maramureșului"]),28)
+    repoFillins.save(FillInStatement(-1,["Râul Tisa formează granița cu țara numită ____."],["ucraina"]),28)
+
+    repoFillins.save(FillInStatement(-1,["Orașul Baia Mare este reședința județului ____."],["maramureș"]),29)
+    repoFillins.save(FillInStatement(-1,["Cea mai mare câmpie din vestul țării este Câmpia de ____."],["vest"]),29)
+
+    repoFillins.save(FillInStatement(-1,["Cele trei râuri Criș sunt: Repede, Negru și ____."],["alb"]),30)
+    repoFillins.save(FillInStatement(-1,["Mânăstirea Bârsana se află în ____."],["maramureș"]),30)
+
 def insert_quizzes(repoQuizzes: QuizzRepository) -> None:
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
-    # repoQuizzes.save(Quizz(1,[],[],[],Difficulty[0]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
-    repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
+    for i in range(5):
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
+        # repoQuizzes.save(Quizz(1,[],[],[],Difficulty[0]),1)
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[0]),1)
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[1]),1)
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
+        repoQuizzes.save(Quizz(-1,[],[],[],Difficulty[2]),1)
+
+def insert_minigames(repoMinigames: MinigameRepository) -> None:
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle1.jpg"),6) #6
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle2.jpg"),9) #12
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle3.jpg"),17) #18
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle4.jpg"),20) #24
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle5.jpg"),30) #30
+    repoMinigames.save(Puzzle(-1,"backend/domain/assets/images/games/puzzle/puzzle6.jpg"),18) #18
+
+    repoMinigames.save(Pairs(-1,{
+        "Mihai Viteazul":"A realizat Unirea din 1600",
+        "Alexandru Ioan Cuza":"A realizat Unirea Principatelor din 1859",
+        "Ștefan cel Mare":"A fost domnitorul Moldovei în jurul anului 1500",
+        "Basarab I":"Este întemeietorul Țării Românești",
+        "Vlad Țepeș":"A atestat documentar Bucureștiul în 1459"
+    }),3) #6
+    repoMinigames.save(Pairs(-1,{
+        "Delta Dunării":"Este cea mai joasă unitate de relief",
+        "Vârful Moldoveanu":"Este cel mai înalt vârf din România",
+        "Lacul Sfânta Ana":"Este singurul lac vulcanic din România",
+        "Munții Apuseni":"Sunt munți cunoscuți pentru multele peșteri",
+        "Lacul Roșu":"S-a format prin alunecare de teren"
+    }),8) #12
+    repoMinigames.save(Pairs(-1,{
+        "Cluj-Napoca":"Este traversat de râul Someș",
+        "București":"Este traversat de râul Dâmbovița",
+        "Granița de Sud a României":"Este formată de fluviul Dunărea",
+        "Bacău":"Este traversat de râul Bistrița",
+        "Granița de Est a României":"Este formată de râul Prut"
+    }),13) #18
+    repoMinigames.save(Pairs(-1,{
+        "Podișul Târnavelor":"Este cunoscut pentru vița-de-vie",
+        "Delta Dunării":"Ocupația principală este pescuitul",
+        "Munții Carpați":"Au multe păduri de brad și molid",
+        "Maramureș":"Este renumit pentru porțile din lemn",
+        "Turda":"Locul de unde se extrage sarea"
+    }),19) #24
+    repoMinigames.save(Pairs(-1,{
+        "Timișoara":"Orașul unde a început Revoluția din 1989",
+        "Dobrogea":"Are ieșire la Marea Neagră",
+        "Crișana":"Se află lângă granița cu Ungaria",
+        "Transilvania":"Are relief de podiș în centru",
+        "Suceava":"A devenit capitală în timpul lui Petru I Mușat"
+    }),28) #30
+    repoMinigames.save(Pairs(-1,{
+        "Monumentul istoric de la Adamclisi":"Tropaeum Traiani",
+        "Cartofii cresc cel mai bine":"În locuri răcoroase",
+        "Cheile Bicazului":"S-au format prin eroziunea râului Bicaz",
+        "Iași":"Orașul unde a fost înființată prima universitate modernă",
+        "Cetatea Histria":"O cetate antică grecească din Dobrogea"
+    }),12) #12
+
+    repoMinigames.save(Rebus(-1,{
+        "Râu care trece prin Cluj":"SOMES",
+        "Munții din vestul țării":"APUSENI",
+        "Orașul de sub Tâmpa":"BRASOV",
+        "Județ cu reședința Miercurea Ciuc":"HARGHITA",
+        "Râu care trece prin Deva":"MURES"
+    },"SIBIU"),1) #6
+    repoMinigames.save(Rebus(-1,{
+        "Județ vecin cu Iași":"VASLUI",
+        "Capitala istorică a Moldovei":"IASI",
+        "Mănăstire celebră (albastru de...)":"VORONET",
+        "Poetul național Mihai...":"EMINESCU",
+        "Oraș în nordul Moldovei":"BOTOSANI"
+    },"SIRET"),10) #12
+    repoMinigames.save(Rebus(-1,{
+        "Județ la Dunăre":"DOLJ",
+        "Orașul de pe Dâmbovița":"BUCURESTI",
+        "Oraș reședință pe râul Olt":"SLATINA",
+        "Oraș port în județul Dolj":"CALAFAT",
+        "Râu care trece prin Pitești":"ARGES",
+        "Punct cardinal unde răsare soarele":"EST"
+    },"DUNARE"),14) #18
+    repoMinigames.save(Rebus(-1,{
+        "Punct cardinal la răsărit":"EST",
+        "Fluviul de la graniță":"DUNARE",
+        "Braț al Dunării cu port":"SULINA",
+        "Munți foarte vechi":"MACIN",
+        "Regiunea de la mare":"DOBROGEA",
+        "Oraș port la mare":"MANGALIA"
+    },"TULCEA"),23) #24
+    repoMinigames.save(Rebus(-1,{
+        "Orașul florilor":"TIMISOARA",
+        "Oraș în județul Arad":"LIPOVA",
+        "Râu la granița de nord a Banatului":"MURES",
+        "Munții din vestul țării":"APUSENI",
+        "Județ în sudul Banatului (Caraș-...)":"SEVERIN"
+    },"TIMIS"),26) #30
+    repoMinigames.save(Rebus(-1,{
+        "Formă de relief înaltă":"MUNTE",
+        "Orașul Marii Uniri (Alba...)":"IULIA",
+        "Oraș mare în Transilvania":"BRASOV",
+        "Județ cu cetatea Deva":"HUNEDOARA",
+        "Râu care trece prin Cluj":"SOMES"
+    },"MURES"),5) #6
+
+    repoMinigames.save(Bingo(-1,{"Decebal": True, "Traian": True, "Burebista": True, "Mircea cel Bătrân": True,
+    "Ștefan cel Mare": True, "Mihai Viteazul": True, "Al. Ioan Cuza": True, "Carol I": True,
+    "Ferdinand I": True, "Regina Maria": True, "Vlad Țepeș": True, "Basarab I": True,
+    "Iancu de Hunedoara": True, "Constantin Brâncoveanu": True, "Neagoe Basarab": True,
+    "Nicolae Bălcescu": True, "Avram Iancu": True, "Tudor Vladimirescu": True,
+    "Ecaterina Teodoroiu": True, "Marea Unire": True, "Independența": True,
+    "Revoluția 1848": True, "Bătălia de la Rovine": True, "Bătălia de la Podul Înalt": True,
+    "Bătălia de la Călugăreni": True, "Sarmizegetusa": True, "Pacea de la Buftea": True,
+    "Tratatul de la Trianon": True, "Dacia Preistorică": True, "Gelu, Glad și Menumorut": True,
+    "Napoleon Bonaparte": False, "Iulius Cezar": False, "Abraham Lincoln": False,
+    "Winston Churchill": False, "Alexandru cel Mare": False, "Genghis Han": False,
+    "Cleopatra": False, "Tutankhamun": False, "Regina Victoria": False, "Simon Bolivar": False,
+    "Nelson Mandela": False, "Mao Zedong": False, "George Washington": False, "Hannibal": False,
+    "Leonida": False, "Pericle": False, "Otto von Bismarck": False, "Ivan cel Groaznic": False,
+    "Ludovic al XIV-lea": False, "Cristofor Columb": False},"ISTORIE"),2) #6
+    repoMinigames.save(Bingo(-1,{"Dunărea": True, "Marea Neagră": True, "Munții Carpați": True, "Vârful Moldoveanu": True,
+    "Delta Dunării": True, "Râul Prut": True, "Râul Siret": True, "Râul Mureș": True,
+    "Râul Olt": True, "Râul Ialomița": True, "Râul Someș": True, "Lacul Sfânta Ana": True,
+    "Lacul Roșu": True, "Transfăgărășan": True, "Transalpina": True, "Sfinxul": True,
+    "Babele": True, "Peștera Scărișoara": True, "Porțile de Fier": True, "Câmpia Română": True,
+    "Podișul Moldovei": True, "Dealurile de Vest": True, "Munții Apuseni": True,
+    "Munții Bucegi": True, "Munții Parâng": True, "Munții Retezat": True, "Munții Rodnei": True,
+    "Defileul Jiului": True, "Podișul Dobrogei": True, "Subcarpații Getici": True,
+    "Fluviul Nil": False, "Munții Alpi": False, "Muntele Everest": False, "Fluviul Amazon": False,
+    "Deșertul Sahara": False, "Munții Himalaya": False, "Marele Canion": False,
+    "Fluviul Mississippi": False, "Muntele Fuji": False, "Oceanul Pacific": False,
+    "Munții Anzi": False, "Marea Mediterană": False, "Insula Groenlanda": False,
+    "Cascada Niagara": False, "Lacul Baikal": False, "Vârful Kilimanjaro": False,
+    "Marea Moartă": False, "Canalul Panama": False, "Strâmtoarea Gibraltar": False,
+    "Podișul Tibet": False},"GEOGRAFIE"),7) #12
+    repoMinigames.save(Bingo(-1,{"Urs carpatin": True, "Râs": True, "Capră neagră": True, "Zimbru": True, "Pelican": True,
+    "Mistreț": True, "Cerb": True, "Căprioară": True, "Cocoș de munte": True,
+    "Acvilă de munte": True, "Șacal aurit": True, "Bursuc": True, "Vidră": True,
+    "Salamandră": True, "Țestoasă de uscat": True, "Floarea de colț": True,
+    "Bujorul românesc": True, "Narcisa sălbatică": True, "Ghiocel": True, "Toporaș": True,
+    "Stejar": True, "Fag": True, "Brad": True, "Molid": True, "Pin": True, "Tei": True,
+    "Salcie": True, "Plop": True, "Frasin": True, "Măceș": True,
+    "Leu": False, "Tigru": False, "Elefant": False, "Girafă": False, "Zebră": False,
+    "Hipopotam": False, "Pinguin": False, "Cangur": False, "Urs Koala": False,
+    "Urs Panda": False, "Cămilă": False, "Balenă albastră": False, "Rechin alb": False,
+    "Baobab": False, "Palmier": False, "Bambus": False, "Cactus": False, "Sequoia": False,
+    "Eucalipt": False, "Orhidee tropicală": False},"NATURA"),16) #18
+    repoMinigames.save(Bingo(-1,{"Castelul Bran": True, "Castelul Peleș": True, "Mănăstirea Voroneț": True,
+    "Cetatea Neamț": True, "Coloana Infinitului": True, "Palatul Parlamentului": True,
+    "Cazinoul Constanța": True, "Cetatea Alba Carolina": True, "Curtea de Argeș": True,
+    "Mănăstirea Putna": True, "Castelul Corvinilor": True, "Biserica Neagră": True,
+    "Turnul Sfatului": True, "Cetatea de Scaun": True, "Ateneul Român": True,
+    "Arcul de Triumf": True, "Salina Turda": True, "Mănăstirea Cozia": True,
+    "Cetatea Râșnov": True, "Cimitirul Vesel": True, "Palatul Culturii": True,
+    "Mănăstirea Horezu": True, "Cetatea Enisala": True, "Biserica de lemn Ieud": True,
+    "Cetatea Devei": True, "Mausoleul Mărășești": True, "Podul Prieteniei": True,
+    "Opera Națională": True, "Grădina Botanică": True, "Muzeul Satului": True,
+    "Turnul Eiffel": False, "Piramidele Giza": False, "Colosseum": False,
+    "Statuia Libertății": False, "Big Ben": False, "Taj Mahal": False, "Marele Zid": False,
+    "Acropola Ateniană": False, "Sagrada Familia": False, "Machu Picchu": False,
+    "Opera din Sydney": False, "Burj Khalifa": False, "Catedrala Notre-Dame": False,
+    "Muntele Rushmore": False, "Stonehenge": False, "Poarta Brandenburg": False,
+    "Louvre": False, "Panteonul": False, "Vatican": False, "Podul Golden Gate": False},"OBIECTIVE"),21) #24
+    repoMinigames.save(Bingo(-1,{"București": True, "Iași": True, "Cluj-Napoca": True, "Timișoara": True, "Constanța": True,
+    "Craiova": True, "Brașov": True, "Galați": True, "Oradea": True, "Ploiești": True,
+    "Brăila": True, "Arad": True, "Pitești": True, "Sibiu": True, "Bacău": True,
+    "Târgu Mureș": True, "Baia Mare": True, "Buzău": True, "Botoșani": True, "Satu Mare": True,
+    "Râmnicu Vâlcea": True, "Drobeta-Turnu Severin": True, "Suceava": True, "Piatra Neamț": True,
+    "Târgu Jiu": True, "Târgoviște": True, "Tulcea": True, "Bistrița": True, "Reșița": True,
+    "Slatina": True,
+    "Paris": False, "Londra": False, "Berlin": False, "Madrid": False, "Roma": False,
+    "Viena": False, "Amsterdam": False, "Praga": False, "Varșovia": False, "Budapesta": False,
+    "Tokyo": False, "New York": False, "Los Angeles": False, "Beijing": False, "Cairo": False,
+    "Moscova": False, "Istanbul": False, "Sydney": False, "Rio de Janeiro": False, "Toronto": False},"ORASE"),29) #30
+    repoMinigames.save(Bingo(-1,{"Ie": True, "Opincă": True, "Mărțișor": True, "Colindă": True, "Doina": True, "Hora": True,
+    "Clacă": True, "Șezătoare": True, "Pluguleț": True, "Sorcova": True, "Papanași": True,
+    "Sărmăluțe": True, "Mămăligă": True, "Cozonac": True, "Pasca": True, "Mujdei": True,
+    "Brânză de burduf": True, "Tulnic": True, "Nai": True, "Cobză": True, "Olărit": True,
+    "Încondeiere ouă": True, "Călușarii": True, "Drăgaica": True, "Sânziene": True,
+    "Capra": True, "Ursul (obicei)": True, "Vatră": True, "Fuior": True, "Război de țesut": True,
+    "Pizza": False, "Burger": False, "Sushi": False, "Taco": False, "Croissant": False,
+    "Halloween": False, "Valentine's Day": False, "Sombrero": False, "Kimono": False,
+    "Kilt": False, "Baghetă": False, "Hot dog": False, "Baseball": False, "Cricket": False,
+    "Flamenco": False, "Salsa": False, "Origami": False, "Karaoke": False, "Yoga": False,
+    "Hamburger": False},"TRADITII"),24) #24
+
+    repoMinigames.save(MapGuesser(-1,{"Unde a avut loc Marea Unire de la 1918?": (0.38, 0.53),
+  "Indică orașul considerat 'inima' Transilvaniei, mare centru universitar.": (0.38, 0.68),
+  "Unde se află Castelul Corvinilor (Huniade)?": (0.32, 0.47)}),4) #6
+    repoMinigames.save(MapGuesser(-1,{"Unde se află Palatul Culturii și Bojdeuca lui Ion Creangă?": (0.74, 0.76),
+  "Indică fosta Cetate de Scaun a lui Ștefan cel Mare.": (0.62, 0.87),
+  "Care este cel mai mare port fluvial la Dunăre din estul țării?": (0.79, 0.41)}),11) #12
+    repoMinigames.save(MapGuesser(-1,{"Unde se află Casa Poporului, a doua cea mai mare clădire din lume?": (0.61, 0.18),
+  "Unde se află hidrocentrala Porțile de Fier?": (0.29, 0.23),
+  "Lângă ce oraș se produc mașinile Dacia?": (0.51, 0.26)}),15) #18
+    repoMinigames.save(MapGuesser(-1,{"Unde se află Cazinoul antic de pe faleză și marele port maritim?": (0.84, 0.14),
+  "La ce mare are deschidere România?": (0.89, 0.19),
+  "Indică locul unde Dunărea se varsă în mare, formând o rezervație.": (0.88, 0.37)}),22) #24
+    repoMinigames.save(MapGuesser(-1,{"În ce oraș a început Revoluția din 1989?": (0.17, 0.49),
+  "Care este cel mai important oraș din Crișana, cu clădiri Art Nouveau?": (0.23, 0.75),
+  "Orașul din nord-vest, aproape de granița cu Ungaria și Ucraina.": (0.32, 0.89)}),25) #30
+    repoMinigames.save(MapGuesser(-1,{"Orașul prin care trece râul Mureș, aproape de granița de vest.": (0.18, 0.57),
+                                      "Care oraș se numește Hermannstadt în germană?": (0.43, 0.48),
+                                      "De unde provine apa Dorna?": (0.53, 0.80)}),27) #30
 
 def test_repository() -> bool:
     con = sqlite3.connect("../../domain/data.db")
@@ -154,6 +473,11 @@ def test_repository() -> bool:
     print(repoFillins.get_by_id(39))
     print(">--------------( Fill-ins inserted! )---------------<\n")
 
+    repoMinigames = MinigameRepository(con)
+    insert_minigames(repoMinigames)
+    print(repoMinigames.get_by_id(10))
+    print(">--------------( Minigames inserted! )---------------<\n")
+
     repoQuizzTasks = QuizzTaskRepository(con)
     print(repoQuizzTasks.get_all()[10])
     print(f">--------------( {len(repoQuizzTasks.get_all())} quizz tasks! )---------------<\n")
@@ -161,7 +485,7 @@ def test_repository() -> bool:
     con.close()
     return True
 
-def run_tests() -> None: # TODO: putem popula baza de date cu aceasta functie!
+def run_tests() -> None: # putem popula baza de date cu aceasta functie!
     print(">--------------( Start repository tests )---------------<\n")
     if test_repository(): print("\n>--------------( All tests passed! )---------------<")
     else: print("\n>--------------( Some tests failed! )---------------<")

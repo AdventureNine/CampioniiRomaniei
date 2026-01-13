@@ -1,65 +1,104 @@
-#:import AppColors frontend.utils.colors.AppColors
+#:import image_path frontend.utils.assets.image_path
+#:import MDFillRoundFlatButton kivymd.uix.button.MDFillRoundFlatButton
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
 
-<MenuBigButton@Button>:
-    background_normal: ''
-    background_color: AppColors.ACCENT
-    font_size: '24sp'
-    bold: True
-    color: AppColors.WHITE
+<ImageButton@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+
+<ButonIesireComun@ImageButton>:
+    source: image_path("ui/back.png")
     size_hint: None, None
-    size: 250, 80
-    background_down: ''
-    canvas.before:
-        Color:
-            rgba: self.background_color if self.state == 'normal' else AppColors.PRIMARY
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [20,]
+    height: "100dp"
+    width: self.height * (16/9)
+    pos_hint: {"top": 0.98, "right": 0.98}
+    on_release: root.exit_app()
 
-<PlayButton@MenuBigButton>:
-    size: 550, 80
+<ButonMeniu@MDFillRoundFlatButton>:
+    font_size: "24sp"
+    size_hint_x: None
+    width: "300dp"
+    height: "60dp"
+    pos_hint: {"center_x": 0.5}
+    md_bg_color: 0.2, 0.4, 0.8, 1
+    text_color: 1, 1, 1, 1
+
+# --- ECRANUL PRINCIPAL ---
 
 <MenuScreen>:
-    canvas.before:
-        Color:
-            rgba: AppColors.BACKGROUND
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    name: 'menu'
 
     FloatLayout:
-        # Titlul Aplicației
-        Label:
-            text: "Campionii Geografiei"
-            font_size: '60sp'
-            pos_hint: {'center_x': 0.5, 'y': 0.3}
-            color: AppColors.PRIMARY
+        # FUNDAL
+        Image:
+            source: image_path("ui/dashboard_background1.png")
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: 1, 1
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+        # FILTRU ÎNTUNECARE
+        MDBoxLayout:
+            md_bg_color: 0, 0, 0, 0.3
+            size_hint: 1, 1
+
+
+        # TITLU (UMBRA - Spate)
+        MDLabel:
+            text: "CAMPIONII ROMÂNIEI"
+            halign: "center"
+            pos_hint: {"center_x": 0.503, "center_y": 0.795}
+            font_name: image_path("ui/RAVIE.TTF")
+            font_size: "60sp"
+            theme_text_color: "Custom"
+            text_color: 0, 0, 0, 0.5
             bold: True
 
-        GridLayout:
-            cols: 2
-            padding: 50
-            size_hint: None, None
-            size: 600, 300
-            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-            PlayButton:
-                text: "JOC"
+        # TITLU (PRINCIPAL - Față)
+        MDLabel:
+            text: "CAMPIONII ROMÂNIEI"
+            halign: "center"
+            pos_hint: {"center_x": 0.5, "center_y": 0.8}
+            font_name: image_path("ui/RAVIE.TTF")
+            font_size: "60sp"
+            theme_text_color: "Custom"
+            text_color: 0, 0.6, 1, 1
+            outline_color: 1, 1, 1, 0.3
+            outline_width: 1
+
+        # LISTA DE BUTOANE
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: "15dp"
+            adaptive_height: True
+            size_hint_x: 0.7
+            pos_hint: {"center_x": 0.5, "center_y": 0.45}
+
+            # Buton START
+            ImageButton:
+                source: image_path("ui/btn_start.png")
+                size_hint: None, None
+                height: "140dp"
+                width: "600dp"
+                pos_hint: {"center_x": 0.5}
                 on_release: app.clouds.change_screen('map')
 
-        GridLayout:
-            cols: 2
-            spacing: 50
-            padding: 50
-            size_hint: None, None
-            size: 600, 300
-            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            #BUTON STATISTICI
+            ImageButton:
+                source: image_path("ui/statistici.png")
+                size_hint: None, None
+                height: "140dp"
+                width: "300dp"
+                pos_hint: {"center_x": 0.5}
+                on_release: app.clouds.change_screen('statistics')
 
-            MenuBigButton:
-                text: "COSMETICE"
-                on_release: app.clouds.change_screen('cosmetics')
-                background_color: 0.6, 0.2, 0.6, 1
+            #BUTON COSMETICE
+            ImageButton:
+                source: image_path("ui/cosmetice.png")
+                size_hint: None, None
+                height: "140dp"
+                width: "300dp"
+                pos_hint: {"center_x": 0.5}
 
-            MenuBigButton:
-                text: "STATISTICI"
-                background_color: 0.4, 0.5, 0.5, 1
+

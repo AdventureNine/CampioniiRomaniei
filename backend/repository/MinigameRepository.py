@@ -4,12 +4,14 @@ from backend.domain.entities.Minigame import Minigame, Puzzle, Rebus, Bingo, Pai
 
 def _parse_win_config(raw_str: str, m_type: str):
     if not raw_str: return None
+    if m_type == "map_guesser":
+        tuples = re.findall(r'<(.*?)><(.*?)><(.*?)>', raw_str)
+        return {key: (float(x), float(y)) for key, x, y in tuples}
     if m_type == "puzzle": return raw_str
     pairs = re.findall(r'<(.*?)><(.*?)>', raw_str)
-    if m_type in "pairs": return {k: v for k, v in pairs}
-    if m_type in "rebus": return raw_str.split(';')[0],{k: v for k, v in pairs}
-    if m_type == "bingo": return {k: (v.lower() == 'true') for k, v in pairs}
-    if m_type == "map_guesser": return [(float(x), float(y)) for x, y in pairs]
+    if m_type == "pairs": return {k: v for k, v in pairs}
+    if m_type == "rebus": return raw_str.split(';')[0],{k: v for k, v in pairs}
+    if m_type == "bingo": return raw_str.split(';')[0],{k: (v.lower() == 'true') for k, v in pairs}
     return raw_str
 
 def _format_win_config(minigame) -> str:
@@ -17,8 +19,8 @@ def _format_win_config(minigame) -> str:
     if isinstance(minigame, Puzzle): return str(minigame.get_image_path())
     if isinstance(minigame, Pairs): return "".join([f"<{k}><{v}>;" for k, v in config.items()])
     if isinstance(minigame, Rebus): return minigame.get_secret_word()+";"+"".join([f"<{k}><{v}>;" for k, v in config.items()])
-    if isinstance(minigame, Bingo): return "".join([f"<{k}><{str(v).lower()}>;" for k, v in config.items()])
-    if isinstance(minigame, MapGuesser): return "".join([f"<{x}><{y}>;" for x, y in config])
+    if isinstance(minigame, Bingo): return minigame.get_theme()+";"+"".join([f"<{k}><{str(v).lower()}>;" for k, v in config.items()])
+    if isinstance(minigame, MapGuesser): return "".join([f"<{key}><{x}><{y}>;" for key, (x, y) in config.items()])
     return str(config)
 
 def _get_type_string(minigame) -> str:
@@ -58,9 +60,11 @@ class MinigameRepository:
             if m_type == "rebus":
                 secret_word,win_config = _parse_win_config(raw_config, m_type)
                 return Rebus(m_id, win_config, secret_word)
+            if m_type == "bingo":
+                theme, win_config = _parse_win_config(raw_config, m_type)
+                return Bingo(m_id, win_config, theme)
             win_config = _parse_win_config(raw_config, m_type)
             if m_type == "puzzle": return Puzzle(m_id, win_config)
-            elif m_type == "bingo": return Bingo(m_id, win_config)
             elif m_type == "pairs": return Pairs(m_id, win_config)
             elif m_type == "map_guesser": return MapGuesser(m_id, win_config)
             return Minigame(m_id, win_config, None)

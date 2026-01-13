@@ -9,7 +9,7 @@ QUESTIONS_DATA = {
         1: [
             {
                 "type": "puzzle",
-                "image": "puzzle1.jpg",
+                "image": "puzzle4.jpg",
                 "question": "Rezolvă puzzle-ul!"
             }
         ],
@@ -80,6 +80,10 @@ QUESTIONS_DATA = {
 
         # NIVEL 4: Agricultură și Resurse (Mediu/Greu)
         4: [
+            #test pt pairs
+            {
+                "type": "pairs"
+            },
             {
                 "type": "quiz",
                 "question": "Ce se face din vița-de-vie?",
