@@ -80,6 +80,10 @@ QUESTIONS_DATA = {
 
         # NIVEL 4: Agricultură și Resurse (Mediu/Greu)
         4: [
+            #test pt pairs
+            {
+                "type": "pairs"
+            },
             {
                 "type": "quiz",
                 "question": "Ce se face din vița-de-vie?",

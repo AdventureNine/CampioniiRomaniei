@@ -5,13 +5,15 @@ import sys
 from kivy.config import Config
 
 from frontend.screens.games.map_guess import MapGuessScreen
+from frontend.screens.games.pairs import PairsGameScreen
+from frontend.screens.statistics.statistics import PaginaStatistici
 
 Config.set('graphics', 'width', '1280')
 Config.set('graphics', 'height', '800')
 Config.set('graphics', 'resizable', False)
 Config.write()
 
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, NoTransition
 from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
@@ -31,10 +33,11 @@ from frontend.screens.generic.fill_screen import GenericFillScreen
 from frontend.screens.games.puzzle import PuzzleGameScreen
 from frontend.screens.games.rebus import RebusScreen
 from frontend.screens.games.bingo import BingoScreen
+from frontend.screens.games.pairs import PairsGameScreen
 
 from kivy.factory import Factory
 
-class DidacticApp(App):
+class DidacticApp(MDApp):
     score = NumericProperty(0)
     timer_text = StringProperty("")
 
@@ -56,6 +59,8 @@ class DidacticApp(App):
         Builder.load_file('screens/games/puzzle.kv')
         Builder.load_file('screens/games/rebus.kv')
         Builder.load_file('screens/games/bingo.kv')
+        Builder.load_file('screens/games/pairs.kv')
+        Builder.load_file('screens/statistics/statistics.kv')
 
         # 2. Layout Principal
         self.root_layout = FloatLayout()
@@ -71,6 +76,8 @@ class DidacticApp(App):
         self.sm.add_widget(MapGuessScreen(name='map_guess'))
         self.sm.add_widget(RebusScreen(name='rebus'))
         self.sm.add_widget(BingoScreen(name='bingo'))
+        self.sm.add_widget(PairsGameScreen(name='pairs_game'))
+        self.sm.add_widget(PaginaStatistici(name='statistics'))
 
         # 4. Strat Nori
         self.clouds = CloudTransitionLayout()
