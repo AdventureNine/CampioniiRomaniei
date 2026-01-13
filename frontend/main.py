@@ -40,6 +40,11 @@ class DidacticApp(MDApp):
     timer_text = StringProperty("")
     player = ObjectProperty(None)
     score = NumericProperty(0)
+    player_repo = ObjectProperty(None)
+    minigame_repo = ObjectProperty(None)
+    quizz_task_repo = ObjectProperty(None)
+    question_repo = ObjectProperty(None)
+    fill_in_repo = ObjectProperty(None)
     conn, sm, clouds = None, None, None
 
     def on_stop(self): self.conn.close()
@@ -52,21 +57,21 @@ class DidacticApp(MDApp):
         root_layout = FloatLayout()
 
         #repositories
-        player_repo = PlayerRepository(self.conn)
-        quizz_task_repo = QuizzTaskRepository(self.conn)
-        question_repo = QuestionRepository(self.conn)
-        fill_in_repo = FillInStatementRepository(self.conn)
-        minigame_repo = MinigameRepository(self.conn)
+        self.player_repo = PlayerRepository(self.conn)
+        self.quizz_task_repo = QuizzTaskRepository(self.conn)
+        self.question_repo = QuestionRepository(self.conn)
+        self.fill_in_repo = FillInStatementRepository(self.conn)
+        self.minigame_repo = MinigameRepository(self.conn)
 
         #TODO: service
 
-        loaded_player = player_repo.get()
+        loaded_player = self.player_repo.get()
         if loaded_player:
             self.player = loaded_player
             self.score = self.player.get_credits()
         else:
             self.player = Player(1, "Explorator")
-            player_repo.save(self.player) #TODO service
+            self.player_repo.save(self.player) #TODO service
 
         # 1. Încărcare Componente Grafice
         Builder.load_file('components/common.kv')

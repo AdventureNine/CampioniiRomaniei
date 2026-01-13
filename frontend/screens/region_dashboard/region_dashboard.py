@@ -214,8 +214,10 @@ class RegionDashboardScreen(Screen):
 
             elif ex_type == 'bingo':
                 screen = app.sm.get_screen('bingo')
+                screen.minigame_id = ex_data.get('id')
                 screen.current_difficulty = ex_data.get('difficulty', screen.current_difficulty)
                 screen.bg_image = self.bg_image
+                screen.generate_bingo()
                 app.clouds.change_screen('bingo')
 
             elif ex_type == 'pairs':

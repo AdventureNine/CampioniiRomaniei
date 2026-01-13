@@ -118,6 +118,7 @@ class BingoScreen(Screen):
     is_wrong = BooleanProperty(False)
     bg_image = StringProperty('')
     current_difficulty = ObjectProperty(None, allownone=True)
+    minigame_id = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         if 'current_difficulty' not in kwargs:
@@ -125,10 +126,16 @@ class BingoScreen(Screen):
             self.current_difficulty = difficulty_levels[1]
         super().__init__(**kwargs)
         self.cells = []
-        Clock.schedule_once(self.generate_bingo, 0.1)
 
     def generate_bingo(self, *args):
-        if not self.game_container:
+        if not self.game_container or self.minigame_id is None:
+            return
+
+        app = App.get_running_app()
+        self.bingo_entity = app.minigame_repo.get_by_id(self.minigame_id)
+
+        if not self.bingo_entity:
+            print(f"Eroare: Nu s-a găsit minigame-ul cu ID {self.minigame_id}")
             return
 
         self.game_container.clear_widgets()
@@ -144,22 +151,16 @@ class BingoScreen(Screen):
         else:  # Hard
             num_true, num_false = 8, 17
 
-        all_true = []
-        all_false = []
-
-        available_categories = list(BINGO_DATA_SOURCE.keys())
-        selected_category_name = random.choice(available_categories)
-        selected_items = BINGO_DATA_SOURCE[selected_category_name]
-
-        all_true.extend([item for item in selected_items if item[1] is True])
-        all_false.extend([item for item in selected_items if item[1] is False])
+        db_items = self.bingo_entity.get_win_configuration()
+        all_true = [(text, True) for text, val in db_items.items() if val is True]
+        all_false = [(text, False) for text, val in db_items.items() if val is False]
 
         sample = random.sample(all_true, min(len(all_true), num_true)) + \
                  random.sample(all_false, min(len(all_false), num_false))
         random.shuffle(sample)
 
-        win_cfg = {item[0]: item[1] for item in sample}
-        self.bingo_entity = Bingo(bingo_id=2, win_configuration=win_cfg, theme= "dummy") # TODO backend connection
+        current_win_cfg = {item[0]: item[1] for item in sample}
+        self.bingo_entity.set_win_configuration(current_win_cfg)
 
         grid = GridLayout(cols=5, spacing=10, size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'), minimum_width=grid.setter('width'))
