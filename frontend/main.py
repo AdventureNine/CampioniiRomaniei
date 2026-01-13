@@ -1,30 +1,22 @@
-import os
-import sys
-
-# --- CONFIGURARE ---
-from kivy.config import Config
-
-from frontend.screens.games.map_guess import MapGuessScreen
-from frontend.screens.games.pairs import PairsGameScreen
-from frontend.screens.statistics.statistics import PaginaStatistici
-
-Config.set('graphics', 'width', '1280')
-Config.set('graphics', 'height', '800')
-Config.set('graphics', 'resizable', False)
-Config.write()
-
+import os, sys, sqlite3
 from kivymd.app import MDApp
+from kivy.lang import Builder
+from kivy.config import Config
+from kivy.factory import Factory
+from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, NoTransition
 from kivy.uix.floatlayout import FloatLayout
-from kivy.lang import Builder
-from kivy.core.window import Window
 from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend'))
+from backend.domain.entities.Player import Player
+from backend.repository.PlayerRepository import PlayerRepository
+from backend.repository.QuizzTaskRepository import QuizzTaskRepository
+from backend.repository.QuestionRepository import QuestionRepository
+from backend.repository.FillInStatementRepository import FillInStatementRepository
+from backend.repository.MinigameRepository import MinigameRepository
 
 from frontend.components.cloud_transition import CloudTransitionLayout
 from frontend.components.polygon_button import PolygonButton
-
 from frontend.screens.menu.menu import MenuScreen
 from frontend.screens.map.map import MapScreen
 from frontend.screens.region_dashboard.region_dashboard import RegionDashboardScreen
@@ -33,37 +25,48 @@ from frontend.screens.generic.fill_screen import GenericFillScreen
 from frontend.screens.games.puzzle import PuzzleGameScreen
 from frontend.screens.games.rebus import RebusScreen
 from frontend.screens.games.bingo import BingoScreen
-from frontend.screens.games.pairs import PairsGameScreen
 from frontend.screens.cosmetics.cosmetics import CosmeticsScreen
+from frontend.screens.games.map_guess import MapGuessScreen
+from frontend.screens.games.pairs import PairsGameScreen
+from frontend.screens.statistics.statistics import PaginaStatistici
 
-import sqlite3
-from backend.repository.PlayerRepository import PlayerRepository
-from backend.domain.entities.Player import Player
-
-from kivy.factory import Factory
+Config.set('graphics', 'width', '1280')
+Config.set('graphics', 'height', '800')
+Config.set('graphics', 'resizable', False)
+Config.write()
+sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend'))
 
 class DidacticApp(MDApp):
-    score = NumericProperty(0)
     timer_text = StringProperty("")
     player = ObjectProperty(None)
+    score = NumericProperty(0)
+    conn, sm, clouds = None, None, None
+
+    def on_stop(self): self.conn.close()
 
     def build(self):
-        Window.size = (1280, 800)
         self.title = "Campionii Geografiei"
-
-        Factory.register('PolygonButton', cls=PolygonButton)
-
         self.conn = sqlite3.connect('../backend/domain/data.db')
+        Window.size = (1280, 800)
+        Factory.register('PolygonButton', cls=PolygonButton)
+        root_layout = FloatLayout()
 
-        self.player_repo = PlayerRepository(self.conn)
+        #repositories
+        player_repo = PlayerRepository(self.conn)
+        quizz_task_repo = QuizzTaskRepository(self.conn)
+        question_repo = QuestionRepository(self.conn)
+        fill_in_repo = FillInStatementRepository(self.conn)
+        minigame_repo = MinigameRepository(self.conn)
 
-        loaded_player = self.player_repo.get()
+        #TODO: service
+
+        loaded_player = player_repo.get()
         if loaded_player:
             self.player = loaded_player
             self.score = self.player.get_credits()
         else:
             self.player = Player(1, "Explorator")
-            self.player_repo.save(self.player)
+            player_repo.save(self.player) #TODO service
 
         # 1. Încărcare Componente Grafice
         Builder.load_file('components/common.kv')
@@ -81,10 +84,7 @@ class DidacticApp(MDApp):
         Builder.load_file('screens/statistics/statistics.kv')
         Builder.load_file('screens/cosmetics/cosmetics.kv')
 
-        # 2. Layout Principal
-        self.root_layout = FloatLayout()
-
-        # 3. Screen Manager
+        # Screen Manager
         self.sm = ScreenManager(transition=NoTransition())
         self.sm.add_widget(MenuScreen(name='menu'))
         self.sm.add_widget(MapScreen(name='map'))
@@ -99,13 +99,10 @@ class DidacticApp(MDApp):
         self.sm.add_widget(PaginaStatistici(name='statistics'))
         self.sm.add_widget(CosmeticsScreen(name='cosmetics'))
 
-        # 4. Strat Nori
         self.clouds = CloudTransitionLayout()
+        root_layout.add_widget(self.sm)
+        root_layout.add_widget(self.clouds) # strat nori
 
-        self.root_layout.add_widget(self.sm)
-        self.root_layout.add_widget(self.clouds)
+        return root_layout
 
-        return self.root_layout
-
-if __name__ == '__main__':
-    DidacticApp().run()
+if __name__ == '__main__': DidacticApp().run()
