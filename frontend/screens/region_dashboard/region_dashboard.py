@@ -210,11 +210,15 @@ class RegionDashboardScreen(Screen):
                 screen = app.sm.get_screen('rebus')
                 screen.region_id = self.region_id
 
-                # Incarca entitatea rebus daca exista rebus_id
-                if 'rebus_id' in ex_data and hasattr(app, 'minigame_repo'):
-                    rebus_entity = app.minigame_repo.get_by_id(ex_data['rebus_id'])
-                    if rebus_entity:
-                        ex_data['rebus'] = rebus_entity
+                # Incarca entitatea rebus din quizz folosind service
+                # Formula: quizz_id = (region_id - 1) * 6 + current_level_id
+                if hasattr(app, 'service'):
+                    quizz_id = (self.region_id - 1) * 6 + self.current_level_id
+                    quizz = app.service.get_quizz_by_id(quizz_id)
+                    if quizz:
+                        rebus_entity = quizz.get_minigames()
+                        if rebus_entity:
+                            ex_data['rebus'] = rebus_entity
 
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image

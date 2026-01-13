@@ -14,6 +14,8 @@ from backend.repository.QuizzTaskRepository import QuizzTaskRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
 from backend.repository.MinigameRepository import MinigameRepository
+from backend.repository.QuizzRepository import QuizzRepository
+from backend.service.Service import Service
 
 from frontend.components.cloud_transition import CloudTransitionLayout
 from frontend.components.polygon_button import PolygonButton
@@ -57,8 +59,17 @@ class DidacticApp(MDApp):
         question_repo = QuestionRepository(self.conn)
         fill_in_repo = FillInStatementRepository(self.conn)
         minigame_repo = MinigameRepository(self.conn)
+        quizz_repo = QuizzRepository(self.conn)
 
         #TODO: service
+        self.service = Service(
+            player_repository=player_repo,
+            question_repository=question_repo,
+            fill_in_repository=fill_in_repo,
+            minigame_repository=minigame_repo,
+            quizz_repository=quizz_repo,
+            quizz_task_repository=quizz_task_repo
+        )
 
         loaded_player = player_repo.get()
         if loaded_player:
