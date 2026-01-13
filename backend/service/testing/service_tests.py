@@ -1,17 +1,14 @@
 """
-Service Tests - Testing all services with existing database
-Uses only extraction functions (no save/add operations)
+Service Tests - Testing the main Service class
 Uses the database from backend/domain/data.db
 """
 
 import sqlite3
 import os
-from backend.domain.entities.FillInStatement import FillInStatement
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Question import Question
 from backend.domain.entities.Quizz import Quizz
-from backend.domain.entities.Minigame import Puzzle, Rebus, Bingo, MapGuesser
-from backend.domain.utils.Difficulty import Difficulty
+from backend.domain.entities.Minigame import MapGuesser
 
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
@@ -19,366 +16,524 @@ from backend.repository.FillInStatementRepository import FillInStatementReposito
 from backend.repository.MinigameRepository import MinigameRepository
 from backend.repository.QuizzRepository import QuizzRepository
 from backend.repository.QuizzTaskRepository import QuizzTaskRepository
-from backend.repository.RegionRepository import RegionRepository
 
-from backend.service.PlayerService import PlayerService
-from backend.service.QuestionService import QuestionService
-from backend.service.FillInStatementService import FillInStatementService
-from backend.service.MinigameService import MinigameService
-from backend.service.QuizzService import QuizzService
-from backend.service.QuizzTaskService import QuizzTaskService
-from backend.service.RegionService import RegionService
-from backend.service.GameService import GameService
+from backend.service.Service import Service, convert_MapGuesser_to_frontend_format, convert_question_to_frontend_format, _get_region_name_by_id
 
 
 # ==================== DATABASE SETUP ====================
 
-# Path to the existing database in domain
 DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'domain', 'data.db'))
 
 
 def get_database_connection() -> sqlite3.Connection:
-    """
-    Returns a connection to the existing database from domain.
-    Only reads data, does not modify anything.
-    """
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"Database not found at: {DB_PATH}")
-    
-    con = sqlite3.connect(DB_PATH)
-    return con
+    return sqlite3.connect(DB_PATH)
 
 
-# ==================== SERVICE TESTS ====================
+def create_service(con: sqlite3.Connection) -> Service:
+    """Create a Service instance with all repositories."""
+    return Service(
+        player_repository=PlayerRepository(con),
+        question_repository=QuestionRepository(con),
+        fill_in_repository=FillInStatementRepository(con),
+        minigame_repository=MinigameRepository(con),
+        quizz_repository=QuizzRepository(con),
+        quizz_task_repository=QuizzTaskRepository(con)
+    )
 
-def test_player_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing PlayerService )---------------<")
+
+# ==================== HELPER FUNCTION TESTS ====================
+
+def test_helper_functions() -> bool:
+    print(">--------------( Testing Helper Functions )---------------<")
     
-    repo = PlayerRepository(con)
-    service = PlayerService(repo)
+    # Test _get_region_name_by_id
+    print("\n_get_region_name_by_id():")
+    assert _get_region_name_by_id(1) == "Transilvania", "Region 1 should be Transilvania"
+    assert _get_region_name_by_id(2) == "Moldova", "Region 2 should be Moldova"
+    assert _get_region_name_by_id(3) == "Țara Românească", "Region 3 should be Țara Românească"
+    assert _get_region_name_by_id(4) == "Dobrogea", "Region 4 should be Dobrogea"
+    assert _get_region_name_by_id(5) == "Banat", "Region 5 should be Banat"
+    assert _get_region_name_by_id(99) is None, "Invalid region ID should return None"
+    print("  Region 1 -> Transilvania ✓")
+    print("  Region 2 -> Moldova ✓")
+    print("  Region 3 -> Țara Românească ✓")
+    print("  Region 4 -> Dobrogea ✓")
+    print("  Region 5 -> Banat ✓")
+    print("  Region 99 -> None ✓")
     
-    # Test get_player
-    player = service.get_player()
-    if player:
-        print(f"get_player(): {player.get_name()} (ID: {player.get_id()})")
-        assert player.get_id() is not None, "Player should have an ID!"
-        assert player.get_name() is not None, "Player should have a name!"
-        
-        # Test get credits
-        credits = player.get_credits()
-        print(f"Player credits: {credits}")
-        assert isinstance(credits, int), "Credits should be an integer!"
-        
-        # Test get statistics
-        stats = player.get_statistics()
-        print(f"Player statistics: {stats}")
-        assert isinstance(stats, dict), "Statistics should be a dictionary!"
-    else:
-        print("get_player(): No player found in database")
-    
-    print(">--------------( PlayerService tests passed! )---------------<\n")
+    print(">--------------( Helper Functions tests passed! )---------------<\n")
     return True
 
 
-def test_question_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing QuestionService )---------------<")
+# ==================== CONVERSION FUNCTION TESTS ====================
+
+def test_convert_question_to_frontend_format(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing convert_question_to_frontend_format )---------------<")
     
     repo = QuestionRepository(con)
-    service = QuestionService(repo)
+    questions = repo.find("1=1")  # Get all questions
     
-    # Test get_questions_by_quizz - try different quizz IDs
-    for quizz_id in [1, 2, 3]:
-        questions = service.get_questions_by_quizz(quizz_id)
-        print(f"get_questions_by_quizz({quizz_id}): {len(questions)} questions found")
+    if questions:
+        q = questions[0]
+        result = convert_question_to_frontend_format(q)
         
-        if questions:
-            q = questions[0]
-            print(f"  First question: {q.get_text()[:50]}..." if len(q.get_text()) > 50 else f"  First question: {q.get_text()}")
-            
-            # Test get_correct_answer
-            correct = service.get_correct_answer(q.get_id())
-            print(f"  get_correct_answer({q.get_id()}): {correct}")
-            assert correct is not None, "Should have a correct answer!"
-            
-            # Test check_answer with correct answer
-            is_correct = service.check_answer(q.get_id(), correct)
-            print(f"  check_answer with correct: {is_correct}")
-            assert is_correct, "Should be True for correct answer!"
-            
-            # Test check_answer with wrong answer
-            is_wrong = service.check_answer(q.get_id(), "wrong_answer_xyz")
-            print(f"  check_answer with wrong: {is_wrong}")
-            assert not is_wrong, "Should be False for wrong answer!"
-            
-            # Test get_all_options
-            options = service.get_all_options(q.get_id())
-            print(f"  get_all_options({q.get_id()}): {len(options)} options")
-            assert isinstance(options, list), "Options should be a list!"
-            break  # Test one quizz only
+        print(f"\nOriginal Question ID: {q.get_id()}")
+        print(f"Original Question Text: {q.get_text()[:50]}..." if len(q.get_text()) > 50 else f"Original Question Text: {q.get_text()}")
+        print(f"Original Answers: {q.get_answer_list()}")
+        
+        print(f"\nConverted to frontend format:")
+        print(f"  id: {result['id']}")
+        print(f"  question: {result['question'][:50]}..." if len(result['question']) > 50 else f"  question: {result['question']}")
+        print(f"  options: {result['options']}")
+        print(f"  correct: {result['correct']}")
+        
+        # Assertions
+        assert result['id'] == q.get_id(), "ID should match!"
+        assert result['question'] == q.get_text(), "Question text should match!"
+        assert result['options'] == q.get_answer_list(), "Options should match answer list!"
+        assert result['correct'] == q.get_answer_list()[0], "Correct should be first answer!"
+        print("\n  All assertions passed! ✓")
+    else:
+        print("  No questions found in database")
     
-    print(">--------------( QuestionService tests passed! )---------------<\n")
+    print(">--------------( convert_question_to_frontend_format tests passed! )---------------<\n")
     return True
 
 
-def test_fill_in_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing FillInStatementService )---------------<")
-    
-    repo = FillInStatementRepository(con)
-    service = FillInStatementService(repo)
-    
-    # Test get_fill_ins_by_quizz - try different quizz IDs
-    for quizz_id in [1, 2, 3, 4, 5]:
-        fill_ins = service.get_fill_ins_by_quizz(quizz_id)
-        print(f"get_fill_ins_by_quizz({quizz_id}): {len(fill_ins)} fill-ins found")
-        
-        if fill_ins:
-            f = fill_ins[0]
-            print(f"  First fill-in segments: {f.get_text_segments()[:3]}...")
-            print(f"  First fill-in answers: {f.get_answer_list()}")
-            
-            # Test get_text_with_blanks
-            text_blanks = service.get_text_with_blanks(f.get_id())
-            print(f"  get_text_with_blanks({f.get_id()}): {text_blanks[:50]}..." if len(text_blanks) > 50 else f"  get_text_with_blanks: {text_blanks}")
-            
-            # Test get_answer_count
-            count = service.get_answer_count(f.get_id())
-            print(f"  get_answer_count({f.get_id()}): {count}")
-            assert count >= 0, "Answer count should be non-negative!"
-            
-            # Test check_answers with correct answers
-            correct_answers = f.get_answer_list()
-            is_correct = service.check_answers(f.get_id(), correct_answers)
-            print(f"  check_answers with correct: {is_correct}")
-            break  # Test one quizz only
-    
-    print(">--------------( FillInStatementService tests passed! )---------------<\n")
-    return True
-
-
-def test_minigame_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing MinigameService )---------------<")
+def test_convert_MapGuesser_to_frontend_format(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing convert_MapGuesser_to_frontend_format )---------------<")
     
     repo = MinigameRepository(con)
-    service = MinigameService(repo)
+    minigames = repo.find("1=1")  # Get all minigames
     
-    # Test get_minigames_by_quizz - try different quizz IDs
-    for quizz_id in [1, 2, 3, 4, 5]:
-        minigames = service.get_minigames_by_quizz(quizz_id)
-        print(f"get_minigames_by_quizz({quizz_id}): {len(minigames)} minigames found")
+    map_guessers = [m for m in minigames if isinstance(m, MapGuesser)]
     
-    # Try to find and test minigames by ID
-    for mg_id in range(1, 20):
-        minigame = service.get_minigame_by_id(mg_id)
-        if minigame:
-            mg_type = service.get_minigame_type(minigame)
-            print(f"get_minigame_by_id({mg_id}): type={mg_type}")
-            # Accept all known minigame types
-            valid_types = ['puzzle', 'rebus', 'bingo', 'map_guesser', 'pairs']
-            assert mg_type in valid_types, f"Unknown minigame type: {mg_type}"
-    
-    print(">--------------( MinigameService tests passed! )---------------<\n")
-    return True
-
-
-def test_quizz_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing QuizzService )---------------<")
-    
-    quizz_repo = QuizzRepository(con)
-    question_repo = QuestionRepository(con)
-    fill_in_repo = FillInStatementRepository(con)
-    minigame_repo = MinigameRepository(con)
-    
-    service = QuizzService(quizz_repo, question_repo, fill_in_repo, minigame_repo)
-    
-    # Test get_all_quizzes
-    all_quizzes = service.get_all_quizzes()
-    print(f"get_all_quizzes(): {len(all_quizzes)} quizzes found")
-    
-    # Test get_quizz_by_id for first available quizz
-    if all_quizzes:
-        quizz_id = all_quizzes[0].get_id()
-        quizz = service.get_quizz_by_id(quizz_id)
-        if quizz:
-            print(f"\nget_quizz_by_id({quizz_id}):")
-            print(f"  Difficulty: {quizz.get_difficulty()}")
-            print(f"  Questions: {len(quizz.get_questions())}")
-            print(f"  Fill-ins: {len(quizz.get_fill_in_statements())}")
-            print(f"  Minigames: {len(quizz.get_minigames())}")
-            
-            # Test get_quizz_task_count
-            counts = service.get_quizz_task_count(quizz_id)
-            print(f"  get_quizz_task_count({quizz_id}): {counts}")
-            
-            # Test get_exercises_as_frontend_format
-            exercises = service.get_exercises_as_frontend_format(quizz)
-            print(f"  get_exercises_as_frontend_format(): {len(exercises)} exercises")
-            for ex in exercises[:3]:
-                ex_type = ex.get('type')
-                ex_content = ex.get('question', ex.get('image', ex.get('text', 'N/A')))
-                if isinstance(ex_content, str) and len(ex_content) > 40:
-                    ex_content = ex_content[:40] + "..."
-                print(f"    - Type: {ex_type}, Content: {ex_content}")
-    
-    # NOTE: get_quizz_by_region_and_level, get_all_quizzes_for_region, get_level_count_for_region
-    # require region_id/level_id columns in quizzes table which don't exist yet.
-    print("\n--- Region/Level functions require region_id/level_id columns (skipped) ---")
-    
-    print(">--------------( QuizzService tests passed! )---------------<\n")
-    return True
-
-
-def test_quizz_task_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing QuizzTaskService )---------------<")
-    
-    task_repo = QuizzTaskRepository(con)
-    question_repo = QuestionRepository(con)
-    fill_in_repo = FillInStatementRepository(con)
-    
-    service = QuizzTaskService(task_repo, question_repo, fill_in_repo)
-    
-    # Test get_all_tasks
-    all_tasks = service.get_all_tasks()
-    print(f"get_all_tasks(): {len(all_tasks)} tasks found")
-    
-    # Test get_task_count_by_type
-    counts = service.get_task_count_by_type()
-    print(f"get_task_count_by_type(): {counts}")
-    
-    # Test get_tasks_by_quizz
-    for quizz_id in [1, 2, 3]:
-        quizz_tasks = service.get_tasks_by_quizz(quizz_id)
-        print(f"get_tasks_by_quizz({quizz_id}): {len(quizz_tasks)} tasks")
-    
-    if all_tasks:
-        task_id = all_tasks[0]['id']
+    if map_guessers:
+        mg = map_guessers[0]
+        result = convert_MapGuesser_to_frontend_format(mg)
         
-        # Test get_task_type
-        task_type = service.get_task_type(task_id)
-        print(f"get_task_type({task_id}): {task_type}")
+        print(f"\nOriginal MapGuesser ID: {mg.get_id()}")
+        print(f"Original Win Config: {mg.get_win_configuration()}")
         
-        # Test get_task_by_id
-        full_task = service.get_task_by_id(task_id)
-        if full_task:
-            print(f"get_task_by_id({task_id}): {type(full_task).__name__}")
-    
-    print(">--------------( QuizzTaskService tests passed! )---------------<\n")
-    return True
-
-
-def test_region_service(con: sqlite3.Connection) -> bool:
-    print(">--------------( Testing RegionService )---------------<")
-    
-    repo = RegionRepository(con)
-    service = RegionService(repo)
-    
-    # Test get_all_regions
-    all_regions = service.get_all_regions()
-    print(f"get_all_regions(): {len(all_regions)} regions found")
-    
-    for region_id, region_data in all_regions.items():
-        print(f"  - ID {region_id}: {region_data.get('name')}")
-    
-    # Test get_region_by_id for each region found
-    if all_regions:
-        first_region_id = list(all_regions.keys())[0]
-        region = service.get_region_by_id(first_region_id)
-        if region:
-            print(f"\nget_region_by_id({first_region_id}):")
-            print(f"  Name: {region.get('name')}")
-            print(f"  Mission: {region.get('mission')}")
-            print(f"  Companion: {region.get('companion')}")
-            print(f"  Description: {region.get('description')}")
-    
-    # Test get_region_by_name
-    if all_regions:
-        first_region_name = list(all_regions.values())[0].get('name')
-        region_by_name = service.get_region_by_name(first_region_name)
-        if region_by_name:
-            print(f"\nget_region_by_name('{first_region_name}'): ID {region_by_name.get('id')}")
-    
-    print(">--------------( RegionService tests passed! )---------------<\n")
-    return True
-
-
-def test_game_service() -> bool:
-    """Test GameService using the main database (read-only operations)."""
-    print(">--------------( Testing GameService )---------------<")
-    
-    # Use the actual database path for GameService
-    game = GameService(DB_PATH)
-    
-    # Test get_all_regions (replaces REGIONS_DATA)
-    print("\n--- Testing REGIONS_DATA replacement ---")
-    all_regions = game.get_all_regions()
-    print(f"get_all_regions(): {len(all_regions)} regions")
-    for region_id, data in all_regions.items():
-        print(f"  Region {region_id}: {data.get('name')}")
-    
-    # Test get_region_data
-    if all_regions:
-        region_id = list(all_regions.keys())[0]
-        region = game.get_region_data(region_id)
-        print(f"\nget_region_data({region_id}): {region.get('name') if region else 'None'}")
-    
-    # NOTE: Functions that require region_id/level_id columns in quizzes table
-    # are skipped: get_all_questions_data, get_exercises_for_level, 
-    # get_user_progress, get_user_progress_for_region, is_level_unlocked
-    print("\n--- Functions requiring region_id/level_id columns (skipped) ---")
-    print("  - get_all_questions_data")
-    print("  - get_exercises_for_level")
-    print("  - get_user_progress")
-    print("  - get_user_progress_for_region")
-    print("  - is_level_unlocked")
-    
-    # Test service accessors
-    print("\n--- Testing Service Accessors ---")
-    print(f"game.region: {type(game.region).__name__}")
-    print(f"game.quizz: {type(game.quizz).__name__}")
-    print(f"game.player: {type(game.player).__name__}")
-    print(f"game.question: {type(game.question).__name__}")
-    print(f"game.fill_in: {type(game.fill_in).__name__}")
-    print(f"game.minigame: {type(game.minigame).__name__}")
-    
-    # Test get_player_stats
-    print("\n--- Testing Player Stats ---")
-    stats = game.get_player_stats()
-    if stats:
-        print(f"get_player_stats(): name={stats.get('name')}, credits={stats.get('credits')}")
+        print(f"\nConverted to frontend format:")
+        print(f"  type: {result['type']}")
+        print(f"  targets count: {len(result['targets'])}")
+        for i, target in enumerate(result['targets'][:3]):
+            print(f"    Target {i+1}: question='{target['question'][:30]}...', x={target['x']}, y={target['y']}")
+        
+        # Assertions
+        assert result['type'] == 'map_guess', "Type should be 'map_guess'!"
+        assert isinstance(result['targets'], list), "Targets should be a list!"
+        for target in result['targets']:
+            assert 'question' in target, "Each target should have 'question'!"
+            assert 'x' in target, "Each target should have 'x'!"
+            assert 'y' in target, "Each target should have 'y'!"
+        print("\n  All assertions passed! ✓")
     else:
-        print("get_player_stats(): No player found")
+        print("  No MapGuesser minigames found in database")
     
-    # Test get_available_regions
-    available = game.get_available_regions()
-    print(f"get_available_regions(): {available}")
-    
-    game.close()
-    
-    print(">--------------( GameService tests passed! )---------------<\n")
+    print(">--------------( convert_MapGuesser_to_frontend_format tests passed! )---------------<\n")
     return True
 
 
-# ==================== RUN TESTS ====================
+# ==================== SERVICE CLASS TESTS ====================
 
-def test_services() -> bool:
-    """Run all service tests using existing database from domain."""
-    print(f"Using database at: {DB_PATH}")
+def test_get_player(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing get_player )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        print(f"  ID: {player.get_id()}")
+        print(f"  Name: {player.get_name()}")
+        print(f"  Credits: {player.get_credits()}")
+        assert player.get_id() is not None, "Player should have an ID!"
+        assert player.get_name() is not None, "Player should have a name!"
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( get_player tests passed! )---------------<\n")
+    return True
+
+
+def test_save_player(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing save_player )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original_name = player.get_name()
+        print(f"  Original name: {original_name}")
+        
+        # Save without changes (should not error)
+        service.save_player(player)
+        print("  save_player(player) - no error ✓")
+        
+        # Test save_player with None (should not error)
+        service.save_player(None)
+        print("  save_player(None) - no error ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( save_player tests passed! )---------------<\n")
+    return True
+
+
+def test_add_credits(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing add_credits )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original_credits = player.get_credits()
+        print(f"  Original credits: {original_credits}")
+        
+        # Add credits
+        new_total = service.add_credits(100)
+        print(f"  add_credits(100) -> {new_total}")
+        assert new_total == original_credits + 100, "Credits should increase by 100!"
+        
+        # Restore original credits
+        service.add_credits(-100)
+        restored = service.get_player().get_credits()
+        print(f"  Restored credits: {restored}")
+        assert restored == original_credits, "Credits should be restored!"
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( add_credits tests passed! )---------------<\n")
+    return True
+
+
+def test_spend_credits(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing spend_credits )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original_credits = player.get_credits()
+        print(f"  Original credits: {original_credits}")
+        
+        # Spend more than available (should fail) - NO DB CHANGE
+        result = service.spend_credits(original_credits + 1000)
+        print(f"  spend_credits({original_credits + 1000}) -> {result}")
+        assert result == False, "Should fail when spending more than available!"
+        
+        # Test spending valid amount, then restore
+        if original_credits >= 10:
+            result = service.spend_credits(10)
+            print(f"  spend_credits(10) -> {result}")
+            assert result == True, "Should succeed when spending valid amount!"
+            
+            # Restore credits
+            service.add_credits(10)
+            restored = service.get_player().get_credits()
+            print(f"  Restored credits: {restored}")
+            assert restored == original_credits, "Credits should be restored!"
+        
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( spend_credits tests passed! )---------------<\n")
+    return True
+
+
+def test_purchase_cosmetic(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing purchase_cosmetic )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original_credits = player.get_credits()
+        original_cosmetics = player.get_cosmetics_purchased().copy()
+        print(f"  Original credits: {original_credits}")
+        print(f"  Original cosmetics: {original_cosmetics}")
+        
+        # Try to purchase with insufficient credits
+        result = service.purchase_cosmetic("expensive.png", original_credits + 1000)
+        print(f"  purchase_cosmetic('expensive.png', {original_credits + 1000}) -> {result}")
+        assert result == False, "Should fail with insufficient credits!"
+        
+        # Try to purchase already owned cosmetic (if any)
+        if original_cosmetics:
+            result = service.purchase_cosmetic(original_cosmetics[0], 0)
+            print(f"  purchase_cosmetic('{original_cosmetics[0]}', 0) -> {result}")
+            assert result == False, "Should fail for already owned cosmetic!"
+        
+        print("  Assertions passed!")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( purchase_cosmetic tests passed! )---------------<\n")
+    return True
+
+
+def test_equip_cosmetic(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing equip_cosmetic )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        owned_cosmetics = player.get_cosmetics_purchased()
+        original_equipped = player.get_cosmetic()  # Save original state
+        print(f"  Owned cosmetics: {owned_cosmetics}")
+        print(f"  Currently equipped: {original_equipped}")
+        
+        # Try to equip unowned cosmetic - NO DB CHANGE (returns False)
+        result = service.equip_cosmetic("not_owned_cosmetic_xyz.png")
+        print(f"  equip_cosmetic('not_owned_cosmetic_xyz.png') -> {result}")
+        assert result == False, "Should fail for unowned cosmetic!"
+        
+        # Equip owned cosmetic (if any)
+        if owned_cosmetics:
+            result = service.equip_cosmetic(owned_cosmetics[0])
+            print(f"  equip_cosmetic('{owned_cosmetics[0]}') -> {result}")
+            assert result == True, "Should succeed for owned cosmetic!"
+            
+            # ALWAYS restore original equipped cosmetic
+            player = service.get_player()
+            player.set_cosmetic(original_equipped)
+            service.save_player(player)
+            print(f"  Restored equipped to: {service.get_player().get_cosmetic()}")
+        
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( equip_cosmetic tests passed! )---------------<\n")
+    return True
+
+
+def test_get_player_stats(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing get_player_stats )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        stats = service.get_player_stats()
+        print(f"  name: {stats['name']}")
+        print(f"  credits: {stats['credits']}")
+        print(f"  avg_play_time: {stats['avg_play_time']}")
+        print(f"  quizzes_solved: {stats['quizzes_solved']}")
+        print(f"  quizzes_played: {stats['quizzes_played']}")
+        print(f"  completion_percentage: {stats['completion_percentage']}")
+        print(f"  regions_state: {stats['regions_state']}")
+        print(f"  equipped_cosmetic: {stats['equipped_cosmetic']}")
+        print(f"  cosmetics_owned: {stats['cosmetics_owned']}")
+        
+        # Assertions
+        assert stats['name'] == player.get_name(), "Name should match!"
+        assert stats['credits'] == player.get_credits(), "Credits should match!"
+        assert 'regions_state' in stats, "Should have regions_state!"
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( get_player_stats tests passed! )---------------<\n")
+    return True
+
+
+def test_increment_quizzes_played(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing increment_quizzes_played )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original = player.get_quizzes_played()
+        print(f"  Original quizzes_played: {original}")
+        
+        service.increment_quizzes_played()
+        new_value = service.get_player().get_quizzes_played()
+        print(f"  After increment: {new_value}")
+        assert new_value == original + 1, "Should increment by 1!"
+        
+        # Restore original value
+        player = service.get_player()
+        player.set_quizzes_played(original)
+        service.save_player(player)
+        print(f"  Restored to: {service.get_player().get_quizzes_played()}")
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( increment_quizzes_played tests passed! )---------------<\n")
+    return True
+
+
+def test_increment_quizzes_solved(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing increment_quizzes_solved )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original = player.get_quizzes_solved()
+        print(f"  Original quizzes_solved: {original}")
+        
+        service.increment_quizzes_solved()
+        new_value = service.get_player().get_quizzes_solved()
+        print(f"  After increment: {new_value}")
+        assert new_value == original + 1, "Should increment by 1!"
+        
+        # Restore original value
+        player = service.get_player()
+        player.set_quizzes_solved(original)
+        service.save_player(player)
+        print(f"  Restored to: {service.get_player().get_quizzes_solved()}")
+        print("  Assertions passed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( increment_quizzes_solved tests passed! )---------------<\n")
+    return True
+
+
+def test_update_play_time(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing update_play_time )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        original_avg = player.get_avg_play_time()
+        original_played = player.get_quizzes_played()
+        print(f"  Original avg_play_time: {original_avg}")
+        print(f"  Original quizzes_played: {original_played}")
+        
+        # Update with session time
+        service.update_play_time(10.0)
+        new_avg = service.get_player().get_avg_play_time()
+        print(f"  After update_play_time(10.0): {new_avg}")
+        
+        # Restore original value
+        player = service.get_player()
+        player.set_avg_play_time(original_avg)
+        service.save_player(player)
+        print(f"  Restored to: {service.get_player().get_avg_play_time()}")
+        print("  Test completed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( update_play_time tests passed! )---------------<\n")
+    return True
+
+
+def test_is_level_unlocked(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing is_level_unlocked )---------------<")
+    
+    service = create_service(con)
+    player = service.get_player()
+    
+    if player:
+        regions_state = player.get_regions_state()
+        print(f"\nPlayer regions_state: {regions_state}")
+        
+        # Test for each region
+        for region_id in range(1, 6):
+            region_name = _get_region_name_by_id(region_id)
+            unlocked_level = regions_state.get(region_name, 0)
+            
+            # Test level that should be unlocked
+            if unlocked_level > 0:
+                result = service.is_level_unlocked(region_id, unlocked_level)
+                print(f"\nis_level_unlocked({region_id}, {unlocked_level}): {result}")
+                assert result == True, f"Level {unlocked_level} should be unlocked for {region_name}!"
+            
+            # Test level that should be locked (if any)
+            locked_level = unlocked_level + 1
+            try:
+                result = service.is_level_unlocked(region_id, locked_level)
+                print(f"is_level_unlocked({region_id}, {locked_level}): {result}")
+            except:
+                print(f"is_level_unlocked({region_id}, {locked_level}): Error (level not in state)")
+        
+        print("\n  Level unlock tests completed! ✓")
+    else:
+        print("  No player found in database")
+    
+    print(">--------------( is_level_unlocked tests passed! )---------------<\n")
+    return True
+
+
+def test_get_quizz_by_id(con: sqlite3.Connection) -> bool:
+    print(">--------------( Testing get_quizz_by_id )---------------<")
+    
+    service = create_service(con)
+    
+    # Test getting quizz by ID
+    for quizz_id in [1, 2, 3, 4, 5]:
+        try:
+            quizz = service.get_quizz_by_id(quizz_id)
+            if quizz:
+                print(f"\nget_quizz_by_id({quizz_id}):")
+                print(f"  ID: {quizz.get_id()}")
+                print(f"  Difficulty: {quizz.get_difficulty()}")
+                print(f"  Questions: {len(quizz.get_questions())}")
+                print(f"  Fill-ins: {len(quizz.get_fill_in_statements())}")
+                
+                minigame = quizz.get_minigame()
+                print(f"  Minigame: {type(minigame).__name__ if minigame else 'None'}")
+                
+                # Assertions
+                assert quizz.get_id() == quizz_id, "Quizz ID should match!"
+                print(f"  Assertions passed! ✓")
+                break  # Test one quizz
+        except Exception as e:
+            print(f"\nget_quizz_by_id({quizz_id}): Error - {e}")
+    
+    print(">--------------( get_quizz_by_id tests passed! )---------------<\n")
+    return True
+
+
+# ==================== RUN ALL TESTS ====================
+
+def test_service() -> bool:
+    print(f"Using database at: {DB_PATH}\n")
     
     if not os.path.exists(DB_PATH):
         print(f"ERROR: Database not found at {DB_PATH}")
         return False
     
     con = get_database_connection()
-    
     all_passed = True
     
     try:
-        all_passed &= test_player_service(con)
-        all_passed &= test_question_service(con)
-        all_passed &= test_fill_in_service(con)
-        all_passed &= test_minigame_service(con)
-        all_passed &= test_quizz_service(con)
-        all_passed &= test_quizz_task_service(con)
-        all_passed &= test_region_service(con)
+        # Test helper functions (no DB needed)
+        all_passed &= test_helper_functions()
+        
+        # Test conversion functions
+        all_passed &= test_convert_question_to_frontend_format(con)
+        all_passed &= test_convert_MapGuesser_to_frontend_format(con)
+        
+        # Test Service class methods - Player operations
+        all_passed &= test_get_player(con)
+        all_passed &= test_save_player(con)
+        all_passed &= test_add_credits(con)
+        all_passed &= test_spend_credits(con)
+        all_passed &= test_purchase_cosmetic(con)
+        all_passed &= test_equip_cosmetic(con)
+        all_passed &= test_get_player_stats(con)
+        all_passed &= test_increment_quizzes_played(con)
+        all_passed &= test_increment_quizzes_solved(con)
+        all_passed &= test_update_play_time(con)
+        
+        # Test Service class methods - Level and Quizz
+        all_passed &= test_is_level_unlocked(con)
+        all_passed &= test_get_quizz_by_id(con)
+        
     except Exception as e:
         print(f"Error in service tests: {e}")
         import traceback
@@ -387,22 +542,13 @@ def test_services() -> bool:
     finally:
         con.close()
     
-    # GameService test
-    try:
-        all_passed &= test_game_service()
-    except Exception as e:
-        print(f"Error in GameService test: {e}")
-        import traceback
-        traceback.print_exc()
-        all_passed = False
-    
     return all_passed
 
 
 def run_tests() -> None:
-    print(">--------------( Start service tests )---------------<\n")
-    if test_services():
-        print("\n>--------------( All service tests passed! )---------------<")
+    print(">--------------( Start Service tests )---------------<\n")
+    if test_service():
+        print("\n>--------------( All Service tests passed! )---------------<")
     else:
         print("\n>--------------( Some tests failed! )---------------<")
 
