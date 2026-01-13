@@ -80,20 +80,26 @@ class RegionDashboardScreen(Screen):
 
     def get_level_settings(self, level_index):
         """
-        Returnează setările specifice nivelului (timp, dificultate etc.)
+        Returnează setările specifice nivelului (timp, dificultate, puncte)
         """
-        # 1, 2 -> USOR (5 min = 300s)
-        # 3, 4 -> MEDIU (7 min = 420s)
-        # 5, 6 -> GREU (10 min = 600s)
+        # 1, 2 -> USOR (5 min = 300s, 10p)
+        # 3, 4 -> MEDIU (7 min = 420s, 20p)
+        # 5, 6 -> GREU (10 min = 600s, 30p)
 
         if level_index in [1, 2]:
-            return {"time_limit": 300, "difficulty": "easy"}
+            return {"time_limit": 300, "difficulty": "easy", "points": 10}
         elif level_index in [3, 4]:
-            return {"time_limit": 420, "difficulty": "medium"}
+            return {"time_limit": 420, "difficulty": "medium", "points": 20}
         else:
-            return {"time_limit": 600, "difficulty": "hard"}
+            return {"time_limit": 600, "difficulty": "hard", "points": 30}
 
     def start_level(self, level_index):
+        status_index = level_index - 1
+
+        if not self.levels_status[status_index]:
+            print(f"Nivelul {level_index} este blocat! Completează nivelul anterior.")
+            return
+
         self.current_level_id = level_index
         region_data = QUESTIONS_DATA.get(self.region_id, {})
         if not region_data:
@@ -209,21 +215,40 @@ class RegionDashboardScreen(Screen):
         self.stop_and_clear_timer()
 
         app = App.get_running_app()
-        points_earned = 50
-        app.score += points_earned
 
-        next_index = self.current_level_id
+        settings = self.get_level_settings(self.current_level_id)
+        base_points = settings.get("points")
+        points_to_award = 0
 
-        if next_index < 6:
+        next_level_unlock_index = self.current_level_id
+
+        already_completed = False
+
+        if next_level_unlock_index < 6:
+            if self.levels_status[next_level_unlock_index] == True:
+                already_completed = True
+        else:
+            pass
+
+        if not already_completed:
+            points_to_award = base_points
+            app.score += points_to_award
+            title = "Nivel Complet!"
+            msg = f"Felicitări! Ai câștigat {points_to_award} puncte."
+        else:
+            title = "Nivel Rejucat"
+            msg = "Felicitări! Ai terminat din nou nivelul!"
+
+        if next_level_unlock_index < 6:
             new_status = list(self.levels_status)
-            new_status[next_index] = True
+            new_status[next_level_unlock_index] = True
             self.levels_status = new_status
             USER_PROGRESS[self.region_id] = self.levels_status
 
         popup = FeedbackPopup(
             type='level_complete',
-            title_text="Nivel Complet!",
-            message_text=f"Felicitări! Ai câștigat {points_earned} puncte.",
+            title_text=title,
+            message_text=msg,
             button_text="Super!"
         )
         popup.bind(on_dismiss=self.go_back_to_levels)
