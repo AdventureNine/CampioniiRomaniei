@@ -28,7 +28,7 @@ class QuizzRepository:
                 quizz_id=quizz_id,
                 questions=[],
                 fill_in_statements=[],
-                minigames=None,
+                minigame=None,
                 difficulty=row[0]
             )
             return quizz
