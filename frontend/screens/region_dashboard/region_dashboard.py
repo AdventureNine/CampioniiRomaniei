@@ -208,6 +208,14 @@ class RegionDashboardScreen(Screen):
 
             elif ex_type == 'rebus':
                 screen = app.sm.get_screen('rebus')
+                screen.region_id = self.region_id
+
+                # Incarca entitatea rebus daca exista rebus_id
+                if 'rebus_id' in ex_data and hasattr(app, 'minigame_repo'):
+                    rebus_entity = app.minigame_repo.get_by_id(ex_data['rebus_id'])
+                    if rebus_entity:
+                        ex_data['rebus'] = rebus_entity
+
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('rebus')
