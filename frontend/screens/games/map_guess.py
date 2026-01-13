@@ -1,7 +1,7 @@
 import math
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.properties import StringProperty, ObjectProperty, BooleanProperty
+from kivy.properties import StringProperty, ObjectProperty
 from kivy.uix.image import Image
 from frontend.components.common import FeedbackPopup
 from frontend.utils.assets import image_path
@@ -30,8 +30,6 @@ class MapGuessScreen(Screen):
     target_y = 0
     tolerance = 0.05
 
-    debug_mode = BooleanProperty(False)
-
     def load_data(self, data, step_number):
         self.map_container.clear_widgets()
 
@@ -51,15 +49,6 @@ class MapGuessScreen(Screen):
 
         rel_x = (touch.x - map_widget.x) / map_widget.width
         rel_y = (touch.y - map_widget.y) / map_widget.height
-
-        if self.debug_mode:
-            self.place_pin(rel_x, rel_y, 'red')
-
-            print(f'\n--- COORDONATE PENTRU COPY-PASTE ---')
-            print(f'"x": {rel_x:.3f}, "y": {rel_y:.3f},')
-            print(f'------------------------------------\n')
-
-            return
 
         dist = math.sqrt((rel_x - self.target_x) ** 2 + (rel_y - self.target_y) ** 2)
 
@@ -81,23 +70,6 @@ class MapGuessScreen(Screen):
             self.map_container.clear_widgets()
         else:
             self.finish_game()
-
-    def on_map_touch(self, touch):
-        map_widget = self.ids.map_area
-        if not map_widget.collide_point(*touch.pos):
-            return
-
-        rel_x = (touch.x - map_widget.x) / map_widget.width
-        rel_y = (touch.y - map_widget.y) / map_widget.height
-
-        dist = math.sqrt((rel_x - self.target_x) ** 2 + (rel_y - self.target_y) ** 2)
-
-        if dist <= self.tolerance:
-            self.place_pin(rel_x, rel_y, 'green')
-            self.show_feedback(True)
-        else:
-            self.place_pin(rel_x, rel_y, 'red')
-            self.show_feedback(False)
 
     def place_pin(self, x_pct, y_pct, color):
         pin = PinWidget(color_type=color)

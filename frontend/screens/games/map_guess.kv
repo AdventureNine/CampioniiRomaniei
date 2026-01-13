@@ -2,7 +2,6 @@
 #:import hex kivy.utils.get_color_from_hex
 
 <MapGuessScreen>:
-    # Legătura id-urilor
     map_container: pins_layer
 
     canvas:
@@ -67,7 +66,6 @@
 
                 RelativeLayout:
                     id: map_area
-                    # Harta stă în interiorul chenarului, cu puțin padding
                     size_hint: 0.96, 0.96
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
@@ -87,10 +85,3 @@
                         size_hint: 1, 1
                         pos_hint: {'x': 0, 'y': 0}
                         on_touch_up: if self.collide_point(*args[1].pos): root.on_map_touch(args[1])
-        ToggleButton:
-            text: "Mod Calibrare: OFF" if self.state == 'normal' else "Mod Calibrare: ON"
-            size_hint: None, None
-            size: 200, 50
-            pos_hint: {'right': 0.98, 'y': 0.02} # Dreapta jos
-            background_color: (1, 0, 0, 1) if self.state == 'down' else (0.5, 0.5, 0.5, 1)
-            on_state: root.debug_mode = (self.state == 'down')
