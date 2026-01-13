@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty
+from kivy.properties import NumericProperty, StringProperty, ListProperty, BooleanProperty, ColorProperty
 from kivy.clock import Clock
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
@@ -10,6 +10,7 @@ from frontend.data.question_data import QUESTIONS_DATA
 from frontend.data.user_progress import USER_PROGRESS
 from frontend.utils.assets import image_path
 from frontend.components.common import FeedbackPopup
+from frontend.utils.colors import AppColors
 
 
 class LevelIcon(ButtonBehavior, Image):
@@ -61,6 +62,8 @@ class RegionDashboardScreen(Screen):
     timer_event = None
     seconds_left = 0
 
+    dashboard_color = ColorProperty(AppColors.PRIMARY)
+
     def on_pre_enter(self, *args):
         self.stop_and_clear_timer()
 
@@ -77,6 +80,12 @@ class RegionDashboardScreen(Screen):
 
         if self.region_id in USER_PROGRESS:
             self.levels_status = USER_PROGRESS[self.region_id]
+
+        self.set_header_color()
+
+    def set_header_color(self):
+        colors = {1: AppColors.TRANSILVANIA, 2: AppColors.MOLDOVA, 3: AppColors.TARA_ROMANEASCA, 4: AppColors.DOBROGEA, 5: AppColors.BANAT}
+        self.dashboard_color = colors.get(self.region_id, AppColors.PRIMARY)
 
     def get_level_settings(self, level_index):
         """
@@ -172,12 +181,14 @@ class RegionDashboardScreen(Screen):
 
             if ex_type == 'quiz':
                 screen = app.sm.get_screen('generic_quiz')
+                screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_quiz')
 
             elif ex_type == 'fill':
                 screen = app.sm.get_screen('generic_fill')
+                screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_fill')

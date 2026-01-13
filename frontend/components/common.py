@@ -1,10 +1,11 @@
 from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, OptionProperty, NumericProperty
+from kivy.properties import StringProperty, OptionProperty, NumericProperty, ColorProperty
 from kivy.app import App
 
 from frontend.utils.assets import image_path
+from frontend.utils.colors import AppColors
 
 
 # --- WIDGET SCOR ---
@@ -33,11 +34,11 @@ class FeedbackPopup(ModalView):
 class AnswerButton(Button):
     pass
 
-
-# --- HEADER STANDARD ---
 class StandardHeader(BoxLayout):
     title = StringProperty("Titlu")
     show_back_button = OptionProperty(True, options=[True, False])
-
     back_screen = StringProperty('menu')
     back_image = image_path(f"ui/back.png")
+
+    # Proprietate nouă
+    header_color = ColorProperty(AppColors.PRIMARY)
