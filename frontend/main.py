@@ -18,7 +18,7 @@ from kivy.uix.screenmanager import ScreenManager, NoTransition
 from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivy.properties import NumericProperty, StringProperty
+from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend'))
 
@@ -34,18 +34,36 @@ from frontend.screens.games.puzzle import PuzzleGameScreen
 from frontend.screens.games.rebus import RebusScreen
 from frontend.screens.games.bingo import BingoScreen
 from frontend.screens.games.pairs import PairsGameScreen
+from frontend.screens.cosmetics.cosmetics import CosmeticsScreen
+
+import sqlite3
+from backend.repository.PlayerRepository import PlayerRepository
+from backend.domain.entities.Player import Player
 
 from kivy.factory import Factory
 
 class DidacticApp(MDApp):
     score = NumericProperty(0)
     timer_text = StringProperty("")
+    player = ObjectProperty(None)
 
     def build(self):
         Window.size = (1280, 800)
         self.title = "Campionii Geografiei"
 
         Factory.register('PolygonButton', cls=PolygonButton)
+
+        self.conn = sqlite3.connect('../backend/domain/data.db')
+
+        self.player_repo = PlayerRepository(self.conn)
+
+        loaded_player = self.player_repo.get()
+        if loaded_player:
+            self.player = loaded_player
+            self.score = self.player.get_credits()
+        else:
+            self.player = Player(1, "Explorator")
+            self.player_repo.save(self.player)
 
         # 1. Încărcare Componente Grafice
         Builder.load_file('components/common.kv')
@@ -61,6 +79,7 @@ class DidacticApp(MDApp):
         Builder.load_file('screens/games/bingo.kv')
         Builder.load_file('screens/games/pairs.kv')
         Builder.load_file('screens/statistics/statistics.kv')
+        Builder.load_file('screens/cosmetics/cosmetics.kv')
 
         # 2. Layout Principal
         self.root_layout = FloatLayout()
@@ -78,6 +97,7 @@ class DidacticApp(MDApp):
         self.sm.add_widget(BingoScreen(name='bingo'))
         self.sm.add_widget(PairsGameScreen(name='pairs_game'))
         self.sm.add_widget(PaginaStatistici(name='statistics'))
+        self.sm.add_widget(CosmeticsScreen(name='cosmetics'))
 
         # 4. Strat Nori
         self.clouds = CloudTransitionLayout()
