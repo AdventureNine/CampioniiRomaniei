@@ -130,7 +130,7 @@ def test_convert_MapGuesser_to_frontend_format(con: sqlite3.Connection) -> bool:
             assert 'question' in target, "Each target should have 'question'!"
             assert 'x' in target, "Each target should have 'x'!"
             assert 'y' in target, "Each target should have 'y'!"
-        print("\n  All assertions passed! ✓")
+        print("\n  All assertions passed! ")
     else:
         print("  No MapGuesser minigames found in database")
     
