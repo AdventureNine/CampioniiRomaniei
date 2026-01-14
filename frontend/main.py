@@ -77,7 +77,7 @@ class DidacticApp(MDApp):
             self.score = self.player.get_credits()
         else:
             self.player = Player(1, "Explorator")
-            player_repo.save(self.player) #TODO service
+            player_repo.save(self.player)
 
         # 1. Încărcare Componente Grafice
         Builder.load_file('components/common.kv')

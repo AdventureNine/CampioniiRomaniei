@@ -20,7 +20,7 @@
             color: (1, 1, 1, 1) if root.is_owned else (0.4, 0.4, 0.4, 1)
 
         Image:
-            source: "backend/domain/assets/images/ui/lock.png" # Verifică dacă ai această imagine
+            source: image_path("ui/lock.png") # Verifică dacă ai această imagine
             size_hint: None, None
             size: dp(40), dp(40)
             pos_hint: {'top': 0.95, 'right': 0.95}
@@ -49,6 +49,19 @@
         on_release: app.sm.get_screen('cosmetics').handle_action(root)
 
 <CosmeticsScreen>:
+    Image:
+        source: image_path("ui/dashboard_background1.png")
+        fit_mode: "cover"
+        size_hint: 1, 1
+
+    Widget:
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
     BoxLayout:
         orientation: 'vertical'
 
