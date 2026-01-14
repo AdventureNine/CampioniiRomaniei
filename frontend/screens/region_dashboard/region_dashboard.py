@@ -6,7 +6,6 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 
 from frontend.data.game_data import REGIONS_DATA
-from frontend.data.question_data import QUESTIONS_DATA
 from frontend.data.user_progress import USER_PROGRESS
 from frontend.utils.assets import image_path
 from frontend.components.common import FeedbackPopup
@@ -59,6 +58,7 @@ class RegionDashboardScreen(Screen):
     current_level_queue = []
     current_step_index = 0
     current_level_id = 0
+    current_quizz_id = 0
 
     # Variabile Timer
     timer_event = None
@@ -112,12 +112,10 @@ class RegionDashboardScreen(Screen):
             return
 
         self.current_level_id = level_index
-        region_data = QUESTIONS_DATA.get(self.region_id, {})
-        if not region_data:
-            print(f"Eroare: Nu există date în QUESTIONS_DATA pentru Regiunea {self.region_id}")
-            return
+        self.current_quizz_id = (self.region_id - 1) * 6 + level_index  # Salveaza quizz_id pentru tot nivelul
 
-        exercises = region_data.get(level_index, [])
+        app = App.get_running_app()
+        exercises = app.service.get_level_data(self.current_quizz_id)
         if not exercises:
             print(f"Nu există exerciții pentru Nivelul {level_index}")
             return
@@ -169,77 +167,97 @@ class RegionDashboardScreen(Screen):
         app = App.get_running_app()
         app.clouds.change_screen('region_dashboard')
 
+    def attach_minigame_to_exdata(self, ex_data, minigame_type, minigame_class, exdata_key):
+        app = App.get_running_app()
+        if hasattr(app, 'service'):
+            quizz = app.service.get_quizz_by_id(self.current_quizz_id)
+            if quizz:
+                minigame_entity = quizz.get_minigames()
+                if isinstance(minigame_entity, minigame_class):
+                    ex_data[exdata_key] = minigame_entity
+
     def load_next_step(self):
         app = App.get_running_app()
 
-        if self.current_step_index < len(self.current_level_queue):
-            is_last_step = (self.current_step_index == len(self.current_level_queue) - 1)
+        while self.current_step_index < len(self.current_level_queue):
+            ex_data = self.current_level_queue[self.current_step_index]
+            ex_type = ex_data.get('type')
 
+            is_last_step = (self.current_step_index == len(self.current_level_queue) - 1)
             if is_last_step:
                 self.stop_and_clear_timer()
 
-            ex_data = self.current_level_queue[self.current_step_index]
-            ex_type = ex_data['type']
-
-            if ex_type == 'quiz':
+            # --- Quiz ---
+            if ex_type == 'quizz':
                 screen = app.sm.get_screen('generic_quiz')
                 screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_quiz')
+                self.current_step_index += 1
+                break
 
+            # --- Fill ---
             elif ex_type == 'fill':
                 screen = app.sm.get_screen('generic_fill')
                 screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('generic_fill')
+                self.current_step_index += 1
+                break
 
+            # --- Puzzle ---
             elif ex_type == 'puzzle':
+                self.attach_minigame_to_exdata(ex_data, 'puzzle', Puzzle, 'puzzle')
                 screen = app.sm.get_screen('puzzle')
                 screen.game_grid = screen.ids.puzzle_grid
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('puzzle')
+                self.current_step_index += 1
+                return
 
+            # --- Map Guesser ---
             elif ex_type == 'map_guess':
+                self.attach_minigame_to_exdata(ex_data, 'map_guesser', MapGuesser, 'map_guesser')
                 screen = app.sm.get_screen('map_guess')
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('map_guess')
+                self.current_step_index += 1
+                return
 
+            # --- Rebus ---
             elif ex_type == 'rebus':
+                self.attach_minigame_to_exdata(ex_data, 'rebus', Rebus, 'rebus')
                 screen = app.sm.get_screen('rebus')
                 screen.region_id = self.region_id
-
-                # Incarca entitatea rebus din quizz folosind service
-                # Formula: quizz_id = (region_id - 1) * 6 + current_level_id
-                if hasattr(app, 'service'):
-                    quizz_id = (self.region_id - 1) * 6 + self.current_level_id
-                    quizz = app.service.get_quizz_by_id(quizz_id)
-                    if quizz:
-                        minigame_entity = quizz.get_minigames()
-                        # Verifica daca minigame-ul este de tip Rebus
-                        if minigame_entity and isinstance(minigame_entity, Rebus):
-                            ex_data['rebus'] = minigame_entity
-
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('rebus')
+                self.current_step_index += 1
+                return
 
+            # --- Bingo ---
             elif ex_type == 'bingo':
+                self.attach_minigame_to_exdata(ex_data, 'bingo', Bingo, 'bingo')
                 screen = app.sm.get_screen('bingo')
                 screen.current_difficulty = ex_data.get('difficulty', screen.current_difficulty)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('bingo')
+                self.current_step_index += 1
+                return
 
+            # --- Pairs ---
             elif ex_type == 'pairs':
+                self.attach_minigame_to_exdata(ex_data, 'pairs', Pairs, 'pairs')
                 screen = app.sm.get_screen('pairs_game')
                 if hasattr(screen, 'start_new_game'):
                     screen.start_new_game()
                 app.clouds.change_screen('pairs_game')
-
-            self.current_step_index += 1
+                self.current_step_index += 1
+                return
         else:
             self.finish_level_sequence()
 
