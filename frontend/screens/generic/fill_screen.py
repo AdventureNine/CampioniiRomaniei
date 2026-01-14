@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.properties import StringProperty, NumericProperty, ColorProperty
 from frontend.components.common import FeedbackPopup
 from frontend.utils.colors import AppColors
-from frontend.utils.assets import image_path
+from frontend.utils.assets import image_path, remove_diacritics
 
 
 class GenericFillScreen(Screen):
@@ -42,8 +42,9 @@ class GenericFillScreen(Screen):
         input_widget = self.ids.get('input_box')
         if not input_widget: return
         user_text = input_widget.text.strip().lower()
+        user_text = remove_diacritics(user_text)
 
-        valid_answers = [ans.lower() for ans in self.accepted_answers]
+        valid_answers = [remove_diacritics(ans.lower()) for ans in self.accepted_answers]
 
         if user_text in valid_answers:
             popup = FeedbackPopup(type='success', title_text="Corect!", button_text="Continuă")
