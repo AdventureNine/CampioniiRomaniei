@@ -32,8 +32,6 @@ from frontend.screens.games.map_guess import MapGuessScreen
 from frontend.screens.games.pairs import PairsGameScreen
 from frontend.screens.statistics.statistics import PaginaStatistici
 
-from frontend.data.user_progress import USER_PROGRESS
-
 Config.set('graphics', 'width', '1280')
 Config.set('graphics', 'height', '800')
 Config.set('graphics', 'resizable', False)
@@ -77,23 +75,6 @@ class DidacticApp(MDApp):
         if loaded_player:
             self.player = loaded_player
             self.score = self.player.get_credits()
-            # --- Sincronizează progresul pt player ---
-            stats = self.player.get_statistics()
-            for region_id in USER_PROGRESS:
-                region_name = None
-                if region_id == 1:
-                    region_name = "Transilvania"
-                elif region_id == 2:
-                    region_name = "Moldova"
-                elif region_id == 3:
-                    region_name = "Țara Românească"
-                elif region_id == 4:
-                    region_name = "Dobrogea"
-                elif region_id == 5:
-                    region_name = "Banat"
-                if region_name and region_name in stats["regions_state"]:
-                    max_level = stats["regions_state"][region_name]
-                    USER_PROGRESS[region_id] = [True if i < max_level else False for i in range(6)]
         else:
             self.player = Player(1, "Explorator")
             player_repo.save(self.player) #TODO service

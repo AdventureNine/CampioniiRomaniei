@@ -6,7 +6,6 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 
 from frontend.data.game_data import REGIONS_DATA
-from frontend.data.user_progress import USER_PROGRESS
 from frontend.utils.assets import image_path
 from frontend.components.common import FeedbackPopup
 from frontend.utils.colors import AppColors
@@ -80,15 +79,16 @@ class RegionDashboardScreen(Screen):
             except:
                 self.bg_image = ""
 
-        # Folosește DOAR progresul real din player
+        # Seteaza starea nivelurilor pe baza progresului utilizatorului
         app = App.get_running_app()
-        player = getattr(app, 'player', None)
-        if player:
-            stats = player.get_statistics()
-            region_name = self.region_name
-            # Dacă nu există progres, setează la 1 (doar primul nivel deblocat)
-            max_level = stats["regions_state"].get(region_name, 1) if region_name else 1
-            self.levels_status = [True if i < max_level else False for i in range(6)]
+        service = getattr(app, 'service', None)
+        region_name = self.region_name
+        max_level = 1
+        if service and region_name:
+            stats = service.get_player_stats()
+            if stats and "regions_state" in stats:
+                max_level = stats["regions_state"].get(region_name, 1)
+        self.levels_status = [True if i < max_level else False for i in range(6)]
 
         self.set_header_color()
 
@@ -272,6 +272,7 @@ class RegionDashboardScreen(Screen):
         self.stop_and_clear_timer()
 
         app = App.get_running_app()
+        service = getattr(app, 'service', None)
 
         settings = self.get_level_settings(self.current_level_id)
         base_points = settings.get("points")
@@ -296,7 +297,7 @@ class RegionDashboardScreen(Screen):
             title = "Nivel Rejucat"
             msg = "Felicitări! Ai terminat din nou nivelul!"
 
-        # Deblochează nivelul următor în levels_status
+        # Deblocheaza urmatorul nivel
         if next_level_unlock_index < 6:
             new_status = list(self.levels_status)
             if next_level_unlock_index < len(new_status):
@@ -304,19 +305,18 @@ class RegionDashboardScreen(Screen):
             self.levels_status = new_status
 
         # --- Salveaza progresul playerului ---
-        player = getattr(app, 'player', None)
-        if player:
-            player.set_credits(app.score)
-            stats = player.get_statistics()
-            region_name = self.region_name
-            if region_name:
-                # Deblochează progresul real: dacă nu era deja completat, crește la nivelul următor
-                if not already_completed:
-                    stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id + 1)
-                else:
-                    stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id)
-            if hasattr(app, 'service'):
-                app.service.save_player(player)
+        if service:
+            player = service.get_player()
+            if player:
+                player.set_credits(app.score)
+                region_name = self.region_name
+                if region_name:
+                    stats = player.get_statistics()
+                    if not already_completed:
+                        stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id + 1)
+                    else:
+                        stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id)
+                service.save_player(player)
 
         popup = FeedbackPopup(
             type='level_complete',
