@@ -6,6 +6,7 @@ from kivy.uix.label import Label
 from frontend.components.common import FeedbackPopup
 from frontend.utils.colors import AppColors
 from frontend.utils.assets import image_path
+import random
 
 class QuizAnswerButton(ButtonBehavior, Label):
     btn_color = ColorProperty([0, 0, 0, 1])
@@ -22,8 +23,13 @@ class GenericQuizScreen(Screen):
 
     def load_data(self, data, step_number):
         self.question_text = data['question']
-        self.options = data['options']
-        self.correct_answer = data['correct']
+        options = data['options'][:]
+        correct_answer = data['correct']
+
+        # Amestecam optiunile
+        random.shuffle(options)
+        self.options = options
+        self.correct_answer = correct_answer
 
         try:
             self.question_bg_image = image_path("ui/question_box.png")
