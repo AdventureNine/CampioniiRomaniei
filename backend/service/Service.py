@@ -2,14 +2,13 @@ from typing import Optional
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.entities.Question import Question
-from backend.domain.entities.Minigame import MapGuesser
+from backend.domain.entities.Minigame import MapGuesser, Minigame, Rebus, Bingo, Puzzle, Pairs
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
 from backend.repository.MinigameRepository import MinigameRepository
 from backend.repository.QuizzRepository import QuizzRepository
 from backend.repository.QuizzTaskRepository import QuizzTaskRepository
-
 
 def convert_MapGuesser_to_frontend_format(map_guesser: MapGuesser) -> dict:
     """Convert a MapGuesser minigame to frontend-compatible format."""
@@ -24,11 +23,21 @@ def convert_question_to_frontend_format(question: Question) -> dict:
     """Convert a Question to frontend-compatible format."""
     answers = question.get_answer_list()
     return {
+        'type': 'quizz',
         'id': question.get_id(),
         'question': question.get_text(),
         'options': answers,
         'correct': answers[0] if answers else ''
     }
+
+
+def convert_fill_to_frontend_format(fill) -> dict:
+    return {
+        "type": "fill",
+        "question": "".join(fill.get_text_segments()),
+        "correct": fill.get_answer_list()
+    }
+
 
 def _get_region_name_by_id(region_id: int) -> str | None:
     match region_id:
@@ -149,11 +158,67 @@ class Service:
         return False
 
     def get_quizz_by_id(self, quizz_id: int) -> Optional[Quizz]:
+        
         quizz: Quizz = self.__quizz_repository.get_by_id(quizz_id)
         questions = self.__question_repository.find(f"quizz = {quizz_id}")
         fill_ins = self.__fill_in_repository.find(f"quizz = {quizz_id}")
         minigames = self.__minigame_repository.find(f"quizz = {quizz_id}")[0]
+        
         quizz.set_questions(questions)
         quizz.set_fill_in_statements(fill_ins)
         quizz.set_minigame(minigames)
+        
         return quizz
+
+    def get_level_data(self, quizz_id: int) -> list[dict]:
+        """
+        Returnează pașii unui nivel în ordinea din DB
+        """
+        tasks = self.__quizz_task_repository.find(
+            f"quizz = {quizz_id} ORDER BY id"
+        )
+
+        level_steps: list[dict] = []
+
+        for task in tasks:
+            task_id = task["id"]
+            task_type = task["type"]
+
+            if task_type == "question":
+                q = self.__question_repository.get_by_id(task_id)
+                if q:
+                    level_steps.append(
+                        convert_question_to_frontend_format(q)
+                    )
+
+            elif task_type == "fill-ins":
+                f = self.__fill_in_repository.get_by_id(task_id)
+                if f:
+                    level_steps.append(
+                        convert_fill_to_frontend_format(f)
+                    )
+
+        quizz = self.get_quizz_by_id(quizz_id)
+
+        if quizz:
+            minigame = quizz.get_minigames()
+
+            if minigame and isinstance(minigame, Rebus):
+                level_steps.append({"type": "rebus"})
+            if minigame and isinstance(minigame, Bingo):
+                level_steps.append({"type": "bingo"})
+            if minigame and isinstance(minigame, MapGuesser):
+                level_steps.append({"type": "map_guesser"})
+            if minigame and isinstance(minigame, Puzzle):
+                level_steps.append({"type": "puzzle"})
+            if minigame and isinstance(minigame, Pairs):
+                level_steps.append({"type": "pairs"})
+        return level_steps
+
+        
+        
+        
+        
+    
+    
+    
