@@ -1,33 +1,40 @@
+from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
-from backend.domain.entities.Player import Player
-
-
-
-# --- MOCK DATA---
-player_test = Player(1, "Campionul")
-
-player_test.set_quizzes_played(15)
-player_test.set_quizzes_solved(12)
-player_test.set_avg_play_time(4.5)
-player_test.set_completion_percentage(35.0)
-player_test.set_regions_state({"Transilvania": 1, "Moldova": 1})
 
 
 class PaginaStatistici(MDScreen):
     def on_pre_enter(self, *args):
-        curent_player = player_test
+        app = MDApp.get_running_app()
+        if not hasattr(app, 'service'):
+            return
 
-        stats = curent_player.get_statistics()
+        stats = app.service.get_player_stats()
 
-        self.ids.row_nume.valoare = str(curent_player.get_name())
-        self.ids.row_credite.valoare = str(curent_player.get_credits())
+        if stats:
+            # Nume Jucător
+            self.ids.row_nume.valoare = str(stats["name"])
 
-        self.ids.row_jucate.valoare = str(stats["quizzes_played"])
-        self.ids.row_rezolvate.valoare = str(stats["quizzes_solved"])
-        self.ids.row_timp.valoare = f"{stats['avg_play_time']:.1f} min"
+            # Credite
+            self.ids.row_credite.valoare = str(stats["credits"])
 
-        dict_regiuni = stats["regions_state"]
-        nr_regiuni = len(dict_regiuni)
+            # Quiz-uri
+            self.ids.row_jucate.valoare = str(stats["quizzes_played"])
+            self.ids.row_rezolvate.valoare = str(stats["quizzes_solved"])
 
-        self.ids.row_regiuni.valoare = f"{nr_regiuni} / 10"
-        self.ids.row_progres.valoare = f"{stats['completion_percentage']}%"
+            # Timp mediu
+            avg_time = stats.get('avg_play_time', 0.0)
+            self.ids.row_timp.valoare = f"{avg_time:.1f} min"
+
+            # Regiuni deblocate
+            regions_state = stats.get("regions_state", {})
+            nr_regiuni_deblocate = len(regions_state)
+            self.ids.row_regiuni.valoare = f"{nr_regiuni_deblocate} / 5"
+
+            # Cosmetice deținute
+            cosmetics = stats.get("cosmetics_owned", [])
+            nr_cosmetics = len(cosmetics)
+            self.ids.row_cosmetici.valoare = str(nr_cosmetics)
+
+            # Progres Total
+            completion = stats.get("completion_percentage", 0.0)
+            self.ids.row_progres.valoare = f"{completion}%"

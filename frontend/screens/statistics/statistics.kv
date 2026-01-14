@@ -65,7 +65,7 @@
         MDCard:
             orientation: "vertical"
             size_hint: None, None
-            size: "700dp", "500dp"
+            size: "700dp", "550dp"
             pos_hint: {"center_x": 0.5, "center_y": 0.45}
 
             # STILIZARE CARD
@@ -118,9 +118,14 @@
                 id: row_timp
 
             RandStatistica:
-                titlu: "REGIUNI:"
+                titlu: "REGIUNI DEBLOCATE:"
                 valoare: "0 / 10"
                 id: row_regiuni
+
+            RandStatistica:
+                titlu: "COSMETICI:"
+                valoare: "0"
+                id: row_cosmetici
 
             RandStatistica:
                 titlu: "PROGRES TOTAL:"
