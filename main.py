@@ -48,7 +48,7 @@ class DidacticApp(MDApp):
 
     def build(self):
         self.title = "Campionii Geografiei"
-        self.conn = sqlite3.connect('../backend/domain/data.db')
+        self.conn = sqlite3.connect('./backend/domain/data.db')
         Window.size = (1280, 800)
         Factory.register('PolygonButton', cls=PolygonButton)
         root_layout = FloatLayout()
@@ -80,20 +80,20 @@ class DidacticApp(MDApp):
             player_repo.save(self.player)
 
         # 1. Încărcare Componente Grafice
-        Builder.load_file('components/common.kv')
-        Builder.load_file('components/cloud_transition.kv')
-        Builder.load_file('screens/menu/menu.kv')
-        Builder.load_file('screens/map/map.kv')
-        Builder.load_file('screens/region_dashboard/region_dashboard.kv')
-        Builder.load_file('screens/generic/quiz_screen.kv')
-        Builder.load_file('screens/generic/fill_screen.kv')
-        Builder.load_file('screens/games/map_guess.kv')
-        Builder.load_file('screens/games/puzzle.kv')
-        Builder.load_file('screens/games/rebus.kv')
-        Builder.load_file('screens/games/bingo.kv')
-        Builder.load_file('screens/games/pairs.kv')
-        Builder.load_file('screens/statistics/statistics.kv')
-        Builder.load_file('screens/cosmetics/cosmetics.kv')
+        Builder.load_file('frontend/components/common.kv')
+        Builder.load_file('frontend/components/cloud_transition.kv')
+        Builder.load_file('frontend/screens/menu/menu.kv')
+        Builder.load_file('frontend/screens/map/map.kv')
+        Builder.load_file('frontend/screens/region_dashboard/region_dashboard.kv')
+        Builder.load_file('frontend/screens/generic/quiz_screen.kv')
+        Builder.load_file('frontend/screens/generic/fill_screen.kv')
+        Builder.load_file('frontend/screens/games/map_guess.kv')
+        Builder.load_file('frontend/screens/games/puzzle.kv')
+        Builder.load_file('frontend/screens/games/rebus.kv')
+        Builder.load_file('frontend/screens/games/bingo.kv')
+        Builder.load_file('frontend/screens/games/pairs.kv')
+        Builder.load_file('frontend/screens/statistics/statistics.kv')
+        Builder.load_file('frontend/screens/cosmetics/cosmetics.kv')
 
         # Screen Manager
         self.sm = ScreenManager(transition=NoTransition())
