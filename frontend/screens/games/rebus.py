@@ -1,123 +1,15 @@
-import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, NumericProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, NumericProperty, ColorProperty
 from kivy.clock import Clock
 
-from backend.domain.utils.Difficulty import Difficulty
 from backend.domain.entities.Minigame import Rebus
+from frontend.utils.colors import AppColors
 
-# date pentru cuvinte
-DATA_SOURCE = {
-    'A': [
-        ('ARAD', 'Municipiu pe Mures'),
-        ('ALBA', 'Judet ardelean'),
-        ('ARDEAL', 'Regiunea Transilvania'),
-        ('AVRAM', 'Prenume revolutionar'),
-        ('ASTRA', 'Asociatie culturala')
-    ],
-    'B': [
-        ('BANAT', 'Regiune in vest'),
-        ('BRASOV', 'Oras in Carpati'),
-        ('BUCEGI', 'Munti langa Bucuresti'),
-        ('BISTRITA', 'Oras in nord'),
-        ('BUZAU', 'Judet din Muntenia')
-    ],
-    'C': [
-        ('CARPATI', 'Muntii Romaniei'),
-        ('CLUJ', 'Oras in Transilvania'),
-        ('CRAIOVA', 'Oras in Oltenia'),
-        ('CALARASI', 'Judet dunarean'),
-        ('CORVIN', 'Familie nobiliara')
-    ],
-    'D': [
-        ('DUNARE', 'Fluviul de la granita'),
-        ('DECEBAL', 'Rege dac'),
-        ('DACIA', 'Tara dacilor'),
-        ('DOBROGEA', 'Regiune istorica'),
-        ('DORU', 'Sentiment romanesc')
-    ],
-    'E': [
-        ('EMINESCU', 'Poet national'),
-        ('EUROPA', 'Continent'),
-        ('ELIADE', 'Scriitor roman'),
-        ('ENESCU', 'Compozitor roman'),
-        ('ETNIE', 'Grup cultural')
-    ],
-    'I': [
-        ('ISTORIE', 'Studiul trecutului'),
-        ('IALOMITA', 'Raul si judet'),
-        ('IASI', 'Oras in Moldova'),
-        ('ILFOV', 'Judet din jurul capitalei'),
-        ('ION', 'Prenume romanesc')
-    ],
-    'M': [
-        ('MOLDOVA', 'Regiune istorica'),
-        ('MURES', 'Rau si judet'),
-        ('MIHAI', 'Prenume domnesc'),
-        ('MARAMURES', 'Zona traditionala'),
-        ('MUNTENIA', 'Regiune sudica')
-    ],
-    'N': [
-        ('NAPOCA', 'Vechiul nume al Clujului'),
-        ('NEAMT', 'Judet in Moldova'),
-        ('NIC', 'Prenume romanesc'),
-        ('NISTRU', 'Fluviu estic'),
-        ('NASAUD', 'Zona ardeleneasca')
-    ],
-    'O': [
-        ('OLT', 'Raul care taie muntii'),
-        ('ORADEA', 'Oras la granita'),
-        ('ORSOVA', 'Oras pe Dunare'),
-        ('OLTENIA', 'Regiune sud-vestica'),
-        ('OPINCA', 'Incaltaminte traditionala')
-    ],
-    'R': [
-        ('ROMA', 'Capitala Imperiului'),
-        ('RESITA', 'Oras in Banat'),
-        ('ROMAN', 'Oras moldovean'),
-        ('ROMANIA', 'Stat european'),
-        ('RADU', 'Prenume domnesc')
-    ],
-    'S': [
-        ('SARMIZEGETUSA', 'Capitala Daciei'),
-        ('SIBIU', 'Oras sasesc'),
-        ('SOMES', 'Rau in Transilvania'),
-        ('SUCEAVA', 'Oras medieval'),
-        ('SECUI', 'Grup etnic')
-    ],
-    'T': [
-        ('TIMIS', 'Judet in Banat'),
-        ('TOLEDO', 'Oras spaniol'),
-        ('TITAN', 'Cartier bucurestean'),
-        ('TARGOVISTE', 'Fosta capitala'),
-        ('TRAIAN', 'Imparat roman')
-    ],
-    'U': [
-        ('UNIRE', 'Eveniment din 1918'),
-        ('UNIRII', 'Piata din Bucuresti'),
-        ('URANUS', 'Planeta'),
-        ('UIOARA', 'Localitate ardeleneasca'),
-        ('UTURE', 'Pasare rapitoare')
-    ]
-}
-
-# cuvintele secrete
-SECRET_WORDS = [
-    "DACIA",
-    "ROMANIA",
-    "ALBA",
-    "MOLDOVA",
-    "UNIRE",
-    "CARPATI",
-    "EMINESCU",
-    "ARDEAL",
-    "OLTENIA",
-    "BUCEGI"
-]
+from kivy.app import App
 
 
 class RebusCell(TextInput):
@@ -172,7 +64,6 @@ class RebusCell(TextInput):
                 return True
         return super().keyboard_on_key_down(window, keycode, text, modifiers)
 
-
     def insert_text(self, substring, from_undo=False):
         # accepta doar litere
         ch = next((c for c in substring if c.isalpha()), '')
@@ -192,48 +83,24 @@ class RebusScreen(Screen):
     background_image = StringProperty('')
     bg_image = StringProperty('')
 
+    region_id = NumericProperty(0)
+    primary_color = ColorProperty(AppColors.ACCENT)
+
     number_w = NumericProperty(50)
     clue_w = NumericProperty(400)
-    cell_w = NumericProperty(40)
+    cell_w = NumericProperty(42)
     max_cols = NumericProperty(15)
-    max_attempts = NumericProperty(150)
-
-    current_difficulty = ObjectProperty(None, allownone=True)
-    regeneration_count = NumericProperty(0)
-    max_regenerations = NumericProperty(4)
 
     def __init__(self, **kwargs):
         self._initialized = False
-
-        # dificultate implicita
-        difficulty_levels = list(Difficulty)
-        self.current_difficulty = difficulty_levels[1]
-
         super().__init__(**kwargs)
-
         self.words_data = []
         self.cells = []
-        self.regeneration_count = 0
 
-        # seteaza parametri in functie de dificultate
-        difficulty_levels = list(Difficulty)
-        if self.current_difficulty == difficulty_levels[0]:
-            self.max_cols = 12
-            self.max_attempts = 100
-        elif len(difficulty_levels) > 1 and self.current_difficulty == difficulty_levels[1]:
-            self.max_cols = 15
-            self.max_attempts = 150
-        else:
-            self.max_cols = 18
-            self.max_attempts = 220
 
     def _sync_text_size(self, inst, size):
         # aliniaza textul in label
         inst.text_size = size
-
-    def _generate_rebus_cb(self, dt):
-        # callback pentru generare rebus
-        self.generate_rebus()
 
     def _build_current_config(self):
         if not self.cells or not self.words_data:
@@ -246,103 +113,15 @@ class RebusScreen(Screen):
             cfg[word_info['clue']] = typed
         return cfg
 
-    def on_kv_post(self, base_widget):
-        # ruleaza dupa kv
-        if not self._initialized:
-            self._initialized = True
-            Clock.schedule_once(self._generate_rebus_cb, 0)
-
-    def generate_rebus(self):
-        # Verifica limita de regenerari
-        if self.regeneration_count >= self.max_regenerations:
-            print(f"Ai atins limita de {self.max_regenerations} regenerări!")
-            return
-
-        self.regeneration_count += 1
-
-        # reset ui si date
-        self.game_container.clear_widgets()
-        self.is_checked = False
-        self.is_completed = False
-        self.rebus_entity = None
-
-        MAX_COLS = int(self.max_cols)
-        MAX_ATTEMPTS = int(self.max_attempts)
-
-        valid_variants = []
-
-        for _ in range(MAX_ATTEMPTS):
-            secret_word = random.choice(SECRET_WORDS).upper()
-
-            # pivot random
-            pivot_column = random.randint(3, MAX_COLS - 4)
-
-            indexed_letters = list(enumerate(secret_word))
-            random.shuffle(indexed_letters)
-
-            words_data = []
-            used_words = set()
-            valid = True
-
-            # cauta cuvinte pentru fiecare litera
-            for original_idx, char in indexed_letters:
-                if char not in DATA_SOURCE:
-                    valid = False
-                    break
-
-                candidates = []
-
-                # gaseste cuvinte potrivite
-                for word, clue in DATA_SOURCE[char]:
-                    w = word.upper()
-                    if w in used_words:
-                        continue
-                    for pos in [i for i, c in enumerate(w) if c == char]:
-                        start = pivot_column - pos
-                        if 0 <= start and start + len(w) <= MAX_COLS:
-                            candidates.append((w, clue, pos, start))
-
-                if not candidates:
-                    valid = False
-                    break
-
-                # alege un cuvant random
-                w, clue, pivot_idx, start_col = random.choice(candidates)
-                used_words.add(w)
-                words_data.append({
-                    'word': w,
-                    'clue': clue,
-                    'start_col': start_col,
-                    'pivot_idx': pivot_idx,
-                    'secret_index': original_idx
-                })
-
-            if valid and len(words_data) == len(secret_word):
-                valid_variants.append(words_data)
-
-        if not valid_variants:
-            self.cells = []
-            self.words_data = []
-            self.game_container.add_widget(
-                Label(text="Nu s-a putut genera un rebus.\nÎncearcă din nou.", color=(1, 1, 1, 1)))
-            return
-
-        # alege o varianta random
-        best_variant = random.choice(valid_variants)
-
-        # ordonare dupa pozitia din cuvantul secret
-        best_variant.sort(key=lambda x: x['secret_index'])
-
-        self.words_data = best_variant
-        win_cfg = {item['clue']: item['word'] for item in self.words_data}
-
-        # extrage cuvantul secret din best_variant
-        secret_word = ''.join([item['word'][item['pivot_idx']] for item in self.words_data])
-
-        self.rebus_entity = Rebus(rebus_id=1, win_configuration=win_cfg, secret_word=secret_word)
-
-        self.cells = []
-        self.game_container.add_widget(self.build_grid(best_variant, MAX_COLS))
+    def set_theme_color(self):
+        colors_map = {
+            1: AppColors.TRANSILVANIA,
+            2: AppColors.MOLDOVA,
+            3: AppColors.TARA_ROMANEASCA,
+            4: AppColors.DOBROGEA,
+            5: AppColors.BANAT
+        }
+        self.primary_color = colors_map.get(self.region_id, AppColors.ACCENT)
 
     def build_grid(self, words_data, max_cols):
         grid = GridLayout(cols=3, spacing=0, size_hint=(None, None))
@@ -366,7 +145,7 @@ class RebusScreen(Screen):
                 size_hint_x=None,
                 width=self.number_w,
                 color=(1, 1, 1, 1),
-                font_size='18sp',
+                font_size='22sp',
                 halign='center',
                 valign='middle',
             )
@@ -379,7 +158,7 @@ class RebusScreen(Screen):
                 size_hint_x=None,
                 width=self.clue_w,
                 color=(1, 1, 1, 1),
-                font_size='16sp',
+                font_size='20sp',
                 halign='left',
                 valign='middle',
                 markup=True,
@@ -436,7 +215,6 @@ class RebusScreen(Screen):
 
         return grid
 
-
     def toggle_check(self):
         # verificare
         if self.is_checked:
@@ -482,13 +260,6 @@ class RebusScreen(Screen):
                 if cell and isinstance(cell, RebusCell):
                     cell.background_color = (1, 1, 0.7, 1) if cell.is_pivot else (1, 1, 1, 1)
 
-    def auto_fill(self):
-        # completeaza automat
-        for row in self.cells:
-            for cell in row:
-                if cell and isinstance(cell, RebusCell):
-                    cell.text = cell.correct_char
-
     def clear_rebus(self):
         # goleste rebusul
         self.is_checked = False
@@ -505,31 +276,91 @@ class RebusScreen(Screen):
     def finalize_rebus(self):
         # finalizare
         print("Rebus finalizat cu succes!")
-        from kivy.app import App
         app = App.get_running_app()
         dashboard = app.sm.get_screen('region_dashboard')
         dashboard.load_next_step()
 
     def go_back(self):
         # inapoi la region dashboard
-        from kivy.app import App
         app = App.get_running_app()
         app.clouds.change_screen('region_dashboard')
 
     def load_data(self, data, step_number):
-        self.regeneration_count = 0
+        """
+        Incarca date de rebus din backend.
+        Format asteptat:
+        {
+            'type': 'rebus',
+            'rebus': Entitate Rebus cu win_configuration si secret_word
+        }
+        """
+        # Reseteaza UI
+        self.game_container.clear_widgets()
+        self.is_checked = False
+        self.is_completed = False
+        self.cells = []
+        self.words_data = []
 
-        # Seteaza dificultatea daca e specificata
-        if 'difficulty' in data:
-            difficulty_map = {
-                'easy': 0,
-                'medium': 1,
-                'hard': 2
-            }
-            difficulty_idx = difficulty_map.get(data['difficulty'], 1)
-            difficulty_levels = list(Difficulty)
-            if 0 <= difficulty_idx < len(difficulty_levels):
-                self.current_difficulty = difficulty_levels[difficulty_idx]
+        # Obtine entitatea rebus din date
+        rebus = data.get('rebus')
+        if not rebus or not isinstance(rebus, Rebus):
+            self.game_container.add_widget(
+                Label(text="Eroare: Nu s-au gasit date de rebus.", color=(1, 1, 1, 1)))
+            return
 
-        # Regenereaza rebusul
-        self.generate_rebus()
+        self.rebus_entity = rebus
+        win_configuration = rebus.get_win_configuration()
+        secret_word = rebus.get_secret_word()
+
+        if not win_configuration or not secret_word:
+            self.game_container.add_widget(
+                Label(text="Eroare: Rebus invalid.", color=(1, 1, 1, 1)))
+            return
+
+
+        MAX_COLS = int(self.max_cols)
+        pivot_column = MAX_COLS // 2
+
+        words_data = []
+
+        # Proceseaza fiecare pereche indiciu-raspuns
+        for secret_idx, (clue, answer) in enumerate(win_configuration.items()):
+            word_upper = answer.upper()
+            secret_char = secret_word[secret_idx].upper() if secret_idx < len(secret_word) else ''
+
+            # Gaseste indexul pivot
+            pivot_idx = -1
+            for i, char in enumerate(word_upper):
+                if char == secret_char:
+                    pivot_idx = i
+                    break
+
+            if pivot_idx == -1:
+                pivot_idx = len(word_upper) // 2
+
+            # Calculeaza coloana de start astfel incat pivotul sa fie aliniat cu pivot_column
+            start_col = pivot_column - pivot_idx
+
+            # Ajusteaza daca cuvantul iese din limite
+            if start_col < 0:
+                start_col = 0
+                pivot_idx = pivot_column if pivot_column < len(word_upper) else len(word_upper) // 2
+            elif start_col + len(word_upper) > MAX_COLS:
+                start_col = MAX_COLS - len(word_upper)
+                pivot_idx = pivot_column - start_col if (pivot_column - start_col) < len(word_upper) else len(word_upper) // 2
+
+            words_data.append({
+                'word': word_upper,
+                'clue': clue,
+                'start_col': start_col,
+                'pivot_idx': pivot_idx,
+                'secret_index': secret_idx
+            })
+
+        # Sorteaza dupa ordinea literelor din cuvantul secret
+        words_data.sort(key=lambda x: x['secret_index'])
+
+        self.words_data = words_data
+        self.cells = []
+        self.game_container.add_widget(self.build_grid(words_data, MAX_COLS))
+        self.set_theme_color()

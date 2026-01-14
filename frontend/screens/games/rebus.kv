@@ -17,23 +17,32 @@
 <RebusScreen>:
     game_container: game_container
 
-    canvas.before:
-        Rectangle:
-            source: root.bg_image
-            pos: self.pos
-            size: self.size
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 0
-        spacing: 5
+    Widget:
+        size_hint: 1, 1
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.4
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
+    FloatLayout:
         StandardHeader:
             title: "REBUS"
+            header_color: root.primary_color
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
 
         FloatLayout:
+            pos_hint: {'x': 0, 'top': 0.89}
+            size_hint: 1, None
+            height: root.height - 220
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 0.35
@@ -47,21 +56,28 @@
                 do_scroll_y: True
                 size_hint: None, None
                 width: root.width - 28
-                height: root.height - 200
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                height: root.height - 230
+                pos_hint: {'x': 0, 'center_y': 0.5}
 
-                BoxLayout:
-                    id: game_container
-                    orientation: 'vertical'
+                FloatLayout:
                     size_hint_y: None
-                    height: self.minimum_height
-                    spacing: 6
-                    padding: 6
+                    height: max(self.parent.height, game_container.height)
+
+                    BoxLayout:
+                        id: game_container
+                        orientation: 'vertical'
+                        size_hint: None, None
+                        width: root.width - 28
+                        height: self.minimum_height
+                        spacing: 6
+                        padding: [6, 20, 6, 20]
+                        pos_hint: {'x': 0, 'center_y': 0.5}
 
         BoxLayout:
-            size_hint_y: None
+            size_hint: None, None
+            width: root.width - 28
             height: 100
-            padding: 14
+            pos_hint: {'center_x': 0.5, 'y': 0.015}
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 0.35
@@ -71,34 +87,19 @@
                     radius: [14]
 
             BoxLayout:
+                orientation: 'horizontal'
                 size_hint_y: None
                 height: 70
                 spacing: 20
                 padding: [100, 0]
-
-                Button:
-                    text: "AUTO"
-                    size_hint_x: None
-                    width: 80
-                    background_normal: ''
-                    background_color: 0.5, 0.5, 0.5, 1
-                    font_size: '14sp'
-                    canvas.before:
-                        Color:
-                            rgba: self.background_color
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [8]
-                    on_release: root.auto_fill()
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
                 Button:
                     text: "ȘTERGE"
-                    size_hint_x: None
-                    width: 100
+                    size_hint_x: 1
                     background_normal: ''
                     background_color: 0.7, 0.3, 0.3, 1
-                    font_size: '14sp'
+                    font_size: '18sp'
                     canvas.before:
                         Color:
                             rgba: self.background_color
@@ -110,7 +111,7 @@
 
                 Button:
                     text: "RESETEAZĂ" if root.is_checked else "VERIFICĂ"
-                    size_hint_x: 0.25
+                    size_hint_x: 1
                     background_normal: ''
                     background_color: (0.6, 0.4, 0.2, 1) if root.is_checked else (0.2, 0.6, 0.3, 1)
                     font_size: '18sp'
@@ -124,25 +125,9 @@
                     on_release: root.toggle_check()
 
                 Button:
-                    text: "REBUS NOU (" + str(root.max_regenerations - root.regeneration_count) + ")"
-                    size_hint_x: 0.25
-                    background_normal: ''
-                    background_color: (0.15, 0.45, 0.75, 1) if root.regeneration_count < root.max_regenerations else (0.3, 0.3, 0.3, 1)
-                    font_size: '18sp'
-                    disabled: root.regeneration_count >= root.max_regenerations
-                    canvas.before:
-                        Color:
-                            rgba: self.background_color
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [8]
-                    on_release: root.generate_rebus()
-
-                Button:
                     text: "[b]FINALIZEAZĂ[/b]"
                     markup: True
-                    size_hint_x: 0.25
+                    size_hint_x: 1
                     background_normal: ''
                     background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
                     font_size: '18sp'
@@ -155,4 +140,3 @@
                             size: self.size
                             radius: [8]
                     on_release: root.finalize_rebus()
-

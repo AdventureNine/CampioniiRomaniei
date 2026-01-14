@@ -12,6 +12,8 @@ from frontend.utils.assets import image_path
 from frontend.components.common import FeedbackPopup
 from frontend.utils.colors import AppColors
 
+from backend.domain.entities.Minigame import Rebus, Bingo, Pairs, MapGuesser, Puzzle
+
 
 class LevelIcon(ButtonBehavior, Image):
     level_index = NumericProperty(1)
@@ -208,6 +210,19 @@ class RegionDashboardScreen(Screen):
 
             elif ex_type == 'rebus':
                 screen = app.sm.get_screen('rebus')
+                screen.region_id = self.region_id
+
+                # Incarca entitatea rebus din quizz folosind service
+                # Formula: quizz_id = (region_id - 1) * 6 + current_level_id
+                if hasattr(app, 'service'):
+                    quizz_id = (self.region_id - 1) * 6 + self.current_level_id
+                    quizz = app.service.get_quizz_by_id(quizz_id)
+                    if quizz:
+                        minigame_entity = quizz.get_minigames()
+                        # Verifica daca minigame-ul este de tip Rebus
+                        if minigame_entity and isinstance(minigame_entity, Rebus):
+                            ex_data['rebus'] = minigame_entity
+
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('rebus')
