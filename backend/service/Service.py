@@ -2,7 +2,7 @@ from typing import Optional
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.entities.Question import Question
-from backend.domain.entities.Minigame import MapGuesser, Minigame, Rebus, Bingo
+from backend.domain.entities.Minigame import MapGuesser, Minigame, Rebus, Bingo, Puzzle, Pairs
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
@@ -208,7 +208,11 @@ class Service:
             if minigame and isinstance(minigame, Bingo):
                 level_steps.append({"type": "bingo"})
             if minigame and isinstance(minigame, MapGuesser):
-                level_steps.append({"type": "mapguesser"})
+                level_steps.append({"type": "map_guesser"})
+            if minigame and isinstance(minigame, Puzzle):
+                level_steps.append({"type": "puzzle"})
+            if minigame and isinstance(minigame, Pairs):
+                level_steps.append({"type": "pairs"})
         return level_steps
 
         
