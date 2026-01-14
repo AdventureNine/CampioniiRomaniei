@@ -214,6 +214,3 @@ class Service:
             if minigame and isinstance(minigame, Pairs):
                 level_steps.append({"type": "pairs"})
         return level_steps
-
-    def get_minigame_by_id(self, minigame_id: int):
-        return self.__minigame_repository.get_by_id(minigame_id)

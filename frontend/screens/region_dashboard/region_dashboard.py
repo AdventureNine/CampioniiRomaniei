@@ -250,10 +250,9 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'bingo':
                 self.attach_minigame_to_exdata(ex_data, 'bingo', Bingo, 'bingo')
                 screen = app.sm.get_screen('bingo')
-                screen.minigame_id = ex_data.get('id')
-                screen.current_difficulty = ex_data.get('difficulty', screen.current_difficulty)
+                screen.region_id = self.region_id
+                screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
-                screen.generate_bingo()
                 app.clouds.change_screen('bingo')
                 self.current_step_index += 1
                 return

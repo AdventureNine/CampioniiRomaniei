@@ -3,7 +3,6 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
-from kivy.clock import Clock
 from kivy.app import App
 
 from backend.domain.utils.Difficulty import Difficulty
@@ -39,14 +38,13 @@ class BingoScreen(Screen):
         self.cells = []
 
     def generate_bingo(self, *args):
-        if not self.game_container or self.minigame_id is None:
+        if not self.game_container:
             return
 
-        app = App.get_running_app()
-        self.bingo_entity = app.service.get_minigame_by_id(self.minigame_id)
-
-        if not self.bingo_entity:
-            print(f"Eroare: Nu s-a găsit minigame-ul cu ID {self.minigame_id}")
+        if not hasattr(self, 'bingo_entity') or not self.bingo_entity:
+            from kivy.uix.label import Label
+            self.game_container.clear_widgets()
+            self.game_container.add_widget(Label(text="Eroare: Nu există date de bingo!", color=(1, 1, 1, 1)))
             return
 
         self.game_container.clear_widgets()
@@ -63,8 +61,17 @@ class BingoScreen(Screen):
             num_true, num_false = 8, 17
 
         db_items = self.bingo_entity.get_win_configuration()
+        if not db_items:
+            from kivy.uix.label import Label
+            self.game_container.add_widget(Label(text="Eroare: Configurație lipsă!", color=(1, 1, 1, 1)))
+            return
         all_true = [(text, True) for text, val in db_items.items() if val is True]
         all_false = [(text, False) for text, val in db_items.items() if val is False]
+
+        if not all_true and not all_false:
+            from kivy.uix.label import Label
+            self.game_container.add_widget(Label(text="Eroare: Nu există celule de bingo!", color=(1, 1, 1, 1)))
+            return
 
         sample = random.sample(all_true, min(len(all_true), num_true)) + \
                  random.sample(all_false, min(len(all_false), num_false))
@@ -121,3 +128,34 @@ class BingoScreen(Screen):
     def go_back(self):
         app = App.get_running_app()
         app.clouds.change_screen('region_dashboard')
+
+    def load_data(self, data, step_number):
+        """
+        Încarcă datele pentru minigame-ul Bingo.
+        Format așteptat:
+        {
+            'type': 'bingo',
+            'bingo': Entitate Bingo cu win_configuration
+        }
+        """
+        # Resetează UI
+        if self.game_container:
+            self.game_container.clear_widgets()
+        self.is_completed = False
+        self.is_wrong = False
+        self.cells = []
+
+        # Obține entitatea Bingo din date
+        bingo = data.get('bingo')
+        if not bingo or not isinstance(bingo, Bingo):
+            from kivy.uix.label import Label
+            if self.game_container:
+                self.game_container.add_widget(
+                    Label(text="Eroare: Nu s-au găsit date de bingo.", color=(1, 1, 1, 1)))
+            return
+        self.bingo_entity = bingo
+        self.minigame_id = getattr(bingo, 'id', data.get('minigame_id', None))
+        if 'difficulty' in data:
+            self.current_difficulty = data['difficulty']
+        # Generează grila de bingo
+        self.generate_bingo()
