@@ -261,6 +261,12 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'pairs':
                 self.attach_minigame_to_exdata(ex_data, 'pairs', Pairs, 'pairs')
                 screen = app.sm.get_screen('pairs_game')
+                if hasattr(screen, 'region_id'):
+                    screen.region_id = self.region_id
+                if hasattr(screen, 'load_data'):
+                    screen.load_data(ex_data, self.current_step_index + 1)
+                if hasattr(screen, 'bg_image'):
+                    screen.bg_image = self.bg_image
                 if hasattr(screen, 'start_new_game'):
                     screen.start_new_game()
                 app.clouds.change_screen('pairs_game')
