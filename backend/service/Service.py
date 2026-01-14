@@ -158,16 +158,16 @@ class Service:
         return False
 
     def get_quizz_by_id(self, quizz_id: int) -> Optional[Quizz]:
-        
+
         quizz: Quizz = self.__quizz_repository.get_by_id(quizz_id)
         questions = self.__question_repository.find(f"quizz = {quizz_id}")
         fill_ins = self.__fill_in_repository.find(f"quizz = {quizz_id}")
         minigames = self.__minigame_repository.find(f"quizz = {quizz_id}")[0]
-        
+
         quizz.set_questions(questions)
         quizz.set_fill_in_statements(fill_ins)
         quizz.set_minigame(minigames)
-        
+
         return quizz
 
     def get_level_data(self, quizz_id: int) -> list[dict]:
@@ -214,11 +214,3 @@ class Service:
             if minigame and isinstance(minigame, Pairs):
                 level_steps.append({"type": "pairs"})
         return level_steps
-
-        
-        
-        
-        
-    
-    
-    

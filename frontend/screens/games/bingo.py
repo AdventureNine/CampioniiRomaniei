@@ -2,55 +2,12 @@ import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
-from kivy.clock import Clock
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, ColorProperty
 from kivy.app import App
 
 from backend.domain.utils.Difficulty import Difficulty
 from backend.domain.entities.Minigame import Bingo
-
-BINGO_DATA_SOURCE = {
-    # --- ISTORIE ROMÂNIA (TRUE) ---
-    'ISTORIE': [
-    ('Decebal', True), ('Traian', True), ('Burebista', True), ('Mircea cel Bătrân', True),
-    ('Ștefan cel Mare', True), ('Mihai Viteazul', True), ('Alexandru Ioan Cuza', True),
-    ('Carol I', True), ('Ferdinand I', True), ('Regina Maria', True), ('Vlad Țepeș', True),
-    ('Basarab I', True), ('Marea Unire', True), ('Independența României', True),
-    ('1 Decembrie', True), ('Alba Iulia', True), ('Sarmizegetusa Regia', True),
-    ('Matei Corvin', True), ('Nicolae Bălcescu', True), ('Avram Iancu', True),
-    ('Tudor Vladimirescu', True), ('Nicolae Iorga', True), ('Bătălia de la Posada', True),
-    ('Bătălia de la Rovine', True), ('Podul lui Traian', True), ('Curtea de Argeș', True),
-    ('Regele Mihai I', True), ('Regina Elisabeta', True), ('Transilvania', True),
-    ('Moldova', True), ('Muntenia', True), ('Basarabia', True), ('Dobrogea', True),
-    ('Crișana', True), ('Banat', True)],
-
-    # --- GEOGRAFIE ROMÂNIA (TRUE) ---
-    'GEOGRAFIE': [('Dunărea', True), ('Marea Neagră', True), ('Munții Carpați', True), ('Vârful Moldoveanu', True),
-    ('Delta Dunării', True), ('Râul Prut', True), ('Râul Siret', True), ('Râul Mureș', True),
-    ('Râul Olt', True), ('Râul Ialomița', True), ('Râul Someș', True), ('Lacul Sfânta Ana', True),
-    ('Lacul Roșu', True), ('Transfăgărășan', True), ('Transalpina', True), ('Sfinxul', True),
-    ('Babele', True), ('Peștera Scărișoara', True), ('Porțile de Fier', True), ('Câmpia Română', True),
-    ('Podișul Moldovei', True), ('Dealurile de Vest', True), ('București', True), ('Iași', True),
-    ('Cluj-Napoca', True), ('Timișoara', True), ('Constanța', True), ('Brașov', True),
-    ('Craiova', True), ('Galați', True), ('Munții Apuseni', True), ('Munții Bucegi', True),
-    ('Munții Parâng', True), ('Munții Retezat', True), ('Munții Rodnei', True)],
-
-    # --- DISTRAGERI / ELEMENTE STRĂINE (FALSE) ---
-    'FALS': [('Paris', False), ('Londra', False), ('Berlin', False), ('Viena', False),
-    ('Roma', False), ('Madrid', False), ('Lisabona', False), ('Amsterdam', False),
-    ('Praga', False), ('Varșovia', False), ('Munții Alpi', False), ('Munții Pirinei', False),
-    ('Munții Anzi', False), ('Munții Himalaya', False), ('Fluviul Nil', False),
-    ('Fluviul Amazon', False), ('Fluviul Mississippi', False), ('Fluviul Volga', False),
-    ('Napoleon Bonaparte', False), ('Iulius Cezar', False), ('Abraham Lincoln', False),
-    ('Cristofor Columb', False), ('Leonardo da Vinci', False), ('Isaac Newton', False),
-    ('Albert Einstein', False), ('W.A. Mozart', False), ('Ludwig van Beethoven', False),
-    ('William Shakespeare', False), ('Pablo Picasso', False), ('Planeta Marte', False),
-    ('Planeta Jupiter', False), ('Marele Zid Chinezesc', False), ('Statuia Libertății', False),
-    ('Turnul Eiffel', False), ('Piramidele din Giza', False), ('Cascada Niagara', False),
-    ('Marele Canion', False), ('Deșertul Sahara', False), ('Australia', False),
-    ('Brazilia', False), ('Canada', False), ('Japonia', False), ('Oceanul Pacific', False),
-    ('Oceanul Atlantic', False), ('Muntele Kilimanjaro', False)]
-}
+from frontend.utils.colors import AppColors
 
 class BingoCell(Button):
     is_target = BooleanProperty(False)
@@ -71,7 +28,9 @@ class BingoScreen(Screen):
     is_completed = BooleanProperty(False)
     is_wrong = BooleanProperty(False)
     bg_image = StringProperty('')
+    primary_color = ColorProperty(AppColors.ACCENT)
     current_difficulty = ObjectProperty(None, allownone=True)
+    minigame_id = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         if 'current_difficulty' not in kwargs:
@@ -79,10 +38,15 @@ class BingoScreen(Screen):
             self.current_difficulty = difficulty_levels[1]
         super().__init__(**kwargs)
         self.cells = []
-        Clock.schedule_once(self.generate_bingo, 0.1)
 
     def generate_bingo(self, *args):
         if not self.game_container:
+            return
+
+        if not hasattr(self, 'bingo_entity') or not self.bingo_entity:
+            from kivy.uix.label import Label
+            self.game_container.clear_widgets()
+            self.game_container.add_widget(Label(text="Eroare: Nu există date de bingo!", color=(1, 1, 1, 1)))
             return
 
         self.game_container.clear_widgets()
@@ -98,18 +62,25 @@ class BingoScreen(Screen):
         else:  # Hard
             num_true, num_false = 8, 17
 
-        all_true = []
-        all_false = []
-        for cat in BINGO_DATA_SOURCE.values():
-            all_true.extend([item for item in cat if item[1] is True])
-            all_false.extend([item for item in cat if item[1] is False])
+        db_items = self.bingo_entity.get_win_configuration()
+        if not db_items:
+            from kivy.uix.label import Label
+            self.game_container.add_widget(Label(text="Eroare: Configurație lipsă!", color=(1, 1, 1, 1)))
+            return
+        all_true = [(text, True) for text, val in db_items.items() if val is True]
+        all_false = [(text, False) for text, val in db_items.items() if val is False]
+
+        if not all_true and not all_false:
+            from kivy.uix.label import Label
+            self.game_container.add_widget(Label(text="Eroare: Nu există celule de bingo!", color=(1, 1, 1, 1)))
+            return
 
         sample = random.sample(all_true, min(len(all_true), num_true)) + \
                  random.sample(all_false, min(len(all_false), num_false))
         random.shuffle(sample)
 
-        win_cfg = {item[0]: item[1] for item in sample}
-        self.bingo_entity = Bingo(bingo_id=2, win_configuration=win_cfg, theme= "dummy") # TODO backend connection
+        current_win_cfg = {item[0]: item[1] for item in sample}
+        self.bingo_entity.set_win_configuration(current_win_cfg)
 
         grid = GridLayout(cols=5, spacing=10, size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'), minimum_width=grid.setter('width'))
@@ -159,3 +130,45 @@ class BingoScreen(Screen):
     def go_back(self):
         app = App.get_running_app()
         app.clouds.change_screen('region_dashboard')
+
+    def set_theme_color(self):
+        colors_map = {
+            1: AppColors.TRANSILVANIA,
+            2: AppColors.MOLDOVA,
+            3: AppColors.TARA_ROMANEASCA,
+            4: AppColors.DOBROGEA,
+            5: AppColors.BANAT
+        }
+        self.primary_color = colors_map.get(self.region_id, AppColors.ACCENT)
+
+    def load_data(self, data, step_number):
+        """
+        Încarcă datele pentru minigame-ul Bingo.
+        Format așteptat:
+        {
+            'type': 'bingo',
+            'bingo': Entitate Bingo cu win_configuration
+        }
+        """
+        # Resetează UI
+        if self.game_container:
+            self.game_container.clear_widgets()
+        self.is_completed = False
+        self.is_wrong = False
+        self.cells = []
+
+        # Obține entitatea Bingo din date
+        bingo = data.get('bingo')
+        if not bingo or not isinstance(bingo, Bingo):
+            from kivy.uix.label import Label
+            if self.game_container:
+                self.game_container.add_widget(
+                    Label(text="Eroare: Nu s-au găsit date de bingo.", color=(1, 1, 1, 1)))
+            return
+        self.bingo_entity = bingo
+        self.minigame_id = getattr(bingo, 'id', data.get('minigame_id', None))
+        if 'difficulty' in data:
+            self.current_difficulty = data['difficulty']
+        # Generează grila de bingo
+        self.generate_bingo()
+        self.set_theme_color()
