@@ -80,8 +80,15 @@ class RegionDashboardScreen(Screen):
             except:
                 self.bg_image = ""
 
-        if self.region_id in USER_PROGRESS:
-            self.levels_status = USER_PROGRESS[self.region_id]
+        # Folosește DOAR progresul real din player
+        app = App.get_running_app()
+        player = getattr(app, 'player', None)
+        if player:
+            stats = player.get_statistics()
+            region_name = self.region_name
+            # Dacă nu există progres, setează la 1 (doar primul nivel deblocat)
+            max_level = stats["regions_state"].get(region_name, 1) if region_name else 1
+            self.levels_status = [True if i < max_level else False for i in range(6)]
 
         self.set_header_color()
 
@@ -289,11 +296,27 @@ class RegionDashboardScreen(Screen):
             title = "Nivel Rejucat"
             msg = "Felicitări! Ai terminat din nou nivelul!"
 
+        # Deblochează nivelul următor în levels_status
         if next_level_unlock_index < 6:
             new_status = list(self.levels_status)
-            new_status[next_level_unlock_index] = True
+            if next_level_unlock_index < len(new_status):
+                new_status[next_level_unlock_index] = True
             self.levels_status = new_status
-            USER_PROGRESS[self.region_id] = self.levels_status
+
+        # --- Salveaza progresul playerului ---
+        player = getattr(app, 'player', None)
+        if player:
+            player.set_credits(app.score)
+            stats = player.get_statistics()
+            region_name = self.region_name
+            if region_name:
+                # Deblochează progresul real: dacă nu era deja completat, crește la nivelul următor
+                if not already_completed:
+                    stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id + 1)
+                else:
+                    stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id)
+            if hasattr(app, 'service'):
+                app.service.save_player(player)
 
         popup = FeedbackPopup(
             type='level_complete',
