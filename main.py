@@ -1,4 +1,6 @@
-import os, sys, sqlite3
+import os, sqlite3, shutil, sys
+
+from kivy.utils import platform
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.config import Config
@@ -42,13 +44,13 @@ class DidacticApp(MDApp):
     timer_text = StringProperty("")
     player = ObjectProperty(None)
     score = NumericProperty(0)
-    conn, sm, clouds = None, None, None
+    conn, sm, clouds, service = None, None, None, None
 
     def on_stop(self): self.conn.close()
 
     def build(self):
         self.title = "Campionii Geografiei"
-        self.conn = sqlite3.connect('./backend/domain/data.db')
+        self.conn = sqlite3.connect(get_db_path(), check_same_thread=False)
         Window.size = (1280, 800)
         Factory.register('PolygonButton', cls=PolygonButton)
         root_layout = FloatLayout()
@@ -78,7 +80,7 @@ class DidacticApp(MDApp):
             self.player = Player(1, "Explorator")
             player_repo.save(self.player)
 
-        # 1. Încărcare Componente Grafice
+        # Încărcare Componente Grafice
         Builder.load_file('frontend/components/common.kv')
         Builder.load_file('frontend/components/cloud_transition.kv')
         Builder.load_file('frontend/screens/menu/menu.kv')
@@ -114,5 +116,16 @@ class DidacticApp(MDApp):
         root_layout.add_widget(self.clouds)
 
         return root_layout
+
+
+def get_db_path():
+    db_name = "./backend/domain/data.db"
+    if platform == 'android':
+        from android.storage import app_storage_path
+        app_path = app_storage_path()
+        dest_path = os.path.join(app_path, db_name)
+        if not os.path.exists(dest_path): shutil.copy(db_name, dest_path)
+        return dest_path
+    else: return db_name
 
 if __name__ == '__main__': DidacticApp().run()
