@@ -61,7 +61,6 @@ class DidacticApp(MDApp):
         minigame_repo = MinigameRepository(self.conn)
         quizz_repo = QuizzRepository(self.conn)
 
-        #TODO: service
         self.service = Service(
             player_repository=player_repo,
             question_repository=question_repo,
@@ -112,7 +111,7 @@ class DidacticApp(MDApp):
 
         self.clouds = CloudTransitionLayout()
         root_layout.add_widget(self.sm)
-        root_layout.add_widget(self.clouds) # strat nori
+        root_layout.add_widget(self.clouds)
 
         return root_layout
 
