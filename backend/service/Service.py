@@ -2,7 +2,7 @@ from typing import Optional
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.entities.Question import Question
-from backend.domain.entities.Minigame import MapGuesser
+from backend.domain.entities.Minigame import MapGuesser, Minigame
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
@@ -24,11 +24,21 @@ def convert_question_to_frontend_format(question: Question) -> dict:
     """Convert a Question to frontend-compatible format."""
     answers = question.get_answer_list()
     return {
+        'type': 'quizz',
         'id': question.get_id(),
         'question': question.get_text(),
         'options': answers,
         'correct': answers[0] if answers else ''
     }
+
+
+def convert_fill_to_frontend_format(fill) -> dict:
+    return {
+        "type": "fill",
+        "question": "".join(fill.get_text_segments()),
+        "correct": fill.get_answer_list()
+    }
+
 
 def _get_region_name_by_id(region_id: int) -> str | None:
     match region_id:
@@ -149,11 +159,59 @@ class Service:
         return False
 
     def get_quizz_by_id(self, quizz_id: int) -> Optional[Quizz]:
+        
         quizz: Quizz = self.__quizz_repository.get_by_id(quizz_id)
         questions = self.__question_repository.find(f"quizz = {quizz_id}")
         fill_ins = self.__fill_in_repository.find(f"quizz = {quizz_id}")
         minigames = self.__minigame_repository.find(f"quizz = {quizz_id}")[0]
+        
         quizz.set_questions(questions)
         quizz.set_fill_in_statements(fill_ins)
         quizz.set_minigame(minigames)
+        
         return quizz
+
+    
+    def get_level_data(self, quizz_id: int) -> list[dict]:
+        """
+        Returnează pașii unui nivel în ordinea din DB
+        """
+        tasks = self.__quizz_task_repository.find(
+            f"quizz = {quizz_id} ORDER BY id"
+        )
+
+        level_steps: list[dict] = []
+
+        for task in tasks:
+            task_id = task["id"]
+            task_type = task["type"]
+
+            if task_type == "question":
+                q = self.__question_repository.get_by_id(task_id)
+                if q:
+                    level_steps.append(
+                        convert_question_to_frontend_format(q)
+                    )
+
+            elif task_type == "fill-ins":
+                f = self.__fill_in_repository.get_by_id(task_id)
+                if f:
+                    level_steps.append(
+                        convert_fill_to_frontend_format(f)
+                    )
+
+            elif task_type == "rebus":
+                level_steps.append({
+                    "type": "rebus"
+                })
+                
+        
+        return level_steps
+
+        
+        
+        
+        
+    
+    
+    
