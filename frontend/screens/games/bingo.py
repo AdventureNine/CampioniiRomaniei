@@ -2,11 +2,12 @@ import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty, ColorProperty
 from kivy.app import App
 
 from backend.domain.utils.Difficulty import Difficulty
 from backend.domain.entities.Minigame import Bingo
+from frontend.utils.colors import AppColors
 
 class BingoCell(Button):
     is_target = BooleanProperty(False)
@@ -27,6 +28,7 @@ class BingoScreen(Screen):
     is_completed = BooleanProperty(False)
     is_wrong = BooleanProperty(False)
     bg_image = StringProperty('')
+    primary_color = ColorProperty(AppColors.ACCENT)
     current_difficulty = ObjectProperty(None, allownone=True)
     minigame_id = ObjectProperty(None)
 
@@ -129,6 +131,16 @@ class BingoScreen(Screen):
         app = App.get_running_app()
         app.clouds.change_screen('region_dashboard')
 
+    def set_theme_color(self):
+        colors_map = {
+            1: AppColors.TRANSILVANIA,
+            2: AppColors.MOLDOVA,
+            3: AppColors.TARA_ROMANEASCA,
+            4: AppColors.DOBROGEA,
+            5: AppColors.BANAT
+        }
+        self.primary_color = colors_map.get(self.region_id, AppColors.ACCENT)
+
     def load_data(self, data, step_number):
         """
         Încarcă datele pentru minigame-ul Bingo.
@@ -159,3 +171,4 @@ class BingoScreen(Screen):
             self.current_difficulty = data['difficulty']
         # Generează grila de bingo
         self.generate_bingo()
+        self.set_theme_color()
