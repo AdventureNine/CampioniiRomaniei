@@ -2,14 +2,13 @@ from typing import Optional
 from backend.domain.entities.Player import Player
 from backend.domain.entities.Quizz import Quizz
 from backend.domain.entities.Question import Question
-from backend.domain.entities.Minigame import MapGuesser, Minigame
+from backend.domain.entities.Minigame import MapGuesser, Minigame, Rebus, Bingo
 from backend.repository.PlayerRepository import PlayerRepository
 from backend.repository.QuestionRepository import QuestionRepository
 from backend.repository.FillInStatementRepository import FillInStatementRepository
 from backend.repository.MinigameRepository import MinigameRepository
 from backend.repository.QuizzRepository import QuizzRepository
 from backend.repository.QuizzTaskRepository import QuizzTaskRepository
-
 
 def convert_MapGuesser_to_frontend_format(map_guesser: MapGuesser) -> dict:
     """Convert a MapGuesser minigame to frontend-compatible format."""
@@ -171,7 +170,6 @@ class Service:
         
         return quizz
 
-    
     def get_level_data(self, quizz_id: int) -> list[dict]:
         """
         Returnează pașii unui nivel în ordinea din DB
@@ -200,12 +198,17 @@ class Service:
                         convert_fill_to_frontend_format(f)
                     )
 
-            elif task_type == "rebus":
-                level_steps.append({
-                    "type": "rebus"
-                })
-                
-        
+        quizz = self.get_quizz_by_id(quizz_id)
+
+        if quizz:
+            minigame = quizz.get_minigames()
+
+            if minigame and isinstance(minigame, Rebus):
+                level_steps.append({"type": "rebus"})
+            if minigame and isinstance(minigame, Bingo):
+                level_steps.append({"type": "bingo"})
+            if minigame and isinstance(minigame, MapGuesser):
+                level_steps.append({"type": "mapguesser"})
         return level_steps
 
         
