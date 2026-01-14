@@ -52,7 +52,7 @@ class CosmeticsScreen(Screen):
             display_name = filename.replace('.png', '').capitalize()
 
             # Logică preț: Ken e 500, restul 300
-            item_price = 500 if display_name.lower() == "ken" else 10
+            item_price = 500 if display_name.lower() == "ken" else 300
             if filename == "default.png":
                 item_price = 0
 

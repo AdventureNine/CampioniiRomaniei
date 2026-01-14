@@ -49,6 +49,19 @@
         on_release: app.sm.get_screen('cosmetics').handle_action(root)
 
 <CosmeticsScreen>:
+    Image:
+        source: image_path("ui/dashboard_background1.png")
+        fit_mode: "cover"
+        size_hint: 1, 1
+
+    Widget:
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
     BoxLayout:
         orientation: 'vertical'
 
