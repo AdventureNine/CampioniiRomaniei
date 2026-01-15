@@ -8,7 +8,7 @@
     halign: 'center'
     valign: 'middle'
     text_size: self.width, None
-    background_color: 0.2, 0.6, 0.8, 1  # Culoare Default (Albastru)
+    background_color: 0.2, 0.6, 0.8, 1
 
     canvas.before:
         Color:
@@ -27,7 +27,7 @@
             width: 2
 
 <AnswerSlot>:
-    padding: 5
+    padding: "5dp"
     canvas.before:
         Color:
             rgba: 0, 0, 0, 0.2
@@ -44,10 +44,10 @@
             dash_offset: 5
 
 <PairsRow>:
-    size_hint_y: None
+    size_hint_y: 1
     height: "80dp"
     spacing: "20dp"
-    padding: "10dp"
+    padding: "5dp"
 
     # Fundal rând
     canvas.before:
@@ -82,10 +82,7 @@
         size_hint: 1, 1
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    # Overlay întunecat
-    MDBoxLayout:
-        md_bg_color: 0, 0, 0, 0.5
-        size_hint: 1, 1
+    DarkOverlay:
 
     FloatLayout:
         # Header standard
@@ -96,53 +93,46 @@
             header_color: root.header_color
 
         # Container principal
-        MDBoxLayout:
+        GameContainer:
             orientation: 'vertical'
             size_hint: None, None
-            width: "900dp" # Lățime fixă pentru consistență
-            height: "650dp"
-            pos_hint: {'center_x': 0.5, 'top': 0.85}
+            width: "900dp"
+            height: root.height * 0.82
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
             spacing: "10dp"
             padding: "20dp"
 
-            # Fundal container
-            canvas.before:
+            canvas.after:
                 Color:
-                    rgba: 0, 0, 0, 0.6
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [20,]
+                    rgba: root.header_color
+                Line:
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+                    width: 1.5
 
             # Titlu / Instrucțiuni
-            MDLabel:
-                text: "Trage elementele din dreapta pentru a le potrivi cu cele din stânga!"
+            Label:
+                text: "Trage elementele din dreapta peste sloturile din stânga!"
                 halign: "center"
-                theme_text_color: "Custom"
-                text_color: 1, 1, 1, 0.8
-                font_style: "H6"
+                color: 1, 1, 1, 0.9
+                font_size: "18sp"
                 size_hint_y: None
                 height: "40dp"
 
             # Zona de Scroll pentru perechi
-            ScrollView:
-                do_scroll_x: False
-                bar_width: "10dp"
-
-                MDBoxLayout:
-                    id: rows_container
-                    orientation: 'vertical'
-                    size_hint_y: None
-                    adaptive_height: True
-                    spacing: "10dp"
-                    padding: "10dp"
+            BoxLayout:
+                id: rows_container
+                orientation: 'vertical'
+                size_hint_y: 1
+                spacing: "10dp"
 
             # Buton Verificare
             Widget:
                 size_hint_y: None
-                height: "20dp"
+                height: "10dp"
 
             ImageButton:
-                source: 'backend/domain/assets/images/buttons/btn_check.png'
+                source: image_path('buttons/btn_check.png')
+                size_hint: None, None
+                size: "200dp", "60dp"
                 pos_hint: {'center_x': 0.5}
                 on_release: root.check_solution()

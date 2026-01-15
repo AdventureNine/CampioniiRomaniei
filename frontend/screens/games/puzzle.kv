@@ -10,39 +10,33 @@
         source: root.bg_image
         fit_mode: "cover"
         size_hint: 1, 1
-        size: [600, 600]
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    Widget:
-        canvas:
-            Color:
-                rgba: 0, 0, 0, 0.5
-            Rectangle:
-                pos: self.pos
-                size: self.size
+    DarkOverlay:
 
     FloatLayout:
         StandardHeader:
-            title: "Reconstituie Imaginea"
+            title: "RECONSTRUIRE IMAGINE"
             header_color: root.primary_color
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
 
-        BoxLayout:
+        GameContainer:
             size_hint: None, None
-            size: 700, 700
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            padding: 5
-            canvas.before:
+            height: root.height * 0.75
+            width: self.height
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+            padding: "10dp"
+
+            canvas.after:
                 Color:
-                    rgba: 1, 1, 1, 0.2
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [10,]
+                    rgba: root.header_color
+                Line:
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+                    width: 1.5
 
             GridLayout:
                 id: puzzle_grid
                 cols: 3
                 rows: 3
-                spacing: 2
+                spacing: "2dp"

@@ -34,8 +34,6 @@ from frontend.screens.games.map_guess import MapGuessScreen
 from frontend.screens.games.pairs import PairsGameScreen
 from frontend.screens.statistics.statistics import PaginaStatistici
 
-Config.set('graphics', 'width', '1280')
-Config.set('graphics', 'height', '800')
 Config.set('graphics', 'resizable', False)
 Config.write()
 sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend'))
