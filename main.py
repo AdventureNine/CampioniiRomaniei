@@ -44,9 +44,20 @@ class DidacticApp(MDApp):
     score = NumericProperty(0)
     conn, sm, clouds, service = None, None, None, None
 
-    def on_start(self): Clock.schedule_once(self.force_update, 0.5)
-    def force_update(self, dt): pass
+    def on_start(self): Clock.schedule_once(self.load_rest_of_app, 0.5)
     def on_stop(self): self.conn.close()
+
+    def load_rest_of_app(self, dt):
+        self.load_heavy_screens()
+        self.sm.current = 'menu'
+        Clock.schedule_once(self.force_redraw, 0.1)
+
+    def force_redraw(self, dt):
+        self.root.do_layout()
+        self.sm.canvas.ask_update()
+        current_size = Window.size
+        Window.size = (current_size[0] + 1, current_size[1] + 1)
+        Window.size = current_size
 
     def build(self):
         self.title = "Campionii Geografiei"
@@ -93,11 +104,9 @@ class DidacticApp(MDApp):
         self.clouds = CloudTransitionLayout()
         root_layout.add_widget(self.sm)
         root_layout.add_widget(self.clouds)
-
-        Clock.schedule_once(self.load_heavy_screens, 1)
         return root_layout
 
-    def load_heavy_screens(self, dt):
+    def load_heavy_screens(self):
         Builder.load_file('frontend/screens/map/map.kv')
         Builder.load_file('frontend/screens/region_dashboard/region_dashboard.kv')
         Builder.load_file('frontend/screens/generic/quiz_screen.kv')
