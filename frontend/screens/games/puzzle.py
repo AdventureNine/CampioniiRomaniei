@@ -4,15 +4,16 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.properties import StringProperty, ObjectProperty, NumericProperty
+from kivy.properties import StringProperty, ObjectProperty, NumericProperty, ColorProperty
 from kivy.uix.image import Image
 from kivy.core.image import Image as CoreImage
+
 from frontend.components.common import FeedbackPopup
 from frontend.utils.assets import image_path
+from frontend.utils.colors import AppColors
 
 
 class PuzzleTile(ButtonBehavior, RelativeLayout):
-    """ O singură piesă din puzzle """
     original_index = NumericProperty(0)
     current_index = NumericProperty(0)
     is_empty = False
@@ -22,21 +23,53 @@ class PuzzleGameScreen(Screen):
     bg_image = StringProperty("")
     game_grid = ObjectProperty(None)
 
+    header_color = ColorProperty(AppColors.PRIMARY)
+    region_id = NumericProperty(0)
+
     rows = 3
     cols = 3
     tiles = []
     empty_index = 0
 
+    def set_theme_color(self):
+        colors_map = {
+            1: AppColors.TRANSILVANIA,
+            2: AppColors.MOLDOVA,
+            3: AppColors.TARA_ROMANEASCA,
+            4: AppColors.DOBROGEA,
+            5: AppColors.BANAT
+        }
+        color = colors_map.get(self.region_id, AppColors.ACCENT)
+        self.header_color = color
+
     def load_data(self, data, step_number):
-        """
-        data['image']: Numele imaginii de puzzle (ex: "peles.jpg")
-        """
-        self.game_grid.clear_widgets()
+        if self.game_grid:
+            self.game_grid.clear_widgets()
         self.tiles = []
         self.empty_index = (self.rows * self.cols) - 1
 
-        full_path = image_path(f"games/puzzle/{data.get('image')}")
-        texture = CoreImage(full_path).texture
+        full_path = ""
+
+        if 'puzzle' in data:
+            minigame_entity = data['puzzle']
+            raw_path = minigame_entity.get_image_path()
+
+            if raw_path:
+                full_path = image_path(raw_path)
+            else:
+                print("Eroare: Entitatea Puzzle nu are cale setată.")
+                return
+        else:
+            print("Eroare: Nu s-a găsit sursa imaginii pentru Puzzle.")
+            return
+
+        self.set_theme_color()
+
+        try:
+            texture = CoreImage(full_path).texture
+        except Exception as e:
+            print(f"Nu s-a putut încărca textura: {e}")
+            return
 
         tile_w = texture.width / self.cols
         tile_h = texture.height / self.rows

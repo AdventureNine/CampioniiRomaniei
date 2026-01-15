@@ -36,7 +36,7 @@
 
     FloatLayout:
         StandardHeader:
-            title: "Bingo Educativ"
+            title: "BIONGO EDUCATIV"
             header_color: root.primary_color
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
@@ -75,23 +75,24 @@
                 spacing: 20
                 padding: [100, 10]
 
-                Button:
-                    text: "ȘTERGE"
-                    disabled: root.is_wrong or root.is_completed # Blocat dacă e greșit
+                ImageButton:
+                    source: image_path("buttons/btn_delete.png")
+                    disabled: root.is_wrong or root.is_completed
+                    opacity: 1 if not (root.is_wrong or root.is_completed) else 0.5
                     on_release: root.clear_bingo()
 
-                Button:
-                    text: "VERIFICĂ"
-                    disabled: root.is_wrong or root.is_completed # Blocat dacă e greșit
+                ImageButton:
+                    source: 'backend/domain/assets/images/buttons/btn_check.png'
+                    disabled: root.is_wrong or root.is_completed
+                    opacity: 1 if not (root.is_wrong or root.is_completed) else 0.5
                     on_release: root.check_solution()
-                    background_color: 0.2, 0.6, 0.3, 1
 
-                Button:
-                    text: "JOC NOU"
+                ImageButton:
+                    source: 'backend/domain/assets/images/buttons/btn_new_game.png'
                     on_release: root.generate_bingo()
 
-                Button:
-                    text: "FINALIZEAZĂ"
+                ImageButton:
+                    source: 'backend/domain/assets/images/buttons/btn_finish.png'
                     disabled: not root.is_completed
-                    background_color: (0.2, 0.7, 0.2, 1) if root.is_completed else (0.3, 0.3, 0.3, 1)
+                    opacity: 1 if root.is_completed else 0.5
                     on_release: root.go_next()

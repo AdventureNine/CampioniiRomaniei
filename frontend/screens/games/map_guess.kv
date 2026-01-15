@@ -4,12 +4,20 @@
 <MapGuessScreen>:
     map_container: pins_layer
 
-    canvas:
-        Color:
-            rgba: AppColors.BACKGROUND
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    Image:
+        source: root.bg_image
+        fit_mode: "cover"
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+    Widget:
+        size_hint: 1, 1
+        canvas:
+            Color:
+                rgba: 0, 0, 0, 0.3
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
     FloatLayout:
         # 1. Header (Sus de tot)
@@ -35,10 +43,11 @@
                 Label:
                     text: root.main_question
                     font_size: '22sp'
-                    color: AppColors.TEXT_PRIMARY
+                    bold: True
+                    color: AppColors.WHITE
                     text_size: self.width, None
                     size_hint_y: None
-                    height: 100
+                    height: 80
                     halign: 'left'
                     valign: 'top'
 
@@ -61,6 +70,7 @@
 
                 Widget:
 
+            # --- PARTEA DREAPTĂ (HARTA) ---
             RelativeLayout:
                 size_hint_x: 0.7
 
@@ -70,7 +80,7 @@
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
                     Image:
-                        source: root.bg_image
+                        source: root.map_image
                         fit_mode: "fill"
                         size_hint: 1, 1
                         pos_hint: {'x': 0, 'y': 0}

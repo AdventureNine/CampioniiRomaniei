@@ -11,30 +11,35 @@ class PaginaStatistici(MDScreen):
         stats = app.service.get_player_stats()
 
         if stats:
-            # Nume Jucător
-            self.ids.row_nume.valoare = str(stats["name"])
+            # 1. Credite
+            self.ids.row_credite.valoare = str(stats.get("credits", 0))
 
-            # Credite
-            self.ids.row_credite.valoare = str(stats["credits"])
+            # 2. Quiz-uri Jucate
+            self.ids.row_jucate.valoare = str(stats.get("quizzes_played", 0))
 
-            # Quiz-uri
-            self.ids.row_jucate.valoare = str(stats["quizzes_played"])
-            self.ids.row_rezolvate.valoare = str(stats["quizzes_solved"])
+            # 3. Quiz-uri Rezolvate
+            self.ids.row_rezolvate.valoare = str(stats.get("quizzes_solved", 0))
 
-            # Timp mediu
+            # 4. Timp mediu
             avg_time = stats.get('avg_play_time', 0.0)
             self.ids.row_timp.valoare = f"{avg_time:.1f} min"
 
-            # Regiuni deblocate
+            # 5. Quiz-uri Deblocate (Total nivele)
             regions_state = stats.get("regions_state", {})
-            nr_regiuni_deblocate = len(regions_state)
-            self.ids.row_regiuni.valoare = f"{nr_regiuni_deblocate} / 5"
 
-            # Cosmetice deținute
+            total_levels_unlocked = sum(regions_state.values())
+
+            if total_levels_unlocked == 0:
+                total_levels_unlocked = 5
+
+            # Sunt 5 regiuni * 6 nivele = 30 nivele totale
+            self.ids.row_regiuni.valoare = f"{total_levels_unlocked} / 30"
+
+            # 6. Cosmetice deținute
             cosmetics = stats.get("cosmetics_owned", [])
             nr_cosmetics = len(cosmetics)
             self.ids.row_cosmetici.valoare = str(nr_cosmetics)
 
-            # Progres Total
-            completion = stats.get("completion_percentage", 0.0)
-            self.ids.row_progres.valoare = f"{completion}%"
+            # 7. Progres Total
+            completion = (total_levels_unlocked / 30) * 100
+            self.ids.row_progres.valoare = f"{completion:.1f}%"

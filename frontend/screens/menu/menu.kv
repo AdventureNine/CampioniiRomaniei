@@ -1,30 +1,6 @@
 #:import image_path frontend.utils.assets.image_path
-#:import MDFillRoundFlatButton kivymd.uix.button.MDFillRoundFlatButton
 #:import MDLabel kivymd.uix.label.MDLabel
 #:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
-
-<ImageButton@ButtonBehavior+Image>:
-    allow_stretch: True
-    keep_ratio: True
-
-<ButonIesireComun@ImageButton>:
-    source: image_path("ui/back.png")
-    size_hint: None, None
-    height: "100dp"
-    width: self.height * (16/9)
-    pos_hint: {"top": 0.98, "right": 0.98}
-    on_release: root.exit_app()
-
-<ButonMeniu@MDFillRoundFlatButton>:
-    font_size: "24sp"
-    size_hint_x: None
-    width: "300dp"
-    height: "60dp"
-    pos_hint: {"center_x": 0.5}
-    md_bg_color: 0.2, 0.4, 0.8, 1
-    text_color: 1, 1, 1, 1
-
-# --- ECRANUL PRINCIPAL ---
 
 <MenuScreen>:
     name: 'menu'
@@ -32,7 +8,7 @@
     FloatLayout:
         # FUNDAL
         Image:
-            source: image_path("ui/dashboard_background1.png")
+            source: image_path("menu/dashboard_bg.png")
             allow_stretch: True
             keep_ratio: False
             size_hint: 1, 1
@@ -43,14 +19,13 @@
             md_bg_color: 0, 0, 0, 0.3
             size_hint: 1, 1
 
-
         # TITLU (UMBRA - Spate)
         MDLabel:
             text: "CAMPIONII ROMÂNIEI"
             halign: "center"
             pos_hint: {"center_x": 0.503, "center_y": 0.795}
-            font_name: image_path("ui/RAVIE.TTF")
-            font_size: "60sp"
+            font_name: image_path("menu/RAVIE.TTF")
+            font_size: "42sp"
             theme_text_color: "Custom"
             text_color: 0, 0, 0, 0.5
             bold: True
@@ -60,8 +35,8 @@
             text: "CAMPIONII ROMÂNIEI"
             halign: "center"
             pos_hint: {"center_x": 0.5, "center_y": 0.8}
-            font_name: image_path("ui/RAVIE.TTF")
-            font_size: "60sp"
+            font_name: image_path("menu/RAVIE.TTF")
+            font_size: "42sp"
             theme_text_color: "Custom"
             text_color: 0, 0.6, 1, 1
             outline_color: 1, 1, 1, 0.3
@@ -70,36 +45,28 @@
         # LISTA DE BUTOANE
         MDBoxLayout:
             orientation: "vertical"
-            spacing: "15dp"
+            spacing: "8dp"
             adaptive_height: True
             size_hint_x: 0.7
             pos_hint: {"center_x": 0.5, "center_y": 0.45}
 
-            # Buton START
+            # BUTON START
             ImageButton:
-                source: image_path("ui/btn_start.png")
-                size_hint: None, None
-                height: "140dp"
-                width: "600dp"
+                source: image_path("buttons/btn_start.png")
+                size: "260dp", "110dp"
                 pos_hint: {"center_x": 0.5}
                 on_release: app.clouds.change_screen('map')
 
-            #BUTON STATISTICI
+            # BUTON STATISTICI
             ImageButton:
-                source: image_path("ui/statistici.png")
-                size_hint: None, None
-                height: "140dp"
-                width: "300dp"
+                source: image_path("buttons/btn_statistics.png")
+                size: "260dp", "110dp"
                 pos_hint: {"center_x": 0.5}
                 on_release: app.clouds.change_screen('statistics')
 
-            #BUTON COSMETICE
+            # BUTON COSMETICE
             ImageButton:
-                source: image_path("ui/cosmetice.png")
-                size_hint: None, None
-                height: "140dp"
-                width: "300dp"
+                source: image_path("buttons/btn_cosmetics.png")
+                size: "260dp", "110dp"
                 pos_hint: {"center_x": 0.5}
                 on_release: app.clouds.change_screen('cosmetics')
-
-

@@ -1,7 +1,6 @@
 import os
 import unicodedata
 
-# aici vom inlocui cu path-ul din baza de date cand conectam cu backend-ul
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def image_path(filename):

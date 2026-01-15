@@ -142,23 +142,7 @@
                 size_hint_y: None
                 height: "20dp"
 
-            Button:
-                text: "VERIFICĂ"
-                size_hint: None, None
-                size: "200dp", "50dp"
+            ImageButton:
+                source: 'backend/domain/assets/images/buttons/btn_check.png'
                 pos_hint: {'center_x': 0.5}
-                background_normal: ''
-                background_color: AppColors.ACCENT
-                font_size: '20sp'
-                bold: True
-                color: AppColors.WHITE
-
-                canvas.before:
-                    Color:
-                        rgba: self.background_color
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [25,]
-
                 on_release: root.check_solution()

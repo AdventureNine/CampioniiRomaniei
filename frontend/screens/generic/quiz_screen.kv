@@ -47,7 +47,7 @@
         # --- CASETA CU ÎNTREBAREA ---
         RelativeLayout:
             size_hint: None, None
-            size: 900, 500
+            size: 700, 400
             pos_hint: {'center_x': 0.5, 'center_y': 0.68}
 
             Image:
@@ -71,7 +71,7 @@
 
             Label:
                 text: root.question_text
-                font_size: '24sp'
+                font_size: '20sp'
                 bold: True
                 color: AppColors.TEXT_PRIMARY
 
@@ -86,9 +86,9 @@
         # --- GRILA DE RĂSPUNSURI MODIFICATĂ ---
         GridLayout:
             cols: 2
-            spacing: 50
+            spacing: 40
             padding: [60, 20]
-            size_hint: 0.85, 0.35
+            size_hint: 0.70, 0.30
             pos_hint: {'center_x': 0.5, 'y': 0.08}
 
             QuizAnswerButton:

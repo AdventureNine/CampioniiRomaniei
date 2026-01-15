@@ -37,8 +37,8 @@ class LevelIcon(ButtonBehavior, Image):
             return
 
         state = "gray" if self.is_locked else "color"
-        folder_name = self.region_name
-        filename = f"ui/{folder_name}/level_{self.region_id}_{self.level_index}_{state}.png"
+        folder_name = self.region_name.replace(" ", "_")
+        filename = f"region_icons/{folder_name}/level_{self.region_id}_{self.level_index}_{state}.png"
 
         try:
             self.source = image_path(filename)
@@ -105,11 +105,11 @@ class RegionDashboardScreen(Screen):
         # 5, 6 -> GREU (10 min = 600s, 30p)
 
         if level_index in [1, 2]:
-            return {"time_limit": 300, "difficulty": "easy", "points": 10}
+            return {"time_limit": 300, "difficulty": "easy", "points": 60}
         elif level_index in [3, 4]:
-            return {"time_limit": 420, "difficulty": "medium", "points": 20}
+            return {"time_limit": 420, "difficulty": "medium", "points": 120}
         else:
-            return {"time_limit": 600, "difficulty": "hard", "points": 30}
+            return {"time_limit": 600, "difficulty": "hard", "points": 180}
 
     def start_level(self, level_index):
         status_index = level_index - 1
@@ -122,13 +122,16 @@ class RegionDashboardScreen(Screen):
         self.current_quizz_id = (self.region_id - 1) * 6 + level_index  # Salveaza quizz_id pentru tot nivelul
 
         app = App.get_running_app()
+
+        if hasattr(app, 'service'):
+            app.service.increment_quizzes_played()
         exercises = app.service.get_level_data(self.current_quizz_id)
         if not exercises:
             print(f"Nu există exerciții pentru Nivelul {level_index}")
             return
 
         self.current_level_queue = exercises
-        self.current_step_index = 0
+        self.current_step_index = 5
 
         settings = self.get_level_settings(level_index)
         self.seconds_left = settings["time_limit"]
@@ -226,7 +229,7 @@ class RegionDashboardScreen(Screen):
                 return
 
             # --- Map Guesser ---
-            elif ex_type == 'map_guess':
+            elif ex_type == 'map_guesser':
                 self.attach_minigame_to_exdata(ex_data, 'map_guesser', MapGuesser, 'map_guesser')
                 screen = app.sm.get_screen('map_guess')
                 screen.load_data(ex_data, self.current_step_index + 1)
@@ -276,24 +279,31 @@ class RegionDashboardScreen(Screen):
             self.finish_level_sequence()
 
     def finish_level_sequence(self):
-        self.stop_and_clear_timer()
+        if self.timer_event:
+            self.timer_event.cancel()
+            self.timer_event = None
 
         app = App.get_running_app()
+        app.timer_text = ""
+
         service = getattr(app, 'service', None)
 
         settings = self.get_level_settings(self.current_level_id)
+
+        time_limit = settings.get("time_limit")
+        left = max(0, self.seconds_left)
+        time_spent_seconds = time_limit - left
+        time_spent_minutes = time_spent_seconds / 60.0
+
         base_points = settings.get("points")
         points_to_award = 0
 
         next_level_unlock_index = self.current_level_id
-
         already_completed = False
 
         if next_level_unlock_index < 6:
             if self.levels_status[next_level_unlock_index] == True:
                 already_completed = True
-        else:
-            pass
 
         if not already_completed:
             points_to_award = base_points
@@ -304,26 +314,23 @@ class RegionDashboardScreen(Screen):
             title = "Nivel Rejucat"
             msg = "Felicitări! Ai terminat din nou nivelul!"
 
-        # Deblocheaza urmatorul nivel
-        if next_level_unlock_index < 6:
-            new_status = list(self.levels_status)
-            if next_level_unlock_index < len(new_status):
-                new_status[next_level_unlock_index] = True
-            self.levels_status = new_status
-
         # --- Salveaza progresul playerului ---
-        if service:
-            player = service.get_player()
+        if hasattr(app, 'service'):
+            app.service.increment_quizzes_solved()
+            app.service.update_play_time(time_spent_minutes)
+            player = app.service.get_player()
             if player:
                 player.set_credits(app.score)
                 region_name = self.region_name
                 if region_name:
                     stats = player.get_statistics()
+                    current_max = stats["regions_state"].get(region_name, 1)
+
                     if not already_completed:
-                        stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id + 1)
-                    else:
-                        stats["regions_state"][region_name] = max(stats["regions_state"].get(region_name, 1), self.current_level_id)
-                service.save_player(player)
+                        new_level = self.current_level_id + 1
+                        stats["regions_state"][region_name] = max(current_max, new_level)
+
+                    app.service.save_player(player)
 
         popup = FeedbackPopup(
             type='level_complete',

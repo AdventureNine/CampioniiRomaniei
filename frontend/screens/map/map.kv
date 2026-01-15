@@ -17,7 +17,6 @@
             size_hint: 1, 1
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-        # Header Score (din components/common.kv)
         ScoreDisplay:
             pos_hint: {'top': 0.98, 'right': 0.98}
 
@@ -63,13 +62,9 @@
             on_release: root.open_region(5)
 
         # Buton Înapoi
-        Button:
-            text: "< Meniu"
+        ImageButton:
+            source: image_path("buttons/home.png")
             size_hint: None, None
-            size: 140, 50
+            size: 200, 100
             pos_hint: {'x': 0.02, 'top': 0.98}
-            background_normal: ''
-            background_color: AppColors.PRIMARY
-            font_size: '18sp'
-            bold: True
             on_release: app.clouds.change_screen('menu')

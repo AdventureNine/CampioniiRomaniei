@@ -1,3 +1,5 @@
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
 from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -7,6 +9,9 @@ from kivy.app import App
 from frontend.utils.assets import image_path
 from frontend.utils.colors import AppColors
 
+# --- BUTON IMAGINE (NOU) ---
+class ImageButton(ButtonBehavior, Image):
+    pass
 
 # --- WIDGET SCOR ---
 class ScoreDisplay(BoxLayout):
@@ -38,7 +43,5 @@ class StandardHeader(BoxLayout):
     title = StringProperty("Titlu")
     show_back_button = OptionProperty(True, options=[True, False])
     back_screen = StringProperty('menu')
-    back_image = image_path(f"ui/back.png")
-
-    # Proprietate nouă
+    back_image = image_path(f"buttons/back.png")
     header_color = ColorProperty(AppColors.PRIMARY)

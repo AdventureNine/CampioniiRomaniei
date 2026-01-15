@@ -4,14 +4,14 @@
     valoare: ""
     orientation: "horizontal"
     size_hint_y: None
-    height: "45dp"
+    height: "32dp"
     padding: "10dp", 0
     spacing: "10dp"
 
     MDLabel:
         text: root.titlu
-        font_name: image_path("ui/RAVIE.TTF")
-        font_size: "18sp"
+        font_name: image_path("menu/RAVIE.TTF")
+        font_size: "14sp"
         theme_text_color: "Custom"
         text_color: 0.9, 0.9, 0.9, 1
         halign: "left"
@@ -21,8 +21,8 @@
     MDLabel:
         id: val_label
         text: root.valoare
-        font_name: image_path("ui/RAVIE.TTF")
-        font_size: "20sp"
+        font_name: image_path("menu/RAVIE.TTF")
+        font_size: "16sp"
         theme_text_color: "Custom"
         text_color: hex('#FFD700')  # Auriu (Gold)
         halign: "right"
@@ -35,7 +35,7 @@
 
     # FUNDAL
     Image:
-        source: image_path("ui/dashboard_background1.png")
+        source: image_path("menu/dashboard_bg.png")
         allow_stretch: True
         keep_ratio: False
         size_hint: 1, 1
@@ -65,29 +65,20 @@
         MDCard:
             orientation: "vertical"
             size_hint: None, None
-            size: "700dp", "550dp"
+            size: "500dp", "440dp"
             pos_hint: {"center_x": 0.5, "center_y": 0.45}
 
             # STILIZARE CARD
             radius: [25,]
-            md_bg_color: 0.1, 0.1, 0.2, 0.85 # Albastru închis, transparent
-            line_color: hex('#448AFF')       # Contur albastru deschis
+            md_bg_color: 0.1, 0.1, 0.2, 0.85
+            line_color: hex('#448AFF')
             line_width: 2
             elevation: 4
 
-            padding: "30dp"
-            spacing: "15dp"
+            padding: ["20dp", "8dp", "20dp", "20dp"]
+            spacing: "6dp"
 
             # -- LISTA DE STATISTICI --
-
-            # Nume
-            RandStatistica:
-                titlu: "NUME:"
-                valoare: "-"
-                # Legăm id-ul intern al label-ului de proprietatea globală a rândului
-                on_valoare: self.ids.val_label.text = self.valoare
-                # suprascriem id-ul în codul Python
-                id: row_nume
 
             # Credite
             RandStatistica:
@@ -118,8 +109,8 @@
                 id: row_timp
 
             RandStatistica:
-                titlu: "REGIUNI DEBLOCATE:"
-                valoare: "0 / 10"
+                titlu: "QUIZURI DEBLOCATE:"
+                valoare: "0 / 30"
                 id: row_regiuni
 
             RandStatistica:

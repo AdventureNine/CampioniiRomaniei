@@ -1,9 +1,9 @@
 <CosmeticCard>:
     orientation: 'vertical'
     size_hint: None, None
-    size: dp(280), dp(350)
-    spacing: dp(10)
-    padding: dp(10)
+    size: dp(240), dp(310)
+    spacing: dp(5)
+    padding: dp(8)
 
     canvas.before:
         Color:
@@ -22,27 +22,29 @@
         Image:
             source: image_path("ui/lock.png") # Verifică dacă ai această imagine
             size_hint: None, None
-            size: dp(40), dp(40)
+            size: dp(30), dp(30)
             pos_hint: {'top': 0.95, 'right': 0.95}
             opacity: 0 if root.is_owned else 1
 
     Label:
         text: root.item_name
         size_hint_y: None
-        height: dp(30)
-        font_size: '18sp'
+        height: dp(25)
+        font_size: '16sp'
         bold: True
 
     Label:
         text: root.price + " Credite" if not root.is_owned else "Deținut"
         size_hint_y: None
         height: dp(20)
+        font_size: '14sp'
         color: (1, 0.8, 0, 1)
 
     Button:
         text: "ECHIPAT" if root.is_equipped else ("ECHIPEAZĂ" if root.is_owned else "CUMPĂRĂ")
         size_hint_y: None
-        height: dp(45)
+        height: dp(40)
+        font_size: '13sp'
         background_normal: ''
         background_color: (0.2, 0.6, 0.2, 1) if not root.is_owned else (0.2, 0.4, 0.8, 1)
         disabled: root.is_equipped
@@ -50,7 +52,7 @@
 
 <CosmeticsScreen>:
     Image:
-        source: image_path("ui/dashboard_background1.png")
+        source: image_path("menu/dashboard_bg.png")
         fit_mode: "cover"
         size_hint: 1, 1
 
@@ -77,7 +79,7 @@
             GridLayout:
                 id: cosmetics_grid
                 cols: 4
-                spacing: dp(30)
-                padding: dp(40)
+                spacing: dp(20)
+                padding: dp(25)
                 size_hint_y: None
                 height: self.minimum_height # CRITIC pentru ScrollView

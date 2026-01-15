@@ -1,9 +1,36 @@
 #:import hex kivy.utils.get_color_from_hex
 #:import AppColors frontend.utils.colors.AppColors
 
+<ImageButton>:
+    size_hint: None, None
+    size: 200, 70
+    fit_mode: "contain"
+    opacity: 1 if self.state == 'normal' else 0.8
+
 <IconButton@ButtonBehavior+Image>:
     size_hint: None, None
     fit_mode: "contain"
+
+# --- LAYER ÎNTUNECAT (FOLOSIT PESTE BACKGROUND) ---
+<DarkOverlay@Widget>:
+    size_hint: 1, 1
+    canvas:
+        Color:
+            rgba: 0, 0, 0, 0.4
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+# --- CONTAINER JOC (FUNDAL NEGRU TRANSPARENT ROTUNJIT) ---
+<GameContainer@BoxLayout>:
+    padding: "20dp"
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.35
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
 
 # --- WIDGET TIMER ---
 <TimerDisplay@BoxLayout>:
@@ -78,7 +105,6 @@
 <StandardHeader>:
     size_hint_y: None
     height: 80
-
     header_color: AppColors.PRIMARY
 
     canvas.before:
@@ -88,44 +114,36 @@
             pos: self.pos
             size: self.size
 
-    # --- 1. BUTONUL DE ÎNAPOI ---
+    # BUTONUL DE ÎNAPOI
     IconButton:
         source: root.back_image
-
-        size: 200, 200
+        size: 100, 100
         pos_hint: {'x': 0.02, 'center_y': 0.5}
-
         opacity: 1 if root.show_back_button else 0
         disabled: not root.show_back_button
         on_release: app.clouds.change_screen(root.back_screen) if hasattr(app, 'clouds') else None
 
-    # --- 2. TITLUL  ---
+    # TITLUL
     Label:
         text: root.title
         font_size: '26sp'
         bold: True
         color: AppColors.WHITE
-
         halign: 'center'
         valign: 'middle'
         text_size: self.width, None
-
         size_hint: 0.6, 1
         pos_hint: {'center_x': 0.7, 'center_y': 0.5}
 
-    # --- 3. ZONA DREAPTĂ (Timer + Scor) ---
+    # ZONA DREAPTĂ (Timer + Scor)
     BoxLayout:
         size_hint: None, 1
         width: 350
         spacing: 20
         orientation: 'horizontal'
-
         pos_hint: {'right': 0.9, 'center_y': 0.7}
 
-        # 1. Componenta Timer (
         TimerDisplay:
-
-        # 2. Componenta Scor
         ScoreDisplay:
 
 # --- POPUP FEEDBACK ---
@@ -190,4 +208,3 @@
         Line:
             rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
             width: 2
-    background_down: ''
