@@ -37,7 +37,8 @@ class LevelIcon(ButtonBehavior, Image):
             return
 
         state = "gray" if self.is_locked else "color"
-        folder_name = self.region_name.replace(" ", "_")
+        folder_name = self.region_name
+        if folder_name.count(" ") > 0: folder_name = "Tararomaneasca"
         filename = f"region_icons/{folder_name}/level_{self.region_id}_{self.level_index}_{state}.png"
 
         try:
@@ -131,7 +132,7 @@ class RegionDashboardScreen(Screen):
             return
 
         self.current_level_queue = exercises
-        self.current_step_index = 0
+        self.current_step_index = 5
 
         settings = self.get_level_settings(level_index)
         self.seconds_left = settings["time_limit"]

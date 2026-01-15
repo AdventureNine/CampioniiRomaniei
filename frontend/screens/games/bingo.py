@@ -90,7 +90,7 @@ class BingoScreen(Screen):
         grid = GridLayout(cols=5, spacing="5dp", size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'), minimum_width=grid.setter('width'))
 
-        grid.width = 500
+        grid.width = 350
 
         for text, is_target in sample:
             cell = BingoCell(text=text, is_target=is_target)
