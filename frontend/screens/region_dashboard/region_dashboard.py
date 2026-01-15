@@ -131,7 +131,7 @@ class RegionDashboardScreen(Screen):
             return
 
         self.current_level_queue = exercises
-        self.current_step_index = 5
+        self.current_step_index = 0
 
         settings = self.get_level_settings(level_index)
         self.seconds_left = settings["time_limit"]
@@ -221,6 +221,7 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'puzzle':
                 self.attach_minigame_to_exdata(ex_data, 'puzzle', Puzzle, 'puzzle')
                 screen = app.sm.get_screen('puzzle')
+                screen.region_id = self.region_id
                 screen.game_grid = screen.ids.puzzle_grid
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
@@ -232,6 +233,7 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'map_guesser':
                 self.attach_minigame_to_exdata(ex_data, 'map_guesser', MapGuesser, 'map_guesser')
                 screen = app.sm.get_screen('map_guess')
+                screen.region_id = self.region_id
                 screen.load_data(ex_data, self.current_step_index + 1)
                 screen.bg_image = self.bg_image
                 app.clouds.change_screen('map_guess')
@@ -264,14 +266,9 @@ class RegionDashboardScreen(Screen):
             elif ex_type == 'pairs':
                 self.attach_minigame_to_exdata(ex_data, 'pairs', Pairs, 'pairs')
                 screen = app.sm.get_screen('pairs_game')
-                if hasattr(screen, 'region_id'):
-                    screen.region_id = self.region_id
-                if hasattr(screen, 'load_data'):
-                    screen.load_data(ex_data, self.current_step_index + 1)
-                if hasattr(screen, 'bg_image'):
-                    screen.bg_image = self.bg_image
-                if hasattr(screen, 'start_new_game'):
-                    screen.start_new_game()
+                screen.region_id = self.region_id
+                screen.load_data(ex_data, self.current_step_index + 1)
+                screen.bg_image = self.bg_image
                 app.clouds.change_screen('pairs_game')
                 self.current_step_index += 1
                 return

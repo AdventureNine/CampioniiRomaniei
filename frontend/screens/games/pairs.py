@@ -149,26 +149,10 @@ class PairsGameScreen(Screen):
         if 'background' in data and data['background']:
             self.bg_image = image_path(data['background'])
 
-        self.region_id = data.get('region_id', 0)
         self.set_theme_color()
 
         # 2. Extragere Minigame (cu FALLBACK)
         minigame_entity = data.get('minigame') or data.get('pairs')
-
-        # --- MECANISM DE SIGURANȚĂ ---
-        if not minigame_entity:
-            print("--- ATENȚIE: Nu s-au găsit date reale ('minigame'). Se folosesc date de TEST.")
-
-            # Creăm un obiect fals pe loc pentru a nu lăsa ecranul gol
-            class MockEntity:
-                def get_win_configuration(self):
-                    return {
-                        "Test: Capitala României?": "București",
-                        "Test: Unirea Mică?": "1859",
-                        "Test: Râul care trece prin Arad?": "Mureș"
-                    }
-
-            minigame_entity = MockEntity()
 
         self.win_config = minigame_entity.get_win_configuration()
         questions = list(self.win_config.keys())

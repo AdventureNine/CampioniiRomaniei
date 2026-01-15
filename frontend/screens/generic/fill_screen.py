@@ -47,11 +47,11 @@ class GenericFillScreen(Screen):
         valid_answers = [remove_diacritics(ans.lower()) for ans in self.accepted_answers]
 
         if user_text in valid_answers:
-            popup = FeedbackPopup(type='success', title_text="Corect!", button_text="Continuă")
+            popup = FeedbackPopup(type='success', title_text="Corect!", message_text="Răspuns corect!", button_text="Continuă")
             popup.bind(on_dismiss=self.go_next)
             popup.open()
         else:
-            popup = FeedbackPopup(type='fail', message_text="Verifică ortografia.")
+            popup = FeedbackPopup(type='fail', message_text="Mai încearcă odată!")
             popup.open()
 
     def go_next(self, instance):

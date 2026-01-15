@@ -10,7 +10,7 @@
         source: root.bg_image
         fit_mode: "cover"
         size_hint: 1, 1
-        size: [800, 800]
+        size: [600, 600]
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
     Widget:
@@ -24,12 +24,13 @@
     FloatLayout:
         StandardHeader:
             title: "Reconstituie Imaginea"
+            header_color: root.primary_color
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
 
         BoxLayout:
             size_hint: None, None
-            size: 900, 900
+            size: 700, 700
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             padding: 5
             canvas.before:

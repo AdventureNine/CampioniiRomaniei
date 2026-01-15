@@ -25,6 +25,7 @@ class PuzzleGameScreen(Screen):
 
     header_color = ColorProperty(AppColors.PRIMARY)
     region_id = NumericProperty(0)
+    primary_color = ColorProperty(AppColors.PRIMARY)
 
     rows = 3
     cols = 3
@@ -55,7 +56,7 @@ class PuzzleGameScreen(Screen):
             raw_path = minigame_entity.get_image_path()
 
             if raw_path:
-                full_path = image_path(raw_path)
+                full_path = raw_path
             else:
                 print("Eroare: Entitatea Puzzle nu are cale setată.")
                 return
