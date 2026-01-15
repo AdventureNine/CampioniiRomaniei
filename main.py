@@ -1,5 +1,5 @@
 import os, sqlite3, shutil, sys
-
+from kivy.clock import Clock
 from kivy.utils import platform
 from kivymd.app import MDApp
 from kivy.lang import Builder
@@ -44,12 +44,15 @@ class DidacticApp(MDApp):
     score = NumericProperty(0)
     conn, sm, clouds, service = None, None, None, None
 
+    def on_start(self): Clock.schedule_once(self.force_update, 0.5)
+    def force_update(self, dt): pass
     def on_stop(self): self.conn.close()
 
     def build(self):
         self.title = "Campionii Geografiei"
+        if platform != 'android':
+            Window.size = (1280, 800)
         self.conn = sqlite3.connect(get_db_path(), check_same_thread=False)
-        Window.size = (1280, 800)
         Factory.register('PolygonButton', cls=PolygonButton)
         root_layout = FloatLayout()
 
@@ -82,6 +85,19 @@ class DidacticApp(MDApp):
         Builder.load_file('frontend/components/common.kv')
         Builder.load_file('frontend/components/cloud_transition.kv')
         Builder.load_file('frontend/screens/menu/menu.kv')
+
+        # Screen Manager
+        self.sm = ScreenManager(transition=NoTransition())
+        self.sm.add_widget(MenuScreen(name='menu'))
+
+        self.clouds = CloudTransitionLayout()
+        root_layout.add_widget(self.sm)
+        root_layout.add_widget(self.clouds)
+
+        Clock.schedule_once(self.load_heavy_screens, 1)
+        return root_layout
+
+    def load_heavy_screens(self, dt):
         Builder.load_file('frontend/screens/map/map.kv')
         Builder.load_file('frontend/screens/region_dashboard/region_dashboard.kv')
         Builder.load_file('frontend/screens/generic/quiz_screen.kv')
@@ -94,9 +110,6 @@ class DidacticApp(MDApp):
         Builder.load_file('frontend/screens/statistics/statistics.kv')
         Builder.load_file('frontend/screens/cosmetics/cosmetics.kv')
 
-        # Screen Manager
-        self.sm = ScreenManager(transition=NoTransition())
-        self.sm.add_widget(MenuScreen(name='menu'))
         self.sm.add_widget(MapScreen(name='map'))
         self.sm.add_widget(RegionDashboardScreen(name='region_dashboard'))
         self.sm.add_widget(GenericQuizScreen(name='generic_quiz'))
@@ -108,13 +121,6 @@ class DidacticApp(MDApp):
         self.sm.add_widget(PairsGameScreen(name='pairs_game'))
         self.sm.add_widget(PaginaStatistici(name='statistics'))
         self.sm.add_widget(CosmeticsScreen(name='cosmetics'))
-
-        self.clouds = CloudTransitionLayout()
-        root_layout.add_widget(self.sm)
-        root_layout.add_widget(self.clouds)
-
-        return root_layout
-
 
 def get_db_path():
     db_name = "backend/domain/data.db"

@@ -114,7 +114,7 @@ class PairsRow(BoxLayout):
 
 # --- Ecranul Principal ---
 class PairsGameScreen(Screen):
-    bg_image = StringProperty(image_path("games/pairs/bg.png"))
+    bg_image = StringProperty('')
     is_checked = BooleanProperty(False)
     is_completed = BooleanProperty(False)
     region_id = NumericProperty(0)
