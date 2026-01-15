@@ -131,7 +131,7 @@ class RegionDashboardScreen(Screen):
             return
 
         self.current_level_queue = exercises
-        self.current_step_index = 4
+        self.current_step_index = 0
 
         settings = self.get_level_settings(level_index)
         self.seconds_left = settings["time_limit"]
