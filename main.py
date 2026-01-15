@@ -119,11 +119,11 @@ class DidacticApp(MDApp):
 
 
 def get_db_path():
-    db_name = "./backend/domain/data.db"
+    db_name = "backend/domain/data.db"
     if platform == 'android':
         from android.storage import app_storage_path
         app_path = app_storage_path()
-        dest_path = os.path.join(app_path, db_name)
+        dest_path = os.path.join(app_path, "data.db")
         if not os.path.exists(dest_path): shutil.copy(db_name, dest_path)
         return dest_path
     else: return db_name
