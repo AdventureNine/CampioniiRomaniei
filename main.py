@@ -61,6 +61,7 @@ class DidacticApp(MDApp):
 
     def build(self):
         self.title = "Campionii Geografiei"
+        self.icon = "backend/domain/assets/images/buttons/icon.jpg"
         if platform != 'android':
             Window.size = (1280, 800)
         self.conn = sqlite3.connect(get_db_path(), check_same_thread=False)

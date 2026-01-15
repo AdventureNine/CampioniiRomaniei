@@ -2,7 +2,7 @@
 
 <BingoCell>:
     size_hint: None, None
-    size: "50dp", "50dp"
+    size: "60dp", "60dp"
     font_size: '14sp'
     halign: 'center'
     valign: 'middle'
@@ -90,7 +90,7 @@
             ImageButton:
                 source: image_path("buttons/btn_delete.png")
                 size_hint: None, None
-                size: "200dp", "120dp"
+                size: "160dp", "100dp"
                 disabled: root.is_wrong or root.is_completed
                 opacity: 1 if not (root.is_wrong or root.is_completed) else 0.5
                 on_release: root.clear_bingo()
@@ -98,7 +98,7 @@
             ImageButton:
                 source: image_path('buttons/btn_check.png')
                 size_hint: None, None
-                size: "200dp", "120dp"
+                size: "160dp", "100dp"
                 disabled: root.is_wrong or root.is_completed
                 opacity: 1 if not (root.is_wrong or root.is_completed) else 0.5
                 on_release: root.check_solution()
@@ -106,13 +106,13 @@
             ImageButton:
                 source: image_path('buttons/btn_new_game.png')
                 size_hint: None, None
-                size: "200dp", "120dp"
+                size: "160dp", "100dp"
                 on_release: root.generate_bingo()
 
             ImageButton:
                 source: image_path('buttons/btn_finish.png')
                 size_hint: None, None
-                size: "200dp", "120dp"
+                size: "160dp", "100dp"
                 disabled: not root.is_completed
                 opacity: 1 if root.is_completed else 0.5
                 on_release: root.go_next()
