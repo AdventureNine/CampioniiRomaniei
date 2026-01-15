@@ -12,6 +12,8 @@ package.domain = backend.domain
 # (str) Source code where the main.py live
 source.dir = .
 
+icon.filename=%(source.dir)s/backend/domain/assets/images/buttons/icon.png
+
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,jpeg,kv,atlas,db,ttf
 
@@ -22,7 +24,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,db,ttf
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-#source.exclude_dirs = tests, bin, venv
+source.exclude_dirs = testing,bin,venv
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'

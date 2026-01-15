@@ -19,4 +19,4 @@ class Quizz:
     def set_fill_in_statements(self, fill_ins: list[FillInStatement]): self.__fill_in_statements = fill_ins
     def set_minigame(self, minigame: Minigame): self.__minigame = minigame
 
-    def __str__(self): return f"Quizz {self.__id} ({self.__difficulty}) with {len(self.__questions)} questions, {len(self.__fill_in_statements)} fill-in statements, {len(self.__minigame)} minigames and difficulty \"{self.__difficulty}\"."
+    def __str__(self): return f"Quizz {self.__id} ({self.__difficulty}) with {len(self.__questions)} questions, {len(self.__fill_in_statements)} fill-in statements, {self.__minigame} minigames and difficulty \"{self.__difficulty}\"."
