@@ -6,7 +6,6 @@
     name: 'menu'
 
     FloatLayout:
-        # FUNDAL
         Image:
             source: image_path("menu/dashboard_bg.png")
             allow_stretch: True
@@ -14,27 +13,24 @@
             size_hint: 1, 1
             pos_hint: {"center_x": .5, "center_y": .5}
 
-        # FILTRU ÎNTUNECARE
         MDBoxLayout:
             md_bg_color: 0, 0, 0, 0.3
             size_hint: 1, 1
 
-        # TITLU (UMBRA - Spate)
         MDLabel:
             text: "CAMPIONII ROMÂNIEI"
             halign: "center"
-            pos_hint: {"center_x": 0.503, "center_y": 0.795}
+            pos_hint: {"center_x": 0.503, "center_y": 0.845}
             font_name: image_path("menu/RAVIE.TTF")
             font_size: "42sp"
             theme_text_color: "Custom"
             text_color: 0, 0, 0, 0.5
             bold: True
 
-        # TITLU (PRINCIPAL - Față)
         MDLabel:
             text: "CAMPIONII ROMÂNIEI"
             halign: "center"
-            pos_hint: {"center_x": 0.5, "center_y": 0.8}
+            pos_hint: {"center_x": 0.5, "center_y": 0.85}
             font_name: image_path("menu/RAVIE.TTF")
             font_size: "42sp"
             theme_text_color: "Custom"
@@ -42,31 +38,36 @@
             outline_color: 1, 1, 1, 0.3
             outline_width: 1
 
-        # LISTA DE BUTOANE
         MDBoxLayout:
             orientation: "vertical"
-            spacing: "8dp"
+            spacing: root.height * 0.02
+
+            size_hint_x: 0.5
             adaptive_height: True
-            size_hint_x: 0.7
-            pos_hint: {"center_x": 0.5, "center_y": 0.45}
+
+            pos_hint: {"center_x": 0.5, "y": 0.12}
 
             # BUTON START
             ImageButton:
                 source: image_path("buttons/btn_start.png")
-                size: "260dp", "110dp"
-                pos_hint: {"center_x": 0.5}
+                size_hint_x: 1
+                size_hint_y: None
+                height: root.height * 0.13
+                allow_stretch: True
                 on_release: app.clouds.change_screen('map')
 
-            # BUTON STATISTICI
             ImageButton:
                 source: image_path("buttons/btn_statistics.png")
-                size: "260dp", "110dp"
-                pos_hint: {"center_x": 0.5}
+                size_hint_x: 1
+                size_hint_y: None
+                height: root.height * 0.13
+                allow_stretch: True
                 on_release: app.clouds.change_screen('statistics')
 
-            # BUTON COSMETICE
             ImageButton:
                 source: image_path("buttons/btn_cosmetics.png")
-                size: "260dp", "110dp"
-                pos_hint: {"center_x": 0.5}
+                size_hint_x: 1
+                size_hint_y: None
+                height: root.height * 0.1
+                allow_stretch: True
                 on_release: app.clouds.change_screen('cosmetics')

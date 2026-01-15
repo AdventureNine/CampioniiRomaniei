@@ -1,10 +1,9 @@
-
 <RandStatistica@MDBoxLayout>:
     titlu: ""
     valoare: ""
     orientation: "horizontal"
     size_hint_y: None
-    height: "32dp"
+    height: "35dp"
     padding: "10dp", 0
     spacing: "10dp"
 
@@ -24,16 +23,13 @@
         font_name: image_path("menu/RAVIE.TTF")
         font_size: "16sp"
         theme_text_color: "Custom"
-        text_color: hex('#FFD700')  # Auriu (Gold)
+        text_color: hex('#FFD700')
         halign: "right"
         valign: "center"
         size_hint_x: 0.4
 
-
 <PaginaStatistici>:
     name: 'statistici'
-
-    # FUNDAL
     Image:
         source: image_path("menu/dashboard_bg.png")
         allow_stretch: True
@@ -45,7 +41,7 @@
         md_bg_color: 0, 0, 0, 0.6
         size_hint: 1, 1
 
-    # TITLU PAGINĂ
+    FloatLayout:
         StandardHeader:
             title: "STATISTICI JUCATOR"
             back_screen: 'menu'
@@ -53,45 +49,39 @@
             pos_hint: {"top": 1}
             id: header
 
-    # CONȚINUT PRINCIPAL
-    MDBoxLayout:
-        orientation: "vertical"
-        spacing: "10dp"
-        padding: "20dp"
-        adaptive_height: True
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-
-        # CARD CENTRAL CU DATELE
         MDCard:
             orientation: "vertical"
-            size_hint: None, None
-            size: "500dp", "440dp"
-            pos_hint: {"center_x": 0.5, "center_y": 0.45}
 
-            # STILIZARE CARD
+            size_hint: 0.6, None
+            adaptive_height: True 
+
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
             radius: [25,]
             md_bg_color: 0.1, 0.1, 0.2, 0.85
             line_color: hex('#448AFF')
             line_width: 2
             elevation: 4
 
-            padding: ["20dp", "8dp", "20dp", "20dp"]
-            spacing: "6dp"
+            padding: ["20dp", "25dp", "20dp", "25dp"] # Padding sus/jos mai generos
+            spacing: "8dp"
 
-            # -- LISTA DE STATISTICI --
-
-            # Credite
             RandStatistica:
                 titlu: "CREDITE:"
                 valoare: "0"
                 id: row_credite
 
-            # Linie despărțitoare
             MDBoxLayout:
                 size_hint_y: None
-                height: "2dp"
-                md_bg_color: 1, 1, 1, 0.2
-                padding: [0, 10, 0, 10]
+                height: "10dp" # Înălțimea containerului liniei
+                padding: [10, 0] # Padding lateral
+
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2
+                    Line:
+                        points: [self.x, self.center_y, self.right, self.center_y]
+                        width: 1
 
             RandStatistica:
                 titlu: "QUIZ-URI JUCATE:"
@@ -114,9 +104,19 @@
                 id: row_regiuni
 
             RandStatistica:
-                titlu: "COSMETICI:"
+                titlu: "COSMETICE:"
                 valoare: "0"
                 id: row_cosmetici
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: "10dp"
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2
+                    Line:
+                        points: [self.x, self.center_y, self.right, self.center_y]
+                        width: 1
 
             RandStatistica:
                 titlu: "PROGRES TOTAL:"

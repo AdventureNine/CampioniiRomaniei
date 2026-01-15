@@ -1,9 +1,10 @@
 <CosmeticCard>:
     orientation: 'vertical'
-    size_hint: None, None
-    size: dp(240), dp(310)
-    spacing: dp(5)
-    padding: dp(8)
+    size_hint: 1, None  
+    height: "260dp"
+    
+    spacing: "5dp"
+    padding: "8dp"
 
     canvas.before:
         Color:
@@ -16,35 +17,37 @@
     RelativeLayout:
         Image:
             source: root.source
-            # Efect de gri dacă nu e deținut
             color: (1, 1, 1, 1) if root.is_owned else (0.4, 0.4, 0.4, 1)
 
         Image:
-            source: image_path("ui/lock.png") # Verifică dacă ai această imagine
+            source: image_path("ui/lock.png")
             size_hint: None, None
-            size: dp(30), dp(30)
+            size: "24dp", "24dp"
             pos_hint: {'top': 0.95, 'right': 0.95}
             opacity: 0 if root.is_owned else 1
 
     Label:
         text: root.item_name
         size_hint_y: None
-        height: dp(25)
-        font_size: '16sp'
+        height: "22dp"
+        font_size: '14sp'
         bold: True
+        text_size: self.width, None
+        halign: 'center'
+        valign: 'middle'
 
     Label:
         text: root.price + " Credite" if not root.is_owned else "Deținut"
         size_hint_y: None
-        height: dp(20)
-        font_size: '14sp'
+        height: "18dp"
+        font_size: '13sp'
         color: (1, 0.8, 0, 1)
 
     Button:
         text: "ECHIPAT" if root.is_equipped else ("ECHIPEAZĂ" if root.is_owned else "CUMPĂRĂ")
         size_hint_y: None
-        height: dp(40)
-        font_size: '13sp'
+        height: "35dp"
+        font_size: '12sp'
         background_normal: ''
         background_color: (0.2, 0.6, 0.2, 1) if not root.is_owned else (0.2, 0.4, 0.8, 1)
         disabled: root.is_equipped
@@ -59,7 +62,7 @@
     Widget:
         canvas:
             Color:
-                rgba: 0, 0, 0, 0.3
+                rgba: 0, 0, 0, 0.4
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -74,12 +77,14 @@
 
         ScrollView:
             do_scroll_x: False
-            bar_width: dp(10)
+            bar_width: "10dp"
+            effect_cls: "ScrollEffect"
 
             GridLayout:
                 id: cosmetics_grid
                 cols: 4
-                spacing: dp(20)
-                padding: dp(25)
+                spacing: "15dp"
+                padding: "20dp"
+
                 size_hint_y: None
-                height: self.minimum_height # CRITIC pentru ScrollView
+                height: self.minimum_height

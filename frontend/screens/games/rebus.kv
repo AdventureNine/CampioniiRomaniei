@@ -1,18 +1,16 @@
+#:import AppColors frontend.utils.colors.AppColors
+
 <RebusCell>:
-    size_hint: None, None
-    width: root.cell_size
-    height: root.cell_size
-    font_size: '24sp'
-    halign: 'center'
-    multiline: False
-    cursor_width: 0
+    font_size: '22sp'
+    bold: True
+    padding: [0, (self.height - self.line_height) / 2]
     background_normal: ''
     canvas.after:
         Color:
             rgba: 0, 0, 0, 1
         Line:
             rectangle: (self.x, self.y, self.width, self.height)
-            width: 1
+            width: 1.2
 
 <RebusScreen>:
     game_container: game_container
@@ -23,14 +21,7 @@
         size_hint: 1, 1
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    Widget:
-        size_hint: 1, 1
-        canvas:
-            Color:
-                rgba: 0, 0, 0, 0.4
-            Rectangle:
-                pos: self.pos
-                size: self.size
+    DarkOverlay:
 
     FloatLayout:
         StandardHeader:
@@ -39,74 +30,60 @@
             pos_hint: {'top': 1}
             back_screen: 'region_dashboard'
 
-        FloatLayout:
-            pos_hint: {'x': 0, 'top': 0.89}
-            size_hint: 1, None
-            height: root.height - 220
-            canvas.before:
+        GameContainer:
+            orientation: 'vertical'
+            pos_hint: {'center_x': 0.5, 'top': 0.88}
+            size_hint: 0.95, 0.65
+            padding: "10dp"
+
+            canvas.after:
                 Color:
-                    rgba: 0, 0, 0, 0.35
-                RoundedRectangle:
-                    pos: self.x + 14, self.y + 5
-                    size: self.width - 28, self.height - 10
-                    radius: [14]
+                    rgba: root.primary_color
+                Line:
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, 15)
+                    width: 1.5
 
             ScrollView:
-                do_scroll_x: False
+                do_scroll_x: True
                 do_scroll_y: True
-                size_hint: None, None
-                width: root.width - 28
-                height: root.height - 230
-                pos_hint: {'x': 0, 'center_y': 0.5}
+                bar_width: "10dp"
+                bar_color: root.primary_color
+                effect_cls: "ScrollEffect"
 
-                FloatLayout:
-                    size_hint_y: None
-                    height: max(self.parent.height, game_container.height)
-
-                    BoxLayout:
-                        id: game_container
-                        orientation: 'vertical'
-                        size_hint: None, None
-                        width: root.width - 28
-                        height: self.minimum_height
-                        spacing: 6
-                        padding: [6, 20, 6, 20]
-                        pos_hint: {'x': 0, 'center_y': 0.5}
+                BoxLayout:
+                    id: game_container
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    width: self.minimum_width
+                    height: self.minimum_height
+                    spacing: "5dp"
+                    pos_hint: {'center_x': 0.5 if self.width < root.width else None}
 
         BoxLayout:
+            orientation: 'horizontal'
             size_hint: None, None
-            width: root.width - 28
-            height: 100
-            pos_hint: {'center_x': 0.5, 'y': 0.015}
-            canvas.before:
-                Color:
-                    rgba: 0, 0, 0, 0.35
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [14]
+            height: "110dp"
+            width: self.minimum_width
+            pos_hint: {'center_x': 0.5, 'y': 0.02}
+            spacing: "40dp"
+            padding: "15dp"
 
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint_y: None
-                height: 70
-                spacing: 20
-                padding: [100, 0]
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            ImageButton:
+                source: image_path('buttons/btn_delete.png')
+                size_hint: None, None
+                size: "200dp", "120dp"
+                on_release: root.clear_rebus()
 
-                ImageButton:
-                    source: 'backend/domain/assets/images/buttons/btn_delete.png'
-                    size_hint_x: 1
-                    on_release: root.clear_rebus()
+            ImageButton:
+                source: image_path('buttons/btn_reset.png') if root.is_checked else image_path('buttons/btn_check.png')
+                size_hint: None, None
+                size: "200dp", "120dp"
+                on_release: root.toggle_check()
 
-                ImageButton:
-                    source: 'backend/domain/assets/images/buttons/btn_reset.png' if root.is_checked else 'backend/domain/assets/images/buttons/btn_check.png'
-                    size_hint_x: 1
-                    on_release: root.toggle_check()
-
-                ImageButton:
-                    source: 'backend/domain/assets/images/buttons/btn_finish.png'
-                    size_hint_x: 1
-                    disabled: not root.is_completed
-                    opacity: 1 if root.is_completed else 0.5
-                    on_release: root.finalize_rebus()
+            ImageButton:
+                source: image_path('buttons/btn_finish.png')
+                size_hint: None, None
+                size: "200dp", "120dp"
+                disabled: not root.is_completed
+                opacity: 1 if root.is_completed else 0.5
+                on_release: root.finalize_rebus()

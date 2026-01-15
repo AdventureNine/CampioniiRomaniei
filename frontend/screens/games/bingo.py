@@ -28,6 +28,9 @@ class BingoScreen(Screen):
     is_completed = BooleanProperty(False)
     is_wrong = BooleanProperty(False)
     bg_image = StringProperty('')
+
+    bingo_theme = StringProperty("Selectează elementele corecte:")
+
     primary_color = ColorProperty(AppColors.ACCENT)
     current_difficulty = ObjectProperty(None, allownone=True)
     minigame_id = ObjectProperty(None)
@@ -67,6 +70,7 @@ class BingoScreen(Screen):
             from kivy.uix.label import Label
             self.game_container.add_widget(Label(text="Eroare: Configurație lipsă!", color=(1, 1, 1, 1)))
             return
+
         all_true = [(text, True) for text, val in db_items.items() if val is True]
         all_false = [(text, False) for text, val in db_items.items() if val is False]
 
@@ -82,9 +86,11 @@ class BingoScreen(Screen):
         current_win_cfg = {item[0]: item[1] for item in sample}
         self.bingo_entity.set_win_configuration(current_win_cfg)
 
-        grid = GridLayout(cols=5, spacing=10, size_hint=(None, None))
+        # Generare Grid
+        grid = GridLayout(cols=5, spacing="5dp", size_hint=(None, None))
         grid.bind(minimum_height=grid.setter('height'), minimum_width=grid.setter('width'))
-        grid.width = 580
+
+        grid.width = 500
 
         for text, is_target in sample:
             cell = BingoCell(text=text, is_target=is_target)
@@ -142,33 +148,24 @@ class BingoScreen(Screen):
         self.primary_color = colors_map.get(self.region_id, AppColors.ACCENT)
 
     def load_data(self, data, step_number):
-        """
-        Încarcă datele pentru minigame-ul Bingo.
-        Format așteptat:
-        {
-            'type': 'bingo',
-            'bingo': Entitate Bingo cu win_configuration
-        }
-        """
-        # Resetează UI
         if self.game_container:
             self.game_container.clear_widgets()
         self.is_completed = False
         self.is_wrong = False
         self.cells = []
 
-        # Obține entitatea Bingo din date
         bingo = data.get('bingo')
         if not bingo or not isinstance(bingo, Bingo):
-            from kivy.uix.label import Label
-            if self.game_container:
-                self.game_container.add_widget(
-                    Label(text="Eroare: Nu s-au găsit date de bingo.", color=(1, 1, 1, 1)))
             return
+
         self.bingo_entity = bingo
         self.minigame_id = getattr(bingo, 'id', data.get('minigame_id', None))
+
+        # [MODIFICARE] Setăm tema/întrebarea
+        self.bingo_theme = self.bingo_entity.get_theme()
+
         if 'difficulty' in data:
             self.current_difficulty = data['difficulty']
-        # Generează grila de bingo
+
         self.generate_bingo()
         self.set_theme_color()
